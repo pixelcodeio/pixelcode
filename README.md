@@ -1,4 +1,6 @@
 # sketch-to-swift
 
-## Installation
-`sh ./script.sh`
+## Directory Structure
+
+`plugin`: Contains the sketch plugin
+`app`: Contains the code for the core web-app
