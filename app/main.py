@@ -1,5 +1,5 @@
-import parser
-import interpreter
+from parser import Parser
+from interpreter import Interpreter
 
 class Main:
   """
@@ -8,7 +8,7 @@ class Main:
   def __init__(self, filepath):
     self.filepath = filepath
 
-  def convert_file():
+  def convert_file(self):
     p = Parser(self.filepath)
     p.parse_svg()
     i = Interpreter()
@@ -17,8 +17,10 @@ class Main:
     parsed_elements = p.elements
 
     labels = []
-    for elem in elements:
+    for elem in parsed_elements:
       labels.append({"id": elem["id"], "type": elem["type"]})
+      print i.generate_rect(elem)
 
 if __name__ == "__main__":
-  m = Main("./tests/red_on_white_rect.svg")
+  m = Main("./tests/testrects.svg")
+  m.convert_file()

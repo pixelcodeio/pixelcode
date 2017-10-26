@@ -96,18 +96,18 @@ class Parser:
         horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
       if elem.name == "rect":
-        center_x = (1.0 * self.globals["height"]) / \
-            int(elem["x"]) + int(elem["width"]) / 2
-        center_y = (1.0 * self.globals["height"]) / \
-            int(elem["y"]) + int(elem["height"]) / 2
-        vertical["distance"] = \
-            (1.0 * self.globals["height"]) / vertical["distance"]
-        horizontal["distance"] = \
-            (1.0 * self.globals["width"]) / horizontal["distance"]
+        center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
+            (1.0 * self.globals["width"]) 
+        center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
+            (1.0 * self.globals["height"]) 
+        width = int(elem["width"]) / (1.0 * self.globals["width"])
+        height = int(elem["height"]) / (1.0 * self.globals["height"]) 
+        vertical["distance"] /= (1.0 * self.globals["height"])
+        horizontal["distance"] /= (1.0 * self.globals["width"]) 
         new_elem = {"type": "UIView", "id": elem["id"],
                     "fill": utils.convert_hex_to_rgb(elem["fill"]), 
                     "x": center_x, "y": center_y,
-                    "width": elem["width"], "height": elem["height"], 
+                    "width": width, "height": height, 
                     "vertical": vertical, "horizontal": horizontal}
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
