@@ -1,3 +1,4 @@
+import utils
 from bs4 import BeautifulSoup
 
 class Parser:
@@ -23,7 +24,7 @@ class Parser:
 
   def parse_svg(self):
     """
-    Returns: Parses an SVG and returns a dictionary representing the contents
+    Returns: Parses an SVG and sets instance variables appropriately
     """
     f = open(self.filepath, "r+")
     soup = BeautifulSoup(f, "lxml")
@@ -43,7 +44,7 @@ class Parser:
     width = svg["width"][:-2]
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
-    return {"background_color": self.convert_hex_to_rgb(bg_color),
+    return {"background_color": utils.convert_hex_to_rgb(bg_color),
             "width": int(width),
             "height": int(height),
             "pagename": pagename,
@@ -59,50 +60,59 @@ class Parser:
       if attr != 'id':
         inheritable[attr] = artboard[attr]
 
-    # grab children, sort by bottom-right coordinate
-    children = [] 
-    for child in artboard.children:
-      if child != "\n":
-        children.append(child)
-    children.sort(key=lambda c: (int(c["x"]) + int(c["y"]) + 
-                                 int(c["width"]) + int(c["height"])))
+    # grab elements, append attributes, sort by bottom-right coordinate
+    elements = [] 
+    for elem in artboard.children:
+      if elem != "\n":
+        for key in inheritable:
+          if key not in elem:
+            elem[key] = inheritable[key]
+        elements.append(elem)
+    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) + 
+                                 int(e["width"]) + int(e["height"])))
 
-    # append parent keys on children
-    for child in children:
-      for key in inheritable:
-        if key not in child:
-          child[key] = inheritable[key]
+    parsed_elements = []
+    for elem in elements:
+      vertical = {}
+      horizontal = {}
 
-  def check_spacing(self, r1, r2, direction):
-    """
-    Args:
-      r1: The rectangle with a smaller bottom-right coordinate sum
-      r2: The rectangle we are currently checking
-      direction: direction to check; one-of [up, down, left, right]
+      for check in parsed_elements:
+        if vertical == {}:
+          check_up = utils.check_spacing(check, elem, "up")
+          if check_up[0]:
+            vertical = {"direction": "up", "id": check["id"],
+                        "distance": check_up[1]}
+        if horizontal == {}:
+          check_left = utils.check_spacing(check, elem, "left")
+          if check_left [0]:
+            horizontal = {"direction": "left", "id": check["id"],
+                          "distance": check_left[1]}
+        if vertical != {} and horizontal != {}:
+          break
 
-    Returns:
-      A tuple (bool, dist) representing whether r2 can have its spacing 
-      defined in [direction] with respect to r1, where dist is the 
-      distance between the two rectangles in pixels.
-    """
-    r1_top = (int(r1["x"]), int(r1["y"])) # top-left
-    r1_bottom = (r1_top[0] + int(r1["width"]), r1_top[1] + int(r1["height"]))
-    r2_top = (int(r2["x"]), int(r2["y"])) # top-left
-    r2_bottom = (r2_top[0] + int(r2["width"]), r2_top[1] + int(r2["height"]))
+      if vertical == {}:
+        vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
+      if horizontal == {}:
+        horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
-    if r2_top[0] > r1_bottom[0] and r2_top[1] > r1_bottom[1]:
-      return False, 0
-
-  def convert_hex_to_rgb(self, hex_string):
-    """ 
-    Returns [hex_string] converted to a rgb tuple. 
-    """
-    h = hex_string.lstrip('#')
-    return tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
+      if elem.name == "rect":
+        center_x = int(elem["x"]) + int(elem["width"]) / 2
+        center_y = int(elem["y"]) + int(elem["height"]) / 2
+        vertical["distance"] = \
+            (1.0 * self.globals["height"]) / vertical["distance"]
+        horizontal["distance"] = \
+            (1.0 * self.globals["width"]) / horizontal["distance"]
+        new_elem = {"type": "UIView", "id": elem["id"],
+                    "fill": utils.convert_hex_to_rgb(elem["fill"]), 
+                    "x": center_x, "y": center_y,
+                    "width": elem["width"], "height": elem["height"], 
+                    "vertical": vertical, "horizontal": horizontal}
+      parsed_elements.insert(0, new_elem)
+    return parsed_elements         
 
 if __name__ == "__main__":
   p = Parser("./tests/testrects.svg")
   p2 = Parser("./tests/test1.svg")
-  assert p.convert_hex_to_rgb("#B4FBB8") == (180, 251, 184)
+  assert utils.convert_hex_to_rgb("#B4FBB8") == (180, 251, 184)
   p.parse_svg()
-  p2.parse_svg()
+  #p2.parse_svg()
