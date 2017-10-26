@@ -96,8 +96,10 @@ class Parser:
         horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
       if elem.name == "rect":
-        center_x = int(elem["x"]) + int(elem["width"]) / 2
-        center_y = int(elem["y"]) + int(elem["height"]) / 2
+        center_x = (1.0 * self.globals["height"]) / \
+            int(elem["x"]) + int(elem["width"]) / 2
+        center_y = (1.0 * self.globals["height"]) / \
+            int(elem["y"]) + int(elem["height"]) / 2
         vertical["distance"] = \
             (1.0 * self.globals["height"]) / vertical["distance"]
         horizontal["distance"] = \
@@ -108,7 +110,7 @@ class Parser:
                     "width": elem["width"], "height": elem["height"], 
                     "vertical": vertical, "horizontal": horizontal}
       parsed_elements.insert(0, new_elem)
-    return parsed_elements         
+    return parsed_elements[::-1]
 
 if __name__ == "__main__":
   p = Parser("./tests/testrects.svg")
