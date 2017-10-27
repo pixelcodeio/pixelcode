@@ -1,5 +1,6 @@
 from parser import Parser
 from interpreter import Interpreter
+import os
 
 class Main:
   """
@@ -17,10 +18,24 @@ class Main:
     parsed_elements = p.elements
 
     labels = []
+    ret = ""
     for elem in parsed_elements:
       labels.append({"id": elem["id"], "type": elem["type"]})
-      print i.generate_rect(elem)
+      ret += i.generate_rect(elem)
+    return ret
 
 if __name__ == "__main__":
-  m = Main("./tests/testrects.svg")
-  m.convert_file()
+  files = os.listdir("./tests")
+  svg = []
+  out = []
+  for f in files:
+    if ".svg" in f:
+      svg.append(f.split(".svg")[0])
+    else:
+      out.append(f.split(".out")[0])
+  for f in svg:
+    if f not in out:
+      m = Main("./tests/" + f + ".svg")
+      o = open("./tests/" + f + ".out", "w+")
+      o.write(m.convert_file())
+      o.close()

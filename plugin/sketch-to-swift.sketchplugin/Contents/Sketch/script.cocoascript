@@ -1,21 +1,8 @@
 var onRun = function(context) {
-    log('This is an example Sketch script.');
-
-    var documentName = context.document.displayName();
-    log('The current document is named: ' + documentName);
-
-    var selectedLayers = context.selection;
-    var selectedCount = selectedLayers.count();
-
-    if (selectedCount == 0) {
-        log('No layers are selected.');
-    } else {
-        log('Selected layers:');
-        for (var i = 0; i < selectedCount; i++) {
-            var layer = selectedLayers[i];
-            log((i+1) + '. ' + layer.name());
-        }
-    };
-
+    var sketch = context.api()
+    var options = { "scales" : "1", "formats" : "svg", "overwriting" : "true", "output": "~/Documents/sketch-to-swift/app/tests" }
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+        layer.export(options)
+    })
 };
 

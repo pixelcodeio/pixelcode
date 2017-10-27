@@ -120,6 +120,7 @@ class Parser:
 if __name__ == "__main__":
   p = Parser("./tests/testrects.svg")
   p2 = Parser("./tests/test1.svg")
+  p3 = Parser("./tests/text.svg")
   assert utils.convert_hex_to_rgb("#B4FBB8") == (180, 251, 184)
   p.parse_svg()
   #p2.parse_svg()

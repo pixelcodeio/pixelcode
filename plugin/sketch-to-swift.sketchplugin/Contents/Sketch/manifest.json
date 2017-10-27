@@ -3,7 +3,7 @@
   "commands" : [
     {
       "script" : "script.cocoascript",
-      "name" : "sketch-to-swift",
+      "name" : "Export to Swift",
       "handlers" : {
         "run" : "onRun"
       },
