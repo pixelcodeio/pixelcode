@@ -32,7 +32,9 @@ class Parser:
     e = []
 
     self.globals = self.parse_globals(soup.svg)
-    self.elements = self.parse_elements(soup.svg.g.g)
+    self.elements = self.parse_elements(
+        self.inherit_from(soup.svg.g, soup.svg.g.g)
+    )
     return
 
   def parse_globals(self, svg):
@@ -54,20 +56,11 @@ class Parser:
     """
     Returns: list of parsed elements
     """
-    # set up list of attributes to inherit from artboard
-    inheritable = {}
-    for attr in artboard.attrs:
-      if attr != 'id':
-        inheritable[attr] = artboard[attr]
-
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = [] 
     for elem in artboard.children:
       if elem != "\n":
-        for key in inheritable:
-          if key not in elem:
-            elem[key] = inheritable[key]
-        elements.append(elem)
+        elements.append(self.inherit_from(artboard, elem))
     elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) + 
                                  int(e["width"]) + int(e["height"])))
 
@@ -96,21 +89,33 @@ class Parser:
         horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
       if elem.name == "rect":
-        center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
-            (1.0 * self.globals["width"]) 
-        center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
-            (1.0 * self.globals["height"]) 
-        width = int(elem["width"]) / (1.0 * self.globals["width"])
-        height = int(elem["height"]) / (1.0 * self.globals["height"]) 
-        vertical["distance"] /= (1.0 * self.globals["height"])
-        horizontal["distance"] /= (1.0 * self.globals["width"]) 
-        new_elem = {"type": "UIView", "id": elem["id"],
-                    "fill": utils.convert_hex_to_rgb(elem["fill"]), 
-                    "x": center_x, "y": center_y,
-                    "width": width, "height": height, 
-                    "vertical": vertical, "horizontal": horizontal}
+        new_elem = self.parse_rect(elem, vertical, horizontal)
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
+
+  def parse_rect(self, elem, vertical, horizontal):
+    center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
+        (1.0 * self.globals["width"]) 
+    center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
+        (1.0 * self.globals["height"]) 
+    width = int(elem["width"]) / (1.0 * self.globals["width"])
+    height = int(elem["height"]) / (1.0 * self.globals["height"]) 
+    vertical["distance"] /= (1.0 * self.globals["height"])
+    horizontal["distance"] /= (1.0 * self.globals["width"]) 
+    return {"type": "UIView", "id": elem["id"],
+        "fill": utils.convert_hex_to_rgb(elem["fill"]), 
+        "x": center_x, "y": center_y,
+        "width": width, "height": height, 
+        "vertical": vertical, "horizontal": horizontal}
+
+  def inherit_from(self, parent, child):
+    """
+    Attributes from parent not defined in child are passed down
+    """
+    for attr in parent.attrs:
+      if attr not in child.attrs:
+        child[attr] = parent[attr]
+    return child
 
 if __name__ == "__main__":
   p = Parser("./tests/testrects.svg")
