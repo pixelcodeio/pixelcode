@@ -1,6 +1,6 @@
 from parser import Parser
 from interpreter import Interpreter
-import os
+import os, sys
 
 class Main:
   """
@@ -24,8 +24,9 @@ class Main:
       ret += i.generate_rect(elem)
     return ret
 
-if __name__ == "__main__":
-  files = os.listdir("./tests")
+def update_test_dir():
+  path = "./tests/"
+  files = os.listdir(path)
   svg = []
   out = []
   for f in files:
@@ -35,7 +36,13 @@ if __name__ == "__main__":
       out.append(f.split(".out")[0])
   for f in svg:
     if f not in out:
-      m = Main("./tests/" + f + ".svg")
-      o = open("./tests/" + f + ".out", "w+")
+      m = Main(path + f + ".svg")
+      o = open(path + f + ".out", "w+")
       o.write(m.convert_file())
       o.close()
+
+if __name__ == "__main__":
+  if len(sys.argv) == 2 and sys.argv[1] == "update":
+    update_test_dir()
+  m = Main("./tests/testrects.svg")
+  m.convert_file()

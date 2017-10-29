@@ -15,6 +15,7 @@ Next, make sure that this repository is located in `~/Documents/sketch-to-swift/
 Install `fswatch` and `xargs` (information on installation can be found online).
 
 ```
+cd app/
 chmod +x run.sh
 sh run.sh
 ```
