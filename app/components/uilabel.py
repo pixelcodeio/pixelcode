@@ -1,25 +1,32 @@
-import interpreter
+import utils
 
 class UILabel:
   def __init__(self):
-    global i
-    i = interpreter.Interpreter()
+    pass
 
   def set_text(self, elem, txt):
     """
     Returns: The swift code to set the text of a label
     """
-    return elem + '.text = ' + txt
+    return '{}.text = {}'.format(elem, txt)
 
   def set_font_size(self, elem, size):
     """
     Returns: The swift code to set the font size of a label
     """
     size = str(size)
-    return elem + '.font = UIFont.systemFont(ofSize: ' + size + ')'
+    return '{}.font = UIFont.systemFont(ofSize: {})'.format(elem, size)
 
-  def generate_text(self, info):
+  def generate_label(self, info):
     """
+    info requires:
+      - id of label
+      - text & fontsize & text color
+      - centerX & centerY
+      - top/bottom & left/right
+      - background color
+      - width & height
+      - corner radius
     Returns: The swift code to generate a label with a text
     """
     vertical = info['vertical']
@@ -41,14 +48,13 @@ class UILabel:
     lid = info['id']
     txt = info['text']
     fontSize = info['fontSize']
-    label = 'var '+ lid + ' = UILabel()\n'
-    label += i.translates_false(lid)
+    label = 'var {} = UILabel()\n'.format(lid)
+    label += utils.translates_false(lid)
     label += self.set_text(lid, txt)
     label += self.set_font_size(lid, fontSize)
-    label += i.set_bg(lid, r, g, b)
-    label += i.add_subview('view', lid)
-    label += i.wh_constraints(lid, width, height)
-    label += i.position_constraints(lid, horizontalID, horizontalDir,
-        horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
-    print(label)
+    label += utils.set_bg(lid, r, g, b)
+    label += utils.add_subview('view', lid)
+    label += utils.wh_constraints(lid, width, height)
+    label += utils.position_constraints(lid, horizontalID, horizontalDir,
+      horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
     return label

@@ -1,12 +1,19 @@
-import interpreter
+import utils
 
 class UIImageView:
   def __init__(self):
-    global i
-    i = interpreter.Interpreter()
+    pass
 
   def generate_img_view(self, info):
     """
+    info requires:
+      - id of image view
+      - image
+      - centerX & centerY
+      - top/bottom & left/right
+      - background color
+      - width & height
+      - corner radius
     Returns: The swift code to generate an image view
     """
     vertical = info['vertical']
@@ -26,12 +33,11 @@ class UIImageView:
     g = fill[1]
     b = fill[2]
     imgID = info['id']
-    imgView = 'var '+ imgID + ' = UIImageView()\n'
-    imgView += i.translates_false(imgID)
-    imgView += i.set_bg(imgID, r, g, b)
-    imgView += i.add_subview('view', imgID)
-    imgView += i.wh_constraints(imgID, width, height)
-    imgView += i.position_constraints(imgID, horizontalID, horizontalDir,
+    imgView = 'var {} = UIImageView()\n'.format(imgID)
+    imgView += utils.translates_false(imgID)
+    imgView += utils.set_bg(imgID, r, g, b)
+    imgView += utils.add_subview('view', imgID)
+    imgView += utils.wh_constraints(imgID, width, height)
+    imgView += utils.position_constraints(imgID, horizontalID, horizontalDir,
       horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
-    print(imgView)
     return imgView

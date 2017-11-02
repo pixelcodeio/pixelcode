@@ -1,13 +1,18 @@
-import interpreter
+import utils
 
 class UIView:
   def __init__(self):
-    global i
-    i = Interpreter()
+    pass
 
 
   def generate_view(self, info):
     """
+    info requires:
+      - id of view
+      - centerX & centerY
+      - top/bottom & left/right
+      - background color
+      - width & height
     Returns: Uses properties from info to generate swift code
     that creates a UIView.
     """
@@ -28,12 +33,11 @@ class UIView:
     g = fill[1]
     b = fill[2]
     rid = info['id']
-    view = 'var '+ rid + ' = UIView()\n'
-    view += i.translates_false(rid)
-    view += i.set_bg(rid, r, g, b)
-    view += i.add_subview('view', rid)
-    view += i.wh_constraints(rid, width, height)
-    view += i.position_constraints(rid, horizontalID, horizontalDir,
+    view = 'var {} = UIView()\n'.format(rid)
+    view += utils.translates_false(rid)
+    view += utils.set_bg(rid, r, g, b)
+    view += utils.add_subview('view', rid)
+    view += utils.wh_constraints(rid, width, height)
+    view += utils.position_constraints(rid, horizontalID, horizontalDir,
       horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
-    print(view)
     return view
