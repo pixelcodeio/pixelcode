@@ -5,59 +5,78 @@ class Interpreter:
   def __init__(self):
     pass
 
-  def generate_header(self):
+  def generate_header(self, glob):
     """
     TODO: Fill in arguments necessary to generate any headers
     """
-    pass
+    viewController = glob['artboard'] + 'ViewController'
+    header = 'import UIKit\nclass ' + viewController + ': UIViewController {\n'
+    header += '\noverride func viewDidLoad() {\n\n}\n}'
+    return header
 
-  def generate_rect(self, info):
+  def translates_false(self, elem):
     """
-    TODO: Fill in arguments necessary to create a rectangle
+    Returns: The line that sets the translatesAutoResizing property
+    of elem to false.
     """
-    vertical = info['vertical']
-    horizontal = info['horizontal']
-    verticalDir = vertical['direction']
-    horizontalDir = horizontal['direction']
-    isUp = True
-    isLeft = True
-    if (verticalDir == 'down'):
-        isUp = false
-    if (horizontalDir == 'right'):
-        isLeft = false
-    verticalID = vertical['id']
-    verticalDist = str(vertical['distance']) 
-    horizontalID = horizontal['id']
-    horizontalDist = str(horizontal['distance'])
-    centerX = str(info['x'])
-    centerY = str(info['y'])
-    width = str(info['width'])
-    height = str(info['height'])
-    fill = info['fill']
-    r = str(fill[0])
-    g = str(fill[1])
-    b = str(fill[2])
-    rid = info['id']
-    rect = 'var '+ rid + ' = UIView()\n'  
-    rect += rid + '.translatesAutoresizingMaskIntoConstraints = false\n'
-    rect += rid + '.backgroundColor = UIColor(red: ' + r + ', green: ' + g 
-    rect += ', blue: ' + b + ', alpha: 1.0)\n'
-    rect += 'view.addSubview(' + rid + ')\n\n'
-    rect += rid + '.widthAnchor.constraint(equalToConstant: view.frame.width*' 
-    rect += width + ').isActive = true\n' 
-    rect += rid + '.heightAnchor.constraint(equalToConstant: view.frame.height*' 
-    rect += height + ').isActive = true\n' 
-    rect += rid + '.centerXAnchor.constraint(equalTo: view.'
-    if isLeft:
-        rect += 'left'
-    else:
-        rect += 'right'
-    rect += 'Anchor, constant: view.frame.width*' + centerX + ').isActive = true\n' 
-    rect += rid + '.centerYAnchor.constraint(equalTo: view.' 
-    if isUp:
-        rect += 'top'
-    else:
-        rect += 'bottom'
-    rect += 'Anchor, constant: view.frame.height*' + centerY + ').isActive = true\n' 
-    return rect
+    return elem + '.translatesAutoresizingMaskIntoConstraints = false\n'
 
+  def set_bg(self, elem, r, g, b):
+    """
+    Returns: The line that sets the background color of elem to the
+    UIColor with the corresponding r, g, b values.
+    """
+    red = str(r)
+    green = str(g)
+    blue = str(b)
+    bg = elem + '.backgroundColor = UIColor(red: ' + red + '/255.0 , green: '
+    bg += green + '/255.0 , blue: ' + blue + '/255.0 , alpha: 1.0)\n'
+    return bg
+
+  def add_subview(self, view, elem):
+    return view + '.addSubview(' + elem + ')\n\n'
+
+  def wh_constraints(self, elem, width, height):
+    """
+    Returns: The swift code that sets the width and height constraints
+    of the elem.
+    """
+    w = str(width)
+    h = str(height)
+    c = elem + '.widthAnchor.constraint(equalToConstant: view.frame.width*'
+    c += w + ').isActive = true\n'
+    c += elem + '.heightAnchor.constraint(equalToConstant: view.frame.height*'
+    c += h + ').isActive = true\n'
+    return c
+
+  def position_constraints(self, elem, horID, horDir, horDist, vertID, vertDir,
+      vertDist, centerX, centerY):
+    """
+    Returns: The swift code to set the centerX and centerY constraints of
+    the elem.
+    """
+    x = str(centerX)
+    y = str(centerY)
+    hDist = str(horDist)
+    vDist = str(vertDist)
+    c = elem + '.centerXAnchor.constraint(equalTo: view.leftAnchor, '
+    c += 'constant: view.frame.width*' + x + ').isActive = true\n'
+    c += elem + '.centerYAnchor.constraint(equalTo: view.topAnchor, '
+    c += 'constant: view.frame.height*' + y + ').isActive = true\n'
+    if horID == '':
+      c += elem + '.leftAnchor.constraint(equalTo: view.leftAnchor, '
+      c += 'constant: view.frame.width*' + hDist + ').isActive = true\n'
+    else:
+      oppDir = 'left' if horDir == 'right' else 'right'
+      c += elem + '.' + horDir + 'Anchor.constraint(equalTo: ' + horID + '.'
+      c += oppDir + 'Anchor, constant: view.frame.width*' + hDist
+      c += ').isActive = true\n'
+    if vertID == '':
+      c += elem + '.topAnchor.constraint(equalTo: view.topAnchor, '
+      c += 'constant: view.frame.height*' + vDist + ').isActive = true\n'
+    else:
+      oppDir = 'top' if horDir == 'bottom' else 'bottom'
+      c += elem + '.' + horDir + 'Anchor.constraint(equalTo: ' + horID + '.'
+      c += oppDir + 'Anchor, constant: view.frame.height*' + vDist
+      c += ').isActive = true\n'
+    return c

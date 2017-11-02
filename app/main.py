@@ -21,7 +21,7 @@ class Main:
     ret = ""
     for elem in parsed_elements:
       labels.append({"id": elem["id"], "type": elem["type"]})
-      ret += i.generate_rect(elem)
+      ret += i.generate_view(elem)
     return ret
 
 def update_test_dir():
