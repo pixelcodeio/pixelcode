@@ -1,6 +1,16 @@
+# temp files
 ~*
+
+# vim files 
 *.swp
 *.swo
+
+# pyc files 
 *.pyc
 *.out
+
+# venv
 venv
+
+# test files 
+app/tests
