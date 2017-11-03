@@ -1,11 +1,8 @@
-# temp files
+# unnecessary files
 ~*
-
-# vim files 
+.DS_Store
 *.swp
 *.swo
-
-# pyc files 
 *.pyc
 *.out
 

@@ -57,11 +57,11 @@ class Parser:
     Returns: list of parsed elements
     """
     # grab elements, append attributes, sort by bottom-right coordinate
-    elements = [] 
+    elements = []
     for elem in artboard.children:
       if elem != "\n":
         elements.append(self.inherit_from(artboard, elem))
-    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) + 
+    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) +
                                  int(e["width"]) + int(e["height"])))
 
     parsed_elements = []
@@ -95,17 +95,17 @@ class Parser:
 
   def parse_rect(self, elem, vertical, horizontal):
     center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
-        (1.0 * self.globals["width"]) 
+        (1.0 * self.globals["width"])
     center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
-        (1.0 * self.globals["height"]) 
+        (1.0 * self.globals["height"])
     width = int(elem["width"]) / (1.0 * self.globals["width"])
-    height = int(elem["height"]) / (1.0 * self.globals["height"]) 
+    height = int(elem["height"]) / (1.0 * self.globals["height"])
     vertical["distance"] /= (1.0 * self.globals["height"])
-    horizontal["distance"] /= (1.0 * self.globals["width"]) 
+    horizontal["distance"] /= (1.0 * self.globals["width"])
     return {"type": "UIView", "id": elem["id"],
-        "fill": utils.convert_hex_to_rgb(elem["fill"]), 
+        "fill": utils.convert_hex_to_rgb(elem["fill"]),
         "x": center_x, "y": center_y,
-        "width": width, "height": height, 
+        "width": width, "height": height,
         "vertical": vertical, "horizontal": horizontal}
 
   def inherit_from(self, parent, child):
