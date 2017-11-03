@@ -1,10 +1,6 @@
 import utils
 
 class UIView:
-  def __init__(self):
-    pass
-
-
   def generate_view(self, info):
     """
     info requires:

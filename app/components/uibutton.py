@@ -1,9 +1,6 @@
 import utils
 
 class UIButton:
-  def __init__(self):
-    pass
-
   def set_title(self, elem, title):
     """
     Returns: The swift code to set title of a button

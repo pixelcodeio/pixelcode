@@ -1,9 +1,6 @@
 import utils
 
 class UIImageView:
-  def __init__(self):
-    pass
-
   def generate_img_view(self, info):
     """
     info requires:

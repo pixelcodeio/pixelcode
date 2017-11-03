@@ -1,9 +1,6 @@
 import utils
 
 class UILabel:
-  def __init__(self):
-    pass
-
   def set_text(self, elem, txt):
     """
     Returns: The swift code to set the text of a label
@@ -14,7 +11,6 @@ class UILabel:
     """
     Returns: The swift code to set the font size of a label
     """
-    size = str(size)
     return '{}.font = UIFont.systemFont(ofSize: {})'.format(elem, size)
 
   def generate_label(self, info):
