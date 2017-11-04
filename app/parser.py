@@ -83,49 +83,97 @@ class Parser(object):
 
     parsed_elements = []
     for elem in elements:
-      vertical = {}
-      horizontal = {}
-
-      for check in parsed_elements:
-        if vertical == {}:
-          check_up = utils.check_spacing(check, elem, "up")
-          if check_up[0]:
-            vertical = {"direction": "up", "id": check["id"],
-                        "distance": check_up[1]}
-        if horizontal == {}:
-          check_left = utils.check_spacing(check, elem, "left")
-          if check_left[0]:
-            horizontal = {"direction": "left", "id": check["id"],
-                          "distance": check_left[1]}
-        if vertical != {} and horizontal != {}:
-          break
-
-      if vertical == {}:
-        vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
-      if horizontal == {}:
-        horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
-  
-      # convert units to percentages
-      elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
-      elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
-      elem["x"] = int(elem["x"]) / (1.0 * self.globals["width"])
-      elem["y"] = int(elem["y"]) / (1.0 * self.globals["height"])
-      horizontal["distance"] /= (1.0 * self.globals["width"])
-      vertical["distance"] /= (1.0 * self.globals["height"])
+      spacing = self.calculate_spacing(elem, parsed_elements)
+      elem = self.convert_coords(elem)
 
       if elem.name == "rect":
         parsed_elem = Rect(elem, vertical, horizontal)
+
       elif elem.name == "text":
         elem["contents"] = ""
         for child in elem.children:
           if child != "\n":
             elem["contents"] += child.contents[0]
-        parsed_elem = Text(elem, vertical, horizontal)
+        parsed_elem = Text(elem, spacing["vertical"], spacing["horizontal"])
+
       elif elem.name == "image":
-        parsed_elem = Image(elem, vertical, horizontal)
+        parsed_elem = Image(elem, spacing["vertical"], spacing["horizontal"])
+
+      elif elem.name == "g" and "Button" in elem["id"]:
+        rect = elem.rect
+        if "rx" in rect:
+          elem["border-radius"] = rect["rx"]
+        if "stroke" in rect:
+          elem["stroke-color"] = utils.convert_hex_to_rgb(rect["stroke"])
+          if "stroke-width" in rect:
+            elem["stroke-width"] = rect["stroke-width"]
+          else:
+            elem["stroke-width"] = 1
+
+        text = elem.find('text')
+        elem["title"] = ""
+        for child in text.children:
+          if child != "\n":
+            elem["title"] += child.contents[0]
+        for key in text.attrs:
+          if key == "fill":
+            elem["title-color"] = text["fill"]
+          else:
+            elem[key] = text[key]
+        parsed_elem = Button(elem, spacing["vertical"], spacing["horizontal"])
+
+      # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
+
+  def calculate_spacing(self, elem, parsed_elements):
+    """
+    Returns:
+      dict with keys vertical and horizontal, where vertical and horizontal
+      represent the relative spacing between elem and parsed_elements
+    """
+    vertical = {}
+    horizontal = {}
+    for check in parsed_elements:
+      if vertical == {}:
+        check_up = utils.check_spacing(check, elem, "up")
+        if check_up[0]:
+          vertical = {"direction": "up", "id": check["id"],
+                      "distance": check_up[1]}
+      if horizontal == {}:
+        check_left = utils.check_spacing(check, elem, "left")
+        if check_left[0]:
+          horizontal = {"direction": "left", "id": check["id"],
+                        "distance": check_left[1]}
+      if vertical != {} and horizontal != {}:
+        break
+
+    if vertical == {}:
+      vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
+    if horizontal == {}:
+      horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
+
+    # convert units to percentages
+    horizontal["distance"] /= (1.0 * self.globals["width"])
+    vertical["distance"] /= (1.0 * self.globals["height"])
+    return {"vertical": vertical, "horizontal": horizontal}
+
+  def convert_coords(self, elem):
+    """
+    Returns: elem with coords set relative to global height/width
+    """
+    # convert units to percentages
+    elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
+    elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
+    elem["x"] = int(elem["x"]) / (1.0 * self.globals["width"])
+    elem["y"] = int(elem["y"]) / (1.0 * self.globals["height"])
+
+    # generate center
+    elem["x"] = elem["x"] + elem["width"] / 2
+    elem["y"] = elem["y"] + elem["height"] / 2
+    return elem
+
 
   def inherit_from(self, parent, child):
     """

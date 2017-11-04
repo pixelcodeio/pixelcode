@@ -41,3 +41,18 @@ def convert_hex_to_rgb(hex_string):
   """
   h = hex_string.lstrip('#')
   return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+def init_optional_params(elem, params):
+  """
+  Returns: elem with params initialized to None, except for fill
+  """
+  for param in params:
+    if param == "fill":
+      if "fill" in elem:
+        elem["fill"] = convert_hex_to_rgb(elem["fill"])
+      else:
+        elem["fill"] = None
+    else:
+      if param not in elem:
+        elem[param] = None
+  return elem

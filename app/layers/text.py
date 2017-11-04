@@ -15,13 +15,22 @@ class Text(object):
     Args:
       Refer to args in __init__
     """
-    center_x = elem["x"] + elem["width"] / 2
-    center_y = elem["y"] + elem["height"] / 2
+    opt_params = [
+        "stroke-color",
+        "stroke-width",
+        "border-radius",
+        "font-weight"
+    ]
+    elem = utils.init_optional_params(elem, opt_params)
     return {
         "type": "UILabel", "id": elem["id"],
         "text": elem["contents"],
         "text-color": utils.convert_hex_to_rgb(elem["fill"]),
         "font-size": elem["font-size"],
-        "x": center_x, "y": center_y,
+        "font-weight": elem["font-weight"],
+        "stroke-color": elem["stroke-color"],
+        "stroke-width": elem["stroke-width"],
+        "border-radius": elem["border-radius"],
+        "x": elem["x"], "y": elem["y"],
         "width": elem["width"], "height": elem["height"],
         "vertical": vertical, "horizontal": horizontal}
