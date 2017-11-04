@@ -88,6 +88,12 @@ class Parser(object):
 
       elem["horizontal"] = spacing["horizontal"]
       elem["vertical"] = spacing["vertical"]
+      if "font-weight" in elem.attrs:
+        if elem["font-weight"] == "normal":
+          elem["font-weight"] = "400"
+        elif elem["font-weight"] == "bold":
+          elem["font-weight"] = "700"
+
       if elem.name == "rect":
         elem["type"] = "UIView"
         parsed_elem = Rect(elem)
@@ -155,7 +161,6 @@ class Parser(object):
     elem["x"] = elem["x"] + elem["width"] / 2
     elem["y"] = elem["y"] + elem["height"] / 2
     return elem
-
 
   def inherit_from(self, parent, child):
     """
