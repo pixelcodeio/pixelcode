@@ -20,7 +20,8 @@ class UIView(object):
         - y: (float) y-coor of view's center as percentage of screen's height
         - vertical: (dict) dict containing constraints for top/bottom of view
         - horizontal: (dict) dict containing constraints for left/right of view
-        - fill: (tuple) r, g, b values for background color
+        - fill: (optional tuple) r, g, b values for background color. Has value
+                None if no value is provided
         - width: (float) width of view as percentage of screen's width
         - height: (float) height of view as percentage of screen's height
 
@@ -40,13 +41,14 @@ class UIView(object):
     width = info['width']
     height = info['height']
     fill = info['fill']
-    r = fill[0]
-    g = fill[1]
-    b = fill[2]
     rid = info['id']
     view = 'var {} = UIView()\n'.format(rid)
     view += utils.translates_false(rid)
-    view += utils.set_bg(rid, r, g, b)
+    if fill != None:
+      r = fill[0]
+      g = fill[1]
+      b = fill[2]
+      view += utils.set_bg(rid, r, g, b)
     view += utils.add_subview('view', rid)
     view += utils.wh_constraints(rid, width, height)
     view += utils.position_constraints(

@@ -29,7 +29,7 @@ def wh_constraints(elem, width, height):
          ).format(elem, width, elem, height)
 
 def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-    vertDist, centerX, centerY):
+                         vertDist, centerX, centerY):
   """
   Returns: The swift code to set the centerX and centerY constraints of
   the elem.
@@ -60,3 +60,26 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
           ').isActive = true\n\n'
          ).format(elem, horDir, horID, oppDir, vertDist)
   return c
+
+def set_border_width(elem, width):
+  """
+  Returns: The swift code to set the border width of elem.
+  """
+  return ("{}.layer.borderWidth = {}\n").format(elem, width)
+
+def set_border_color(elem, color):
+  """
+  Returns: The swift code to set the border color of elem.
+  """
+  r = color[0]
+  g = color[1]
+  b = color[2]
+  return ("{}.layer.borderColor = UIColor(red: {}/255.0, green: {}/255.0, "
+          "blue: {}/255.0, alpha: 1.0).cgColor\n"
+         ).format(elem, r, g, b)
+
+def set_corner_radius(elem, radius):
+  """
+  Returns: The swift code to set the corner radius of elem.
+  """
+  return ("{}.layer.cornerRadius = {}\n").format(elem, radius)

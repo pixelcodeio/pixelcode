@@ -55,6 +55,13 @@ class UILabel(object):
     """
     return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
+  def set_font_weight(self, elem, weight):
+    """
+    Returns: The swift code to set the font weight of elem.
+    """
+    return ("{}.font = UIFont.Weight.init(rawValue: {})\n"
+           ).format(elem, weight)
+
   def generate_label(self, info):
     """
     Args:
@@ -63,12 +70,20 @@ class UILabel(object):
         - text: (str) text that is to be displayed
         - text-color: (tuple) r, g, b values of the text color
         - font-size: (int) font-size of the text
+        - font-weight: (optional int) font weight of title. Has value None if
+                       no value is provided
         - x: (float) x-coor of view's center as percentage of screen's width
         - y: (float) y-coor of view's center as percentage of screen's height
         - vertical: (dict) dict containing constraints for top/bottom of view
         - horizontal: (dict) dict containing constraints for left/right of view
         - width: (float) width of view as percentage of screen's width
         - height: (float) height of view as percentage of screen's height
+        - stroke-color: (optional tuple) r, g, b values representing the border
+                        color. Has value None if no value is provided
+        - stroke-width: (optional int) the number of pixels representing the
+                        border width. Has value None if no value is provided
+        - border-radius: (optional int) the number of pixels representing the
+                         corner radius. Has value None if no value is provided
 
     Returns: The swift code to generate a label with a text
     """
@@ -88,12 +103,20 @@ class UILabel(object):
     txt = info['text']
     txtColor = info['text-color']
     fontSize = info['font-size']
+    fontW = info['font-weight']
+    borColor = info['stroke-color']
+    borWidth = info['stroke-width']
+    corRad = info['border-radius']
     label = 'var {} = UILabel()\n'.format(lid)
     label += utils.translates_false(lid)
     label += self.set_text(lid, txt)
     label += self.set_text_color(lid, txtColor)
     label += self.set_bg_color(lid)
     label += self.set_font_size(lid, fontSize)
+    label += self.set_font_weight(lid, fontW) if fontW != None else ""
+    label += utils.set_border_color(lid, borColor) if borColor != None else ""
+    label += utils.set_border_width(lid, borWidth) if borWidth != None else ""
+    label += utils.set_corner_radius(lid, corRad) if corRad != None else ""
     label += self.center_and_wrap(lid)
     label += utils.add_subview('view', lid)
     label += utils.wh_constraints(lid, width, height)
