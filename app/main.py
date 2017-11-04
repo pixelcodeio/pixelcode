@@ -1,8 +1,9 @@
+import os
+import sys
 from parser import Parser
 from interpreter import Interpreter
-import os, sys
 
-class Main:
+class Main(object):
   """
   Takes a SVG file and returns a swift file representing the same code.
   """
@@ -35,7 +36,4 @@ def update_test_dir():
       o.close()
 
 if __name__ == "__main__":
-  if len(sys.argv) == 2 and sys.argv[1] == "update":
-    update_test_dir()
-  m = Main("./tests/testrects.svg")
-  m.convert_file()
+  update_test_dir()

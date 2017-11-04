@@ -1,7 +1,7 @@
 import utils
 from bs4 import BeautifulSoup
 
-class Parser:
+class Parser(object):
   """
   Parses a SVG file and outputs a dictionary with necessary attributes
     elements: list of elements in svg
@@ -28,7 +28,6 @@ class Parser:
     f = open(self.filepath, "r+")
     soup = BeautifulSoup(f, "lxml")
     f.close()
-    e = []
 
     self.globals = self.parse_globals(soup.svg)
     self.elements = self.parse_elements(
@@ -76,7 +75,7 @@ class Parser:
                         "distance": check_up[1]}
         if horizontal == {}:
           check_left = utils.check_spacing(check, elem, "left")
-          if check_left [0]:
+          if check_left[0]:
             horizontal = {"direction": "left", "id": check["id"],
                           "distance": check_left[1]}
         if vertical != {} and horizontal != {}:
@@ -101,7 +100,8 @@ class Parser:
     height = int(elem["height"]) / (1.0 * self.globals["height"])
     vertical["distance"] /= (1.0 * self.globals["height"])
     horizontal["distance"] /= (1.0 * self.globals["width"])
-    return {"type": "UIView", "id": elem["id"],
+    return {
+        "type": "UIView", "id": elem["id"],
         "fill": utils.convert_hex_to_rgb(elem["fill"]),
         "x": center_x, "y": center_y,
         "width": width, "height": height,
