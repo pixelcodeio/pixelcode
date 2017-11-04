@@ -90,6 +90,8 @@ class Parser(object):
       # convert units to percentages
       elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
       elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
+      elem["x"] /= (1.0 * self.globals["width"])
+      elem["y"] /= (1.0 * self.globals["height"])
       vertical["distance"] /= (1.0 * self.globals["height"])
       horizontal["distance"] /= (1.0 * self.globals["width"])
 
