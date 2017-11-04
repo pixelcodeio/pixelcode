@@ -43,6 +43,13 @@ class UIButton(object):
             "UIFont.Weight.init(rawValue: {}))\n"
            ).format(elem, size, weight)
 
+  def set_font_family(self, elem, font, size):
+    """
+    Returns: The swift code to set the font family and size of the title in elem
+    """
+    return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
+           ).format(elem, font, size)
+
   def generate_button(self, info):
     """
     Args:
@@ -53,6 +60,7 @@ class UIButton(object):
         - font-size: (int) font-size of the title
         - font-weight: (optional int) font weight of title. Has value None if
                        no value is provided
+        - font-family: (str) name of the font of title
         - x: (float) x-coor of view's center as percentage of screen's width
         - y: (float) y-coor of view's center as percentage of screen's height
         - vertical: (dict) dict containing constraints for top/bottom of view
@@ -88,6 +96,7 @@ class UIButton(object):
     titleColor = info['title-color']
     fontSize = info['font-size']
     fontW = info['font-weight']
+    fontFamily = info['font-family']
     borColor = info['stroke-color']
     borWidth = info['stroke-width']
     corRad = info['border-radius']
@@ -99,6 +108,7 @@ class UIButton(object):
       button += self.set_font_size_weight(bid, fontSize, fontW)
     else:
       button += self.set_font_size(bid, fontSize)
+    button += self.set_font_family(bid, fontFamily, fontSize)
     if fill != None:
       r = fill[0]
       g = fill[1]
