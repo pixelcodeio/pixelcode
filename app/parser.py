@@ -1,7 +1,9 @@
-import utils
+import json
 from bs4 import BeautifulSoup
+from layers import *
+import utils
 
-class Parser:
+class Parser(object):
   """
   Parses a SVG file and outputs a dictionary with necessary attributes
     elements: list of elements in svg
@@ -13,27 +15,42 @@ class Parser:
       - pagename (str)
       - artboard (str)
   """
-  def __init__(self, filepath):
+  def __init__(self, path, artboard):
     """
     Returns: Parser object for parsing the file located at filepath
     """
+    self.artboard = artboard
     self.elements = []
-    self.filepath = filepath
+    self.json = {}
     self.globals = {}
-    return
+    self.path = path
+
+  def parse_artboard(self):
+    """
+    Parses artboard with name [self.artboard]
+    """
+    self.parse_json()
+    self.parse_svg()
+
+  def parse_json(self):
+    """
+    Initializes self.json
+    """
+    f = open(self.path + self.artboard + ".json", "r+")
+    self.json = json.loads(f.read())
 
   def parse_svg(self):
     """
     Returns: Parses an SVG and sets instance variables appropriately
     """
-    f = open(self.filepath, "r+")
+    f = open(self.path + self.artboard + ".svg", "r+")
     soup = BeautifulSoup(f, "lxml")
     f.close()
-    e = []
 
     self.globals = self.parse_globals(soup.svg)
-    self.elements = self.parse_elements(soup.svg.g.g)
-    return
+    self.elements = self.parse_elements(
+        self.inherit_from(soup.svg.g, soup.svg.g.g)
+    )
 
   def parse_globals(self, svg):
     """
@@ -54,67 +71,114 @@ class Parser:
     """
     Returns: list of parsed elements
     """
-    # set up list of attributes to inherit from artboard
-    inheritable = {}
-    for attr in artboard.attrs:
-      if attr != 'id':
-        inheritable[attr] = artboard[attr]
-
     # grab elements, append attributes, sort by bottom-right coordinate
-    elements = [] 
+    elements = []
     for elem in artboard.children:
       if elem != "\n":
-        for key in inheritable:
-          if key not in elem:
-            elem[key] = inheritable[key]
+        elem = self.inherit_from(artboard, elem)
+        elem = self.inherit_from_json(elem)
         elements.append(elem)
-    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) + 
+    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) +
                                  int(e["width"]) + int(e["height"])))
 
     parsed_elements = []
     for elem in elements:
-      vertical = {}
-      horizontal = {}
+      spacing = self.calculate_spacing(elem, parsed_elements)
+      elem = self.convert_coords(elem)
 
-      for check in parsed_elements:
-        if vertical == {}:
-          check_up = utils.check_spacing(check, elem, "up")
-          if check_up[0]:
-            vertical = {"direction": "up", "id": check["id"],
-                        "distance": check_up[1]}
-        if horizontal == {}:
-          check_left = utils.check_spacing(check, elem, "left")
-          if check_left [0]:
-            horizontal = {"direction": "left", "id": check["id"],
-                          "distance": check_left[1]}
-        if vertical != {} and horizontal != {}:
-          break
-
-      if vertical == {}:
-        vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
-      if horizontal == {}:
-        horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
+      elem["horizontal"] = spacing["horizontal"]
+      elem["vertical"] = spacing["vertical"]
+      if "font-weight" in elem.attrs:
+        if elem["font-weight"] == "normal":
+          elem["font-weight"] = "400"
+        elif elem["font-weight"] == "bold":
+          elem["font-weight"] = "700"
 
       if elem.name == "rect":
-        center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
-            (1.0 * self.globals["width"]) 
-        center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
-            (1.0 * self.globals["height"]) 
-        width = int(elem["width"]) / (1.0 * self.globals["width"])
-        height = int(elem["height"]) / (1.0 * self.globals["height"]) 
-        vertical["distance"] /= (1.0 * self.globals["height"])
-        horizontal["distance"] /= (1.0 * self.globals["width"]) 
-        new_elem = {"type": "UIView", "id": elem["id"],
-                    "fill": utils.convert_hex_to_rgb(elem["fill"]), 
-                    "x": center_x, "y": center_y,
-                    "width": width, "height": height, 
-                    "vertical": vertical, "horizontal": horizontal}
+        elem["type"] = "UIView"
+        parsed_elem = Rect(elem)
+
+      elif elem.name == "text":
+        elem["type"] = "UILabel"
+        parsed_elem = Text(elem)
+
+      elif elem.name == "image":
+        elem["type"] = "UIImageView"
+        parsed_elem = Image(elem)
+
+      elif elem.name == "g" and "Button" in elem["id"]:
+        elem["type"] = "UIButton"
+        parsed_elem = Button(elem)
+
+      # finished creating new element
+      new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
 
-if __name__ == "__main__":
-  p = Parser("./tests/testrects.svg")
-  p2 = Parser("./tests/test1.svg")
-  assert utils.convert_hex_to_rgb("#B4FBB8") == (180, 251, 184)
-  p.parse_svg()
-  #p2.parse_svg()
+  def calculate_spacing(self, elem, parsed_elements):
+    """
+    Returns:
+      dict with keys vertical and horizontal, where vertical and horizontal
+      represent the relative spacing between elem and parsed_elements
+    """
+    vertical = {}
+    horizontal = {}
+    for check in parsed_elements:
+      if vertical == {}:
+        check_up = utils.check_spacing(check, elem, "up")
+        if check_up[0]:
+          vertical = {"direction": "up", "id": check["id"],
+                      "distance": check_up[1]}
+      if horizontal == {}:
+        check_left = utils.check_spacing(check, elem, "left")
+        if check_left[0]:
+          horizontal = {"direction": "left", "id": check["id"],
+                        "distance": check_left[1]}
+      if vertical != {} and horizontal != {}:
+        break
+
+    if vertical == {}:
+      vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
+    if horizontal == {}:
+      horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
+
+    # convert units to percentages
+    horizontal["distance"] /= (1.0 * self.globals["width"])
+    vertical["distance"] /= (1.0 * self.globals["height"])
+    return {"vertical": vertical, "horizontal": horizontal}
+
+  def convert_coords(self, elem):
+    """
+    Returns: elem with coords set relative to global height/width
+    """
+    # convert units to percentages
+    elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
+    elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
+    elem["x"] = int(elem["x"]) / (1.0 * self.globals["width"])
+    elem["y"] = int(elem["y"]) / (1.0 * self.globals["height"])
+
+    # generate center
+    elem["x"] = elem["x"] + elem["width"] / 2
+    elem["y"] = elem["y"] + elem["height"] / 2
+    return elem
+
+  def inherit_from(self, parent, child):
+    """
+    Returns: child with attributes from parent not defined in child passed down
+    """
+    for attr in parent.attrs:
+      if attr not in child.attrs:
+        child[attr] = parent[attr]
+    return child
+
+  def inherit_from_json(self, child):
+    """
+    Returns: child with attributes from json not defined in child passed down
+    """
+    for layer in self.json["layers"]:
+      if child["id"] == layer["name"]:
+        for key in layer.keys():
+          if key != "name":
+            child[key] = layer[key]
+        break
+    return child

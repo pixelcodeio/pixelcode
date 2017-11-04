@@ -1,4 +1,4 @@
-def check_spacing(r1, r2, direction):
+def check_spacing(r1, r2, direction): # pylint: disable=R0911
   """
   Args:
     r1: The rectangle with a smaller bottom-right coordinate sum
@@ -6,8 +6,8 @@ def check_spacing(r1, r2, direction):
     direction: direction to check; one-of [up, left]
 
   Returns:
-    A tuple (bool, dist) representing whether r2 can have its spacing 
-    defined in [direction] with respect to r1, where dist is the 
+    A tuple (bool, dist) representing whether r2 can have its spacing
+    defined in [direction] with respect to r1, where dist is the
     distance between the two rectangles in pixels.
   """
   r1_top = (int(r1["x"]), int(r1["y"])) # top-left
@@ -36,9 +36,23 @@ def check_spacing(r1, r2, direction):
     return False, 0
 
 def convert_hex_to_rgb(hex_string):
-  """ 
-  Returns [hex_string] converted to a rgb tuple. 
+  """
+  Returns: [hex_string] converted to a rgb tuple.
   """
   h = hex_string.lstrip('#')
-  return tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
+  return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
+def init_optional_params(elem, params):
+  """
+  Returns: elem with params initialized to None, except for fill
+  """
+  for param in params:
+    if param == "fill":
+      if "fill" in elem.attrs and elem["fill"] != "none":
+        elem["fill"] = convert_hex_to_rgb(elem["fill"])
+      else:
+        elem["fill"] = None
+    else:
+      if param not in elem.attrs:
+        elem[param] = None
+  return elem

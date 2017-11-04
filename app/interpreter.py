@@ -1,63 +1,58 @@
-class Interpreter:
+from components import *
+
+class Interpreter(object):
   """
   Takes output from Parser one at a time and generates swift file
+    globals: (dict) passed in from Parser
+    swift: (str) the swift code to generate all the elements
   """
-  def __init__(self):
-    pass
+  def __init__(self, glob):
+    self.globals = glob
+    self.swift = ""
 
   def generate_header(self):
     """
-    TODO: Fill in arguments necessary to generate any headers
+    Returns: The swift code of the header
     """
-    pass
+    viewController = '{}ViewController'.format(self.globals['artboard'])
+    return ("import UIKit\nclass {}: UIViewController {{\n"
+            "\noverride func viewDidLoad() {{\n"
+           ).format(viewController)
 
-  def generate_rect(self, info):
+  def set_view_bg(self):
     """
-    TODO: Fill in arguments necessary to create a rectangle
+    Returns: The swift code to set the view's background color.
     """
-    vertical = info['vertical']
-    horizontal = info['horizontal']
-    verticalDir = vertical['direction']
-    horizontalDir = horizontal['direction']
-    isUp = True
-    isLeft = True
-    if (verticalDir == 'down'):
-        isUp = false
-    if (horizontalDir == 'right'):
-        isLeft = false
-    verticalID = vertical['id']
-    verticalDist = str(vertical['distance']) 
-    horizontalID = horizontal['id']
-    horizontalDist = str(horizontal['distance'])
-    centerX = str(info['x'])
-    centerY = str(info['y'])
-    width = str(info['width'])
-    height = str(info['height'])
-    fill = info['fill']
-    r = str(fill[0])
-    g = str(fill[1])
-    b = str(fill[2])
-    rid = info['id']
-    rect = 'var '+ rid + ' = UIView()\n'  
-    rect += rid + '.translatesAutoresizingMaskIntoConstraints = false\n'
-    rect += rid + '.backgroundColor = UIColor(red: ' + r + ', green: ' + g 
-    rect += ', blue: ' + b + ', alpha: 1.0)\n'
-    rect += 'view.addSubview(' + rid + ')\n\n'
-    rect += rid + '.widthAnchor.constraint(equalToConstant: view.frame.width*' 
-    rect += width + ').isActive = true\n' 
-    rect += rid + '.heightAnchor.constraint(equalToConstant: view.frame.height*' 
-    rect += height + ').isActive = true\n' 
-    rect += rid + '.centerXAnchor.constraint(equalTo: view.'
-    if isLeft:
-        rect += 'left'
-    else:
-        rect += 'right'
-    rect += 'Anchor, constant: view.frame.width*' + centerX + ').isActive = true\n' 
-    rect += rid + '.centerYAnchor.constraint(equalTo: view.' 
-    if isUp:
-        rect += 'top'
-    else:
-        rect += 'bottom'
-    rect += 'Anchor, constant: view.frame.height*' + centerY + ').isActive = true\n' 
-    return rect
+    bg = self.globals['background_color']
+    r = bg[0]
+    g = bg[1]
+    b = bg[2]
+    return ("view.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0,"
+            " blue: {}/255.0, alpha: 1.0)\n\n"
+           ).format(r, g, b)
 
+  def generate_code(self, elements):
+    """
+    Args:
+      elements: (list) list of elements
+
+    Returns: The swift code for the file to generate all the elements
+    """
+    c = self.generate_header()
+    c += self.set_view_bg()
+    for ele in elements:
+      t = ele["type"]
+      if t == "UIView":
+        v = UIView(ele)
+        c += v.swift
+      elif t == "UIButton":
+        b = UIButton(ele)
+        c += b.swift
+      elif t == "UIImageView":
+        iv = UIImageView(ele)
+        c += iv.swift
+      elif t == "UILabel":
+        l = UILabel(ele, self.globals['background_color'])
+        c += l.swift
+    c += "\n}\n}"
+    self.swift = c

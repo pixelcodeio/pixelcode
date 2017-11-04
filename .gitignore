@@ -1,5 +1,13 @@
+# unnecessary files
 ~*
+.DS_Store
 *.swp
 *.swo
 *.pyc
+*.out
+
+# venv
 venv
+
+# test files 
+# app/tests

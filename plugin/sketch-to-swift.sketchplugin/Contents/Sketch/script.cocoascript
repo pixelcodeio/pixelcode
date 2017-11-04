@@ -1,21 +1,44 @@
 var onRun = function(context) {
-    log('This is an example Sketch script.');
-
-    var documentName = context.document.displayName();
-    log('The current document is named: ' + documentName);
-
-    var selectedLayers = context.selection;
-    var selectedCount = selectedLayers.count();
-
-    if (selectedCount == 0) {
-        log('No layers are selected.');
-    } else {
-        log('Selected layers:');
-        for (var i = 0; i < selectedCount; i++) {
-            var layer = selectedLayers[i];
-            log((i+1) + '. ' + layer.name());
+    var sketch = context.api()
+    var options = { "scales" : "1", "formats" : "svg", "overwriting" : "true", "output": "~/Documents/sketch-to-swift/app/tests" }
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+        if (layer.isArtboard) {
+            exportJSON(layer, "/Users/Young/Documents/sketch-to-swift/app/tests/");
         }
-    };
-
+        layer.export(options)
+    })
 };
 
+function exportJSON(artboard, file_path){
+    //initialize the artboard array
+    var layerArray = [];
+    artboard.iterate(function(layer) {
+        if (layer.isImage) {
+            var options = { "scales" : "1", "formats" : "png", "overwriting" : "true", "output": "~/Documents/sketch-to-swift/app/tests" }
+            layer.export(options)
+        }
+        //create the variables
+        var layerName = String(layer.name);
+        var layerXpos = String(layer.frame.x);
+        var layerYpos = String(layer.frame.y);
+        var layerHeight = String(layer.frame.height);
+        var layerWidth = String(layer.frame.width);
+        var layerText = String("");
+
+        // add the strings to the array
+        layerArray.push({
+            name: layerName,
+            x: layerXpos,
+            y: layerYpos,
+            height: layerHeight,
+            width: layerWidth,
+        });
+    });
+    artboardName = artboard.name;
+    // Create the JSON object from the layer array
+    var jsonObj = { layers : layerArray };
+    // Convert the object to a json string
+    var file = NSString.stringWithString(JSON.stringify(jsonObj, null, "\t"));
+    // Save the file
+    [file writeToFile:file_path+artboardName+".json" atomically:true encoding:NSUTF8StringEncoding error:null];
+}
