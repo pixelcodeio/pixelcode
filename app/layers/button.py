@@ -41,7 +41,7 @@ class Button(object):
         "stroke-color",
         "stroke-width",
         "border-radius",
-        "font-weight"
+        "font-weight",
     ]
     elem = utils.init_optional_params(elem, opt_params)
 
@@ -54,6 +54,7 @@ class Button(object):
         "stroke-color",
         "title-color",
         "title",
+        "font-family",
         "font-size",
         "font-weight",
         "x",
