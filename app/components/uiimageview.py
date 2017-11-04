@@ -1,16 +1,31 @@
-import utils
+import components.utils
 
-class UIImageView:
+class UIImageView(object):
+  def __init__(self, info):
+    """
+    Args:
+      info: Refer to generate_img_view for documentation of info
+
+    Returns: UIImageView object with the necessary swift code
+    """
+    self.swift = self.generate_img_view(info)
+    return
+
   def generate_img_view(self, info):
     """
-    info requires:
-      - id of image view
-      - image
-      - centerX & centerY
-      - top/bottom & left/right
-      - background color
-      - width & height
-      - corner radius
+    Args:
+      info: is a dictionary of keys:
+        - id: (str) name of view
+        - image: (unclear as of now)
+        - x: (float) x-coor of view's center as percentage of screen's width
+        - y: (float) y-coor of view's center as percentage of screen's height
+        - vertical: (dict) dict containing constraints for top/bottom of view
+        - horizontal: (dict) dict containing constraints for left/right of view
+        - fill: (tuple) r, g, b values for background color
+        - width: (float) width of view as percentage of screen's width
+        - height: (float) height of view as percentage of screen's height
+        - corner-radius: (float) corner radius as percentage of view's width
+
     Returns: The swift code to generate an image view
     """
     vertical = info['vertical']
@@ -35,6 +50,7 @@ class UIImageView:
     imgView += utils.set_bg(imgID, r, g, b)
     imgView += utils.add_subview('view', imgID)
     imgView += utils.wh_constraints(imgID, width, height)
-    imgView += utils.position_constraints(imgID, horizontalID, horizontalDir,
-      horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
+    imgView += utils.position_constraints(
+        imgID, horizontalID, horizontalDir, horizontalDist, verticalID,
+        verticalDir, verticalDist, centerX, centerY)
     return imgView
