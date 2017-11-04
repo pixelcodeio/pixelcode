@@ -86,41 +86,23 @@ class Parser(object):
       spacing = self.calculate_spacing(elem, parsed_elements)
       elem = self.convert_coords(elem)
 
+      elem["horizontal"] = spacing["horizontal"]
+      elem["vertical"] = spacing["vertical"]
       if elem.name == "rect":
-        parsed_elem = Rect(elem, vertical, horizontal)
+        elem["type"] = "UIView"
+        parsed_elem = Rect(elem)
 
       elif elem.name == "text":
-        elem["contents"] = ""
-        for child in elem.children:
-          if child != "\n":
-            elem["contents"] += child.contents[0]
-        parsed_elem = Text(elem, spacing["vertical"], spacing["horizontal"])
+        elem["type"] = "UILabel"
+        parsed_elem = Text(elem)
 
       elif elem.name == "image":
-        parsed_elem = Image(elem, spacing["vertical"], spacing["horizontal"])
+        elem["type"] = "UIImageView"
+        parsed_elem = Image(elem)
 
       elif elem.name == "g" and "Button" in elem["id"]:
-        rect = elem.rect
-        if "rx" in rect:
-          elem["border-radius"] = rect["rx"]
-        if "stroke" in rect:
-          elem["stroke-color"] = utils.convert_hex_to_rgb(rect["stroke"])
-          if "stroke-width" in rect:
-            elem["stroke-width"] = rect["stroke-width"]
-          else:
-            elem["stroke-width"] = 1
-
-        text = elem.find('text')
-        elem["title"] = ""
-        for child in text.children:
-          if child != "\n":
-            elem["title"] += child.contents[0]
-        for key in text.attrs:
-          if key == "fill":
-            elem["title-color"] = text["fill"]
-          else:
-            elem[key] = text[key]
-        parsed_elem = Button(elem, spacing["vertical"], spacing["horizontal"])
+        elem["type"] = "UIButton"
+        parsed_elem = Button(elem)
 
       # finished creating new element
       new_elem = parsed_elem.elem

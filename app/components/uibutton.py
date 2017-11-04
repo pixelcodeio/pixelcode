@@ -15,7 +15,7 @@ class UIButton(object):
     """
     Returns: The swift code to set title of a elem using title
     """
-    return '{}.setTitle({}, for: .normal)\n'.format(elem, title)
+    return '{}.setTitle("{}", for: .normal)\n'.format(elem, title)
 
   def set_title_color(self, elem, color):
     """
