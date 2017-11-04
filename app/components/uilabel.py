@@ -113,7 +113,7 @@ class UILabel(object):
     txtColor = info['text-color']
     fontSize = info['font-size']
     fontW = info['font-weight']
-    fontFamily = info['fontFamily']
+    fontFamily = info['font-family']
     borColor = info['stroke-color']
     borWidth = info['stroke-width']
     corRad = info['border-radius']

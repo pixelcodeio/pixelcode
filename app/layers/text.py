@@ -23,10 +23,11 @@ class Text(object):
 
     opt_params = [
         "font-weight",
+        "font-family",
         "fill",
-        "stroke-color", # TODO: remove this
-        "stroke-width", # TODO: remove this
-        "border-radius", # TODO: remove this
+        "stroke-color",
+        "stroke-width",
+        "border-radius",
     ]
     elem = utils.init_optional_params(elem, opt_params)
     params = [
@@ -37,9 +38,10 @@ class Text(object):
         "fill",
         "font-size",
         "font-weight",
-        "stroke-color", # TODO: remove this
-        "stroke-width", # TODO: remove this
-        "border-radius", # TODO: remove this
+        "font-family",
+        "stroke-color",
+        "stroke-width",
+        "border-radius",
         "x",
         "y",
         "width",

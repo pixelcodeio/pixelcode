@@ -32,7 +32,7 @@ def update_test_dir():
   files = os.listdir(path)
   svg = []
   for f in files:
-    if ".svg" in f:
+    if ".svg" in f and f[0] != ".": # ignore temp files
       svg.append(f.split(".svg")[0])
   for f in svg:
     print "Generating from file: " + f + ".svg"
