@@ -116,8 +116,13 @@ class Parser(object):
       if elem.name == "rect":
         parsed_elem = Rect(elem, vertical, horizontal)
       elif elem.name == "text":
-        elem["contents"] = elem.tspan.contents[0]
+        elem["contents"] = ""
+        for child in elem.children:
+          if child != "\n":
+            elem["contents"] += child.contents[0]
         parsed_elem = Text(elem, vertical, horizontal)
+      elif elem.name == "image":
+        parsed_elem = Image(elem, vertical, horizontal)
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
