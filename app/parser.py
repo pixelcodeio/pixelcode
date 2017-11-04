@@ -14,13 +14,14 @@ class Parser(object):
       - pagename (str)
       - artboard (str)
   """
-  def __init__(self, filepath):
+  def __init__(self, path, artboard):
     """
     Returns: Parser object for parsing the file located at filepath
     """
+    self.artboard = artboard
     self.elements = []
-    self.filepath = filepath
     self.globals = {}
+    self.path = path
 
   def parse_svg(self):
     """
@@ -111,11 +112,3 @@ class Parser(object):
       if attr not in child.attrs:
         child[attr] = parent[attr]
     return child
-
-if __name__ == "__main__":
-  p = Parser("./tests/testrects.svg")
-  p2 = Parser("./tests/test1.svg")
-  p3 = Parser("./tests/text.svg")
-  assert utils.convert_hex_to_rgb("#B4FBB8") == (180, 251, 184)
-  p.parse_svg()
-  #p2.parse_svg()

@@ -7,11 +7,17 @@ class Main(object):
   """
   Takes a SVG file and returns a swift file representing the same code.
   """
-  def __init__(self, filepath):
-    self.filepath = filepath
+  def __init__(self, path, artboard):
+    """
+    Args:
+      path: path to directory
+      artboard: artboard name
+    """
+    self.path = path
+    self.artboard = artboard
 
-  def convert_file(self):
-    p = Parser(self.filepath)
+  def convert_artboard(self):
+    p = Parser(self.path, self.artboard)
     p.parse_svg()
 
     i = Interpreter(p.globals)
@@ -19,21 +25,20 @@ class Main(object):
     return i.swift
 
 def update_test_dir():
+  """
+  Generates ".out" files for any files in "./tests"
+  """
   path = "./tests/"
   files = os.listdir(path)
   svg = []
-  out = []
   for f in files:
     if ".svg" in f:
       svg.append(f.split(".svg")[0])
-    else:
-      out.append(f.split(".out")[0])
   for f in svg:
-    if f not in out:
-      m = Main(path + f + ".svg")
-      o = open(path + f + ".out", "w+")
-      o.write(m.convert_file())
-      o.close()
+    m = Main(path, f)
+    o = open(path + f + ".out", "w+")
+    o.write(m.convert_artboard())
+    o.close()
 
 if __name__ == "__main__":
   update_test_dir()

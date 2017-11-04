@@ -34,7 +34,7 @@ function exportJSON(artboard, file_path){
     });
     artboardName = artboard.name;
     // Create the JSON object from the layer array
-    var jsonObj = { artboardName : layerArray };
+    var jsonObj = { layers : layerArray };
     // Convert the object to a json string
     var file = NSString.stringWithString(JSON.stringify(jsonObj, null, "\t"));
     // Save the file

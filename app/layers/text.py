@@ -1,14 +1,14 @@
 import utils
 
-class Rect(object):
+class Text(object):
   def __init__(self, elem, vertical, horizontal):
     """
     Args:
-      elem (dict): represents a rectangle layer from sketch to be parsed.
+      elem (dict): represents a text layer from sketch to be parsed.
       vertical (dict): represents the vertical spacing from other objects.
       horizontal (dict): represents the horizontal spacing from other objects.
     """
-    self.elem = self.parse_elem(elem, vertical, horizontal)
+    self.elem = self.parse_rect(elem, vertical, horizontal)
 
   def parse_elem(self, elem, vertical, horizontal):
     """
@@ -16,7 +16,7 @@ class Rect(object):
       Refer to args in __init__
 
     Returns: dictionary with keys
-      - type (str): "UIView"
+      - type (str): "UILabel"
       - id (str): id of the element
       - fill (tuple): (r, g, b) triple representing the color
       - x (float): x coordinate with respect to global width
