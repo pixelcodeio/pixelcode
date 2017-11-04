@@ -35,12 +35,13 @@ class UIButton(object):
     font = 'UIFont.systemFont(ofSize: {})'.format(size)
     return '{}.titleLabel?.font = {}\n'.format(elem, font)
 
-  def set_font_weight(self, elem, weight):
+  def set_font_size_weight(self, elem, size, weight):
     """
-    Returns: The swift code to set the font weight of elem.
+    Returns: The swift code to set the font size and weight of elem.
     """
-    return ("{}.titleLabel?.font = UIFont.Weight.init(rawValue: {})\n"
-           ).format(elem, weight)
+    return ("{}.titleLabel?.font = UIFont.systemFont(ofSize: {}, weight: "
+            "UIFont.Weight.init(rawValue: {}))\n"
+           ).format(elem, size, weight)
 
   def generate_button(self, info):
     """
@@ -94,7 +95,10 @@ class UIButton(object):
     button += utils.translates_false(bid)
     button += self.set_title(bid, title)
     button += self.set_title_color(bid, titleColor)
-    button += self.set_font_size(bid, fontSize)
+    if fontW != None:
+      button += self.set_font_size_weight(bid, fontSize, fontW)
+    else:
+      button += self.set_font_size(bid, fontSize)
     if fill != None:
       r = fill[0]
       g = fill[1]
@@ -103,7 +107,6 @@ class UIButton(object):
     button += utils.set_border_color(bid, borColor) if borColor != None else ""
     button += utils.set_border_width(bid, borWidth) if borWidth != None else ""
     button += utils.set_corner_radius(bid, corRad) if corRad != None else ""
-    button += self.set_font_weight(bid, fontW) if fontW != None else ""
     button += utils.add_subview('view', bid)
     button += utils.wh_constraints(bid, width, height)
     button += utils.position_constraints(
