@@ -48,11 +48,11 @@ def init_optional_params(elem, params):
   """
   for param in params:
     if param == "fill":
-      if "fill" in elem:
+      if "fill" in elem.attrs and elem["fill"] != "none":
         elem["fill"] = convert_hex_to_rgb(elem["fill"])
       else:
         elem["fill"] = None
     else:
-      if param not in elem:
+      if param not in elem.attrs:
         elem[param] = None
   return elem

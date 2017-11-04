@@ -1,16 +1,14 @@
 import utils
 
 class Rect(object):
-  def __init__(self, elem, vertical, horizontal):
+  def __init__(self, elem):
     """
     Args:
       elem (dict): represents a rectangle layer from sketch to be parsed.
-      vertical (dict): represents the vertical spacing from other objects.
-      horizontal (dict): represents the horizontal spacing from other objects.
     """
-    self.elem = self.parse_elem(elem, vertical, horizontal)
+    self.elem = self.parse_elem(elem)
 
-  def parse_elem(self, elem, vertical, horizontal):
+  def parse_elem(self, elem):
     """
     Args:
       Refer to args in __init__
@@ -24,19 +22,32 @@ class Rect(object):
       - vertical (dict): refer to __init__ args for description
       - horizontal (dict): refer to __init__ args for description
     """
+    elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
     opt_params = [
         "stroke-color",
-        "stroke",
-        "border-radius",
-        "font-weight"
+        "stroke-width",
+        "border-radius"
     ]
     elem = utils.init_optional_params(elem, opt_params)
-    return {
-        "type": "UIView", "id": elem["id"],
-        "fill": utils.convert_hex_to_rgb(elem["fill"]),
-        "x": elem["x"], "y": elem["y"],
-        "width": elem["width"], "height": elem["height"],
-        "font-weight": elem["font-weight"], "stroke": elem["stroke"],
-        "stroke-color": elem["stroke-color"],
-        "border-radius": elem["border-radius"],
-        "vertical": vertical, "horizontal": horizontal}
+
+    params = [
+        "type",
+        "id",
+        "fill",
+        "border-radius",
+        "stroke-width",
+        "stroke-color",
+        "title-color",
+        "title",
+        "font-size",
+        "x",
+        "y",
+        "width",
+        "height",
+        "horizontal",
+        "vertical"
+    ]
+    ret = {}
+    for param in params:
+      ret[param] = elem[param]
+    return ret
