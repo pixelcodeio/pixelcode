@@ -19,6 +19,18 @@ class Interpreter(object):
             "\noverride func viewDidLoad() {{\n"
            ).format(viewController)
 
+  def set_view_bg(self):
+    """
+    Returns: The swift code to set the view's background color.
+    """
+    bg = self.globals['background_color']
+    r = bg[0]
+    g = bg[1]
+    b = bg[2]
+    return ("view.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0,"
+            " blue: {}/255.0, alpha: 1.0)\n\n"
+           ).format(r, g, b)
+
   def generate_code(self, elements):
     """
     Args:
@@ -27,6 +39,7 @@ class Interpreter(object):
     Returns: The swift code for the file to generate all the elements
     """
     c = self.generate_header()
+    c += self.set_view_bg()
     for ele in elements:
       t = ele["type"]
       if t == "UIView":

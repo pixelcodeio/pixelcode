@@ -51,12 +51,12 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
          ).format(elem, horDir, horID, oppDir, horDist)
   if vertID == '':
     c += ('{}.topAnchor.constraint(equalTo: view.topAnchor, '
-          'constant: view.frame.height*{}).isActive = true\n'
+          'constant: view.frame.height*{}).isActive = true\n\n'
          ).format(elem, vertDist)
   else:
     oppDir = 'top' if horDir == 'bottom' else 'bottom'
     c += ('{}.{}Anchor.constraint(equalTo: {}.'
           '{}Anchor, constant: view.frame.height*{}'
-          ').isActive = true\n'
+          ').isActive = true\n\n'
          ).format(elem, horDir, horID, oppDir, vertDist)
   return c
