@@ -20,7 +20,6 @@ class Parser:
     self.elements = []
     self.filepath = filepath
     self.globals = {}
-    return
 
   def parse_svg(self):
     """

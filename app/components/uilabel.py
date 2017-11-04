@@ -1,28 +1,43 @@
-import utils
+import components.utils
 
-class UILabel:
+class UILabel(object):
+  def __init__(self, info):
+    """
+    Args:
+      info: Refer to generate_label for documentation of info.
+
+    Returns: UILabel object with the necessary swift code
+    """
+    self.swift = self.generate_label(info)
+    return
+
   def set_text(self, elem, txt):
     """
-    Returns: The swift code to set the text of a label
+    Returns: The swift code to set the text of elem to be txt
     """
     return '{}.text = {}'.format(elem, txt)
 
   def set_font_size(self, elem, size):
     """
-    Returns: The swift code to set the font size of a label
+    Returns: The swift code to set the font size of elem to be size
     """
     return '{}.font = UIFont.systemFont(ofSize: {})'.format(elem, size)
 
   def generate_label(self, info):
     """
-    info requires:
-      - id of label
-      - text & fontsize & text color
-      - centerX & centerY
-      - top/bottom & left/right
-      - background color
-      - width & height
-      - corner radius
+    Args:
+      info: is a dictionary of keys:
+        - id: (str) name of view
+        - text: (str) text that is to be displayed
+        - text-color: (tuple) r, g, b values of the text color
+        - font-size: (int) font-size of the text
+        - x: (float) x-coor of view's center as percentage of screen's width
+        - y: (float) y-coor of view's center as percentage of screen's height
+        - vertical: (dict) dict containing constraints for top/bottom of view
+        - horizontal: (dict) dict containing constraints for left/right of view
+        - width: (float) width of view as percentage of screen's width
+        - height: (float) height of view as percentage of screen's height
+
     Returns: The swift code to generate a label with a text
     """
     vertical = info['vertical']
@@ -51,6 +66,7 @@ class UILabel:
     label += utils.set_bg(lid, r, g, b)
     label += utils.add_subview('view', lid)
     label += utils.wh_constraints(lid, width, height)
-    label += utils.position_constraints(lid, horizontalID, horizontalDir,
-      horizontalDist, verticalID, verticalDir, verticalDist, centerX, centerY)
+    label += utils.position_constraints(
+        lid, horizontalID, horizontalDir, horizontalDist, verticalID,
+        verticalDir, verticalDist, centerX, centerY)
     return label

@@ -12,17 +12,10 @@ class Main:
   def convert_file(self):
     p = Parser(self.filepath)
     p.parse_svg()
-    i = Interpreter()
 
-    parsed_globals = p.globals
-    parsed_elements = p.elements
-
-    labels = []
-    ret = ""
-    for elem in parsed_elements:
-      labels.append({"id": elem["id"], "type": elem["type"]})
-      ret += i.generate_view(elem)
-    return ret
+    i = Interpreter(p.globals)
+    i.generate_code(p.elements)
+    return i.swift
 
 def update_test_dir():
   path = "./tests/"
