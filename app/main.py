@@ -35,7 +35,7 @@ def update_test_dir():
     if ".svg" in f:
       svg.append(f.split(".svg")[0])
   for f in svg:
-    print f
+    print "Generating from file: " + f + ".svg"
     m = Main(path, f)
     o = open(path + f + ".out", "w+")
     o.write(m.convert_artboard())
