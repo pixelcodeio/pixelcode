@@ -1,4 +1,4 @@
-import components.utils
+import components.utils as utils
 
 class UILabel(object):
   def __init__(self, info):
