@@ -15,8 +15,8 @@ class Image(object):
     Args:
       Refer to args in __init__
     """
-    center_x = ((elem["x"] + elem["width"]) / 2)
-    center_y = ((elem["y"] + elem["height"]) / 2)
+    center_x = elem["x"] + elem["width"] / 2
+    center_y = elem["y"] + elem["height"] / 2
     return {
         "type": "UIImageView", "id": elem["id"],
         "x": center_x, "y": center_y,
