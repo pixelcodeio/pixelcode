@@ -24,8 +24,8 @@ class Rect(object):
       - vertical (dict): refer to __init__ args for description
       - horizontal (dict): refer to __init__ args for description
     """
-    center_x = ((elem["x"] + elem["width"]) / 2)
-    center_y = ((elem["y"] + elem["height"]) / 2)
+    center_x = elem["x"] + elem["width"] / 2
+    center_y = elem["y"] + elem["height"] / 2
     return {
         "type": "UIView", "id": elem["id"],
         "fill": utils.convert_hex_to_rgb(elem["fill"]),

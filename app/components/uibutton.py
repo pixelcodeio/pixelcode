@@ -15,21 +15,21 @@ class UIButton(object):
     """
     Returns: The swift code to set title of a elem using title
     """
-    return '{}.setTitle({}, for: .normal)'.format(elem, title)
+    return '{}.setTitle({}, for: .normal)\n'.format(elem, title)
 
   def set_title_color(self, elem, r, g, b):
     """
     Returns: The swift code to set title color of elem using the r, g, b values
     """
     color = 'UIColor(red: {}, green: {}, blue: {}, alpha: 1.0)'.format(r, g, b)
-    return '{}.setTitleColor({}, for: .normal)'.format(elem, color)
+    return '{}.setTitleColor({}, for: .normal)\n'.format(elem, color)
 
   def set_font_size(self, elem, size):
     """
     Returns: The swift code to set the font size of elem using size
     """
     font = 'UIFont.systemFont(ofSize: {})'.format(size)
-    return '{}.titleLabel.font = {}'.format(elem, font)
+    return '{}.titleLabel.font = {}\n'.format(elem, font)
 
   def generate_button(self, info):
     """

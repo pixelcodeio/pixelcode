@@ -104,14 +104,14 @@ class Parser(object):
         vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
       if horizontal == {}:
         horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
-
+  
       # convert units to percentages
       elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
       elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
       elem["x"] = int(elem["x"]) / (1.0 * self.globals["width"])
       elem["y"] = int(elem["y"]) / (1.0 * self.globals["height"])
-      vertical["distance"] /= (1.0 * self.globals["height"])
       horizontal["distance"] /= (1.0 * self.globals["width"])
+      vertical["distance"] /= (1.0 * self.globals["height"])
 
       if elem.name == "rect":
         parsed_elem = Rect(elem, vertical, horizontal)

@@ -52,7 +52,7 @@ class Interpreter(object):
         iv = UIImageView(ele)
         c += iv.swift
       elif t == "UILabel":
-        l = UILabel(ele)
+        l = UILabel(ele, self.globals['background_color'])
         c += l.swift
     c += "\n}\n}"
     self.swift = c

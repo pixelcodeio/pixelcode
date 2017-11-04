@@ -1,13 +1,15 @@
 import components.utils as utils
 
 class UILabel(object):
-  def __init__(self, info):
+  def __init__(self, info, bgColor):
     """
     Args:
       info: Refer to generate_label for documentation of info.
+      bgColor: (tuple) Background color of label as r, g, b values
 
     Returns: UILabel object with the necessary swift code
     """
+    self.bgColor = bgColor
     self.swift = self.generate_label(info)
     return
 
@@ -15,13 +17,43 @@ class UILabel(object):
     """
     Returns: The swift code to set the text of elem to be txt
     """
-    return '{}.text = {}'.format(elem, txt)
+    return '{}.text = "{}"\n'.format(elem, txt)
+
+  def set_text_color(self, elem, color):
+    """
+    Returns: The swift code to set the text color of elem to be color
+    """
+    r = color[0]
+    g = color[1]
+    b = color[2]
+    return ("{}.textColor = UIColor(red: {}/255.0, green: {}/255.0, "
+            "blue: {}/255.0, alpha: 1.0)\n"
+           ).format(elem, r, g, b)
+
+  def set_bg_color(self, elem):
+    """
+    Returns: The swift code to set the background color of elem.
+    """
+    r = self.bgColor[0]
+    g = self.bgColor[1]
+    b = self.bgColor[2]
+    return ("{}.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0, "
+            "blue: {}/255.0, alpha: 1.0)\n"
+           ).format(elem, r, g, b)
+
+  def center_and_wrap(self, elem):
+    """
+    Returns: The swift code to center the text and wrap lines
+    """
+    return ("{}.textAlignment = .center\n{}.numberOfLines = 0\n"
+            "{}.lineBreakMode = .byWordWrapping\n"
+           ).format(elem, elem, elem)
 
   def set_font_size(self, elem, size):
     """
     Returns: The swift code to set the font size of elem to be size
     """
-    return '{}.font = UIFont.systemFont(ofSize: {})'.format(elem, size)
+    return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
   def generate_label(self, info):
     """
@@ -52,19 +84,17 @@ class UILabel(object):
     centerY = info['y']
     width = info['width']
     height = info['height']
-    info['fill'] = (0, 0, 0) # TODO: fix this
-    fill = info['fill']
-    r = fill[0]
-    g = fill[1]
-    b = fill[2]
     lid = info['id']
     txt = info['text']
+    txtColor = info['text-color']
     fontSize = info['font-size']
     label = 'var {} = UILabel()\n'.format(lid)
     label += utils.translates_false(lid)
     label += self.set_text(lid, txt)
+    label += self.set_text_color(lid, txtColor)
+    label += self.set_bg_color(lid)
     label += self.set_font_size(lid, fontSize)
-    label += utils.set_bg(lid, r, g, b)
+    label += self.center_and_wrap(lid)
     label += utils.add_subview('view', lid)
     label += utils.wh_constraints(lid, width, height)
     label += utils.position_constraints(
