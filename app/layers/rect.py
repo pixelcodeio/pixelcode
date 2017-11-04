@@ -14,7 +14,7 @@ class Rect(object):
     """
     Args:
       Refer to args in __init__
-      
+
     Returns: dictionary with keys
       - type (str): "UIView"
       - id (str): id of the element
