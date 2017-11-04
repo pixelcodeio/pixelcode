@@ -40,7 +40,8 @@ class UIImageView(object):
     centerY = info['y']
     width = info['width']
     height = info['height']
-    fill = info['fill']
+    fill = (255, 255, 255) # TODO: fix-this
+    # fill = info['fill']
     r = fill[0]
     g = fill[1]
     b = fill[2]
