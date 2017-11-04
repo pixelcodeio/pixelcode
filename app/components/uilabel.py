@@ -55,12 +55,20 @@ class UILabel(object):
     """
     return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
-  def set_font_weight(self, elem, weight):
+  def set_font_size_weight(self, elem, size, weight):
     """
-    Returns: The swift code to set the font weight of elem.
+    Returns: The swift code to set the font size and weight of elem.
     """
-    return ("{}.font = UIFont.Weight.init(rawValue: {})\n"
-           ).format(elem, weight)
+    return ("{}.font = UIFont.systemFont(ofSize: {}, weight: "
+            "UIFont.Weight.init(rawValue: {}))\n"
+           ).format(elem, size, weight)
+
+  def set_font_family(self, elem, font, size):
+    """
+    Returns: The swift code to set the font family and size of the title in elem
+    """
+    return ("{}.font = UIFont(name: \"{}\", size: {})\n"
+           ).format(elem, font, size)
 
   def generate_label(self, info):
     """
@@ -72,6 +80,7 @@ class UILabel(object):
         - font-size: (int) font-size of the text
         - font-weight: (optional int) font weight of title. Has value None if
                        no value is provided
+        - font-family: (str) name of the font of title
         - x: (float) x-coor of view's center as percentage of screen's width
         - y: (float) y-coor of view's center as percentage of screen's height
         - vertical: (dict) dict containing constraints for top/bottom of view
@@ -104,6 +113,7 @@ class UILabel(object):
     txtColor = info['text-color']
     fontSize = info['font-size']
     fontW = info['font-weight']
+    fontFamily = info['fontFamily']
     borColor = info['stroke-color']
     borWidth = info['stroke-width']
     corRad = info['border-radius']
@@ -112,8 +122,11 @@ class UILabel(object):
     label += self.set_text(lid, txt)
     label += self.set_text_color(lid, txtColor)
     label += self.set_bg_color(lid)
-    label += self.set_font_size(lid, fontSize)
-    label += self.set_font_weight(lid, fontW) if fontW != None else ""
+    if fontW != None:
+      label += self.set_font_size_weight(lid, fontSize, fontW)
+    else:
+      label += self.set_font_size(lid, fontSize)
+    label += self.set_font_family(lid, fontFamily, fontSize)
     label += utils.set_border_color(lid, borColor) if borColor != None else ""
     label += utils.set_border_width(lid, borWidth) if borWidth != None else ""
     label += utils.set_corner_radius(lid, corRad) if corRad != None else ""
