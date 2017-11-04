@@ -1,5 +1,6 @@
 import utils
 from bs4 import BeautifulSoup
+from layers import *
 
 class Parser(object):
   """
@@ -86,26 +87,19 @@ class Parser(object):
       if horizontal == {}:
         horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
+      # convert units to percentages
+      elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
+      elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
+      vertical["distance"] /= (1.0 * self.globals["height"])
+      horizontal["distance"] /= (1.0 * self.globals["width"])
+
       if elem.name == "rect":
-        new_elem = self.parse_rect(elem, vertical, horizontal)
+        r = Rect(elem, vertical, horizontal)
+      else:
+        pass
+      new_elem = r.elem
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1]
-
-  def parse_rect(self, elem, vertical, horizontal):
-    center_x = (int(elem["x"]) + int(elem["width"]) / 2) / \
-        (1.0 * self.globals["width"])
-    center_y = (int(elem["y"]) + int(elem["height"]) / 2) / \
-        (1.0 * self.globals["height"])
-    width = int(elem["width"]) / (1.0 * self.globals["width"])
-    height = int(elem["height"]) / (1.0 * self.globals["height"])
-    vertical["distance"] /= (1.0 * self.globals["height"])
-    horizontal["distance"] /= (1.0 * self.globals["width"])
-    return {
-        "type": "UIView", "id": elem["id"],
-        "fill": utils.convert_hex_to_rgb(elem["fill"]),
-        "x": center_x, "y": center_y,
-        "width": width, "height": height,
-        "vertical": vertical, "horizontal": horizontal}
 
   def inherit_from(self, parent, child):
     """
