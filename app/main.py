@@ -18,7 +18,7 @@ class Main(object):
 
   def convert_artboard(self):
     p = Parser(self.path, self.artboard)
-    p.parse_svg()
+    p.parse_artboard()
 
     i = Interpreter(p.globals)
     i.generate_code(p.elements)

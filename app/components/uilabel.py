@@ -52,13 +52,14 @@ class UILabel(object):
     centerY = info['y']
     width = info['width']
     height = info['height']
+    info['fill'] = (0, 0, 0) # TODO: fix this
     fill = info['fill']
     r = fill[0]
     g = fill[1]
     b = fill[2]
     lid = info['id']
     txt = info['text']
-    fontSize = info['fontSize']
+    fontSize = info['font-size']
     label = 'var {} = UILabel()\n'.format(lid)
     label += utils.translates_false(lid)
     label += self.set_text(lid, txt)

@@ -8,27 +8,20 @@ class Text(object):
       vertical (dict): represents the vertical spacing from other objects.
       horizontal (dict): represents the horizontal spacing from other objects.
     """
-    self.elem = self.parse_rect(elem, vertical, horizontal)
+    self.elem = self.parse_elem(elem, vertical, horizontal)
 
   def parse_elem(self, elem, vertical, horizontal):
     """
     Args:
       Refer to args in __init__
-
-    Returns: dictionary with keys
-      - type (str): "UILabel"
-      - id (str): id of the element
-      - fill (tuple): (r, g, b) triple representing the color
-      - x (float): x coordinate with respect to global width
-      - y (float): y coordinate with respect to global height
-      - vertical (dict): refer to __init__ args for description
-      - horizontal (dict): refer to __init__ args for description
     """
     center_x = ((elem["x"] + elem["width"]) / 2)
     center_y = ((elem["y"] + elem["height"]) / 2)
     return {
-        "type": "UIView", "id": elem["id"],
-        "fill": utils.convert_hex_to_rgb(elem["fill"]),
+        "type": "UILabel", "id": elem["id"],
+        "text": elem["contents"],
+        "text-color": utils.convert_hex_to_rgb(elem["fill"]),
+        "font-size": elem["font-size"],
         "x": center_x, "y": center_y,
         "width": elem["width"], "height": elem["height"],
         "vertical": vertical, "horizontal": horizontal}
