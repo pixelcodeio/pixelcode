@@ -1,4 +1,4 @@
-def check_spacing(r1, r2, direction):
+def check_spacing(r1, r2, direction): # pylint: disable=R0911
   """
   Args:
     r1: The rectangle with a smaller bottom-right coordinate sum
@@ -37,7 +37,7 @@ def check_spacing(r1, r2, direction):
 
 def convert_hex_to_rgb(hex_string):
   """
-  Returns [hex_string] converted to a rgb tuple.
+  Returns: [hex_string] converted to a rgb tuple.
   """
   h = hex_string.lstrip('#')
-  return tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
+  return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
