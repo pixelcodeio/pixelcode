@@ -39,7 +39,7 @@ class UIButton(object):
     """
     Returns: The swift code to set the font weight of elem.
     """
-    return ("{}.titleLabel.font = UIFont.Weight.init(rawValue: {})\n"
+    return ("{}.titleLabel?.font = UIFont.Weight.init(rawValue: {})\n"
            ).format(elem, weight)
 
   def generate_button(self, info):
