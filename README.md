@@ -24,7 +24,7 @@ Any artboards exported using the plugin should have `.svg` files created in `app
 
 ## XCode Setup
 
-To import font into Xcode, you can follow the steps below or the ones detailed [here](https://medium.com/yay-its-erica/how-to-import-fonts-into-xcode-swift-3-f0de7e921ef8
+To import fonts into Xcode, you can follow the steps below or the ones detailed [here](https://medium.com/yay-its-erica/how-to-import-fonts-into-xcode-swift-3-f0de7e921ef8
 ).
 
 1. Download a font in OTF (OpenTypeFormat), i.e. `.otf`
