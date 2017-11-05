@@ -38,4 +38,5 @@ class BaseLayer(object):
     obj = {}
     for param in params:
       obj[param] = elem[param]
+    print obj
     return obj

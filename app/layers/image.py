@@ -1,4 +1,5 @@
 import utils
+from layers.base_layer import BaseLayer
 
 class Image(BaseLayer):
   """
