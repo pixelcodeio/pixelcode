@@ -6,10 +6,6 @@ class Button(BaseLayer):
   Class representing a Button in Sketch
   """
   def parse_elem(self, elem):
-    """
-    Args:
-      Refer to args in __init__
-    """
     rect = elem.rect
     if "rx" in rect.attrs:
       elem["border-radius"] = rect["rx"]
@@ -31,4 +27,4 @@ class Button(BaseLayer):
       else:
         elem[key] = text[key]
 
-    return self.generate_object(elem)
+    return super(Button, self).parse_elem(elem)
