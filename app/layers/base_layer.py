@@ -16,25 +16,25 @@ class BaseLayer(object):
     Generates object to be sent to the interpreter class
     """
     params = [
-        "type",
-        "id",
-        "fill",
         "border-radius",
-        "stroke-width",
-        "stroke-color",
-        "text",
-        "text-color",
-        "title-color",
-        "title",
+        "fill",
         "font-family",
         "font-size",
         "font-weight",
-        "x",
-        "y",
-        "width",
         "height",
         "horizontal",
+        "id",
+        "stroke-color",
+        "stroke-width",
+        "text",
+        "text-color",
+        "title",
+        "title-color",
+        "type",
         "vertical"
+        "width",
+        "x",
+        "y",
     ]
     elem = utils.init_optional_params(elem, params)
     obj = {}
