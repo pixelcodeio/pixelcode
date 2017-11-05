@@ -21,4 +21,4 @@ class Rect(BaseLayer):
     """
     elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
 
-    self.generate_object(elem)
+    return self.generate_object(elem)

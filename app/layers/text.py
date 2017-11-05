@@ -16,4 +16,4 @@ class Text(BaseLayer):
       if child != "\n":
         elem["text"] += child.contents[0]
 
-    self.generate_object(elem)
+    return self.generate_object(elem)

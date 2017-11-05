@@ -22,6 +22,8 @@ class BaseLayer(object):
         "border-radius",
         "stroke-width",
         "stroke-color",
+        "text",
+        "text-color",
         "title-color",
         "title",
         "font-family",
@@ -38,5 +40,4 @@ class BaseLayer(object):
     obj = {}
     for param in params:
       obj[param] = elem[param]
-    print obj
     return obj
