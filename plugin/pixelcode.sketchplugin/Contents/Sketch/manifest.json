@@ -11,7 +11,7 @@
     }
   ],
   "menu" : {
-    "title" : "sketch-to-swift",
+    "title" : "pixelcode",
     "items" : [
       "com.bohemiancoding.sketch.runscriptidentifier"
     ]
@@ -20,5 +20,5 @@
   "version" : "0.1",
   "description" : "Converts Artboards to Swift Code",
   "authorEmail" : "kim.thunderbird@gmail.com",
-  "name" : "sketch-to-swift"
+  "name" : "pixelcode"
 }
