@@ -1,10 +1,10 @@
-# sketch-to-swift
+# pixelcode
 
 ## Directory Structure
 
 `plugin/`: Contains the sketch plugin
 
-`app/`: Contains the code for the core web-app
+`app/`: Contains the code for the core app
 
 ## Running Tests with Plugin
 
