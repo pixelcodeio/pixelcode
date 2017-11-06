@@ -13,7 +13,10 @@ class BaseLayer(object):
 
   def generate_object(self, elem):
     """
-    Generates object to be sent to the interpreter class
+    Args:
+      elem (dict): represents a high-level layer of from sketch to be parsed.
+
+    Returns: object to be sent to the interpreter class
     """
     params = [
         "border-radius",
@@ -31,7 +34,7 @@ class BaseLayer(object):
         "title",
         "title-color",
         "type",
-        "vertical"
+        "vertical",
         "width",
         "x",
         "y",
@@ -41,3 +44,12 @@ class BaseLayer(object):
     for param in params:
       obj[param] = elem[param]
     return obj
+
+  def parse_elem(self, elem):
+    """
+    Args:
+      elem (dict): represents a high-level layer of from sketch to be parsed.
+
+    Returns: object to be sent to the interpreter class
+    """
+    return self.generate_object(elem)
