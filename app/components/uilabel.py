@@ -41,13 +41,13 @@ class UILabel(object):
             "blue: {}/255.0, alpha: 1.0)\n"
            ).format(elem, r, g, b)
 
-  def center_and_wrap(self, elem):
+  def center_and_wrap(self, elem, textAlign):
     """
     Returns: The swift code to center the text and wrap lines
     """
-    return ("{}.textAlignment = .center\n{}.numberOfLines = 0\n"
+    return ("{}.textAlignment = .{}\n{}.numberOfLines = 0\n"
             "{}.lineBreakMode = .byWordWrapping\n"
-           ).format(elem, elem, elem)
+           ).format(elem, textAlign, elem, elem)
 
   def set_font_size(self, elem, size):
     """
@@ -110,6 +110,7 @@ class UILabel(object):
     height = info['height']
     lid = info['id']
     txt = info['text']
+    txtAlign = info['text-align']
     txtColor = info['text-color']
     fontSize = info['font-size']
     fontW = info['font-weight']
@@ -126,11 +127,13 @@ class UILabel(object):
       label += self.set_font_size_weight(lid, fontSize, fontW)
     else:
       label += self.set_font_size(lid, fontSize)
+    if txtAlign is None:
+      txtAlign = "center"
     label += self.set_font_family(lid, fontFamily, fontSize)
     label += utils.set_border_color(lid, borColor) if borColor != None else ""
     label += utils.set_border_width(lid, borWidth) if borWidth != None else ""
     label += utils.set_corner_radius(lid, corRad) if corRad != None else ""
-    label += self.center_and_wrap(lid)
+    label += self.center_and_wrap(lid, txtAlign)
     label += utils.add_subview('view', lid)
     label += utils.wh_constraints(lid, width, height)
     label += utils.position_constraints(
