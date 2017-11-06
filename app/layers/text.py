@@ -11,6 +11,8 @@ class Text(BaseLayer):
       Refer to args in __init__
     """
     elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
+    elem["stroke-width"] = None
+    elem["stroke-color"] = None
     elem["text"] = ""
     for child in elem.children:
       if child != "\n":

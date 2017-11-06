@@ -52,6 +52,11 @@ def init_optional_params(elem, params):
         elem["fill"] = convert_hex_to_rgb(elem["fill"])
       else:
         elem["fill"] = None
+    elif param == "font-family":
+      if "font-family" in elem.attrs:
+        elem["font-family"] = elem["font-family"].split(",")[0]
+      else:
+        elem["font-family"] = None
     else:
       if param not in elem.attrs:
         elem[param] = None
