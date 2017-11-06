@@ -2,45 +2,69 @@ var onRun = function(context) {
     var sketch = context.api();
     var app = [NSApplication sharedApplication];
     var layers = sketch.selectedDocument.selectedLayers;
+    var filepath = "/Users/Young/Documents/pixelcode/app/tests/";
+
     if (layers.isEmpty) {
-        context.document.showMessage("PixelCode: No layers selected.");
+        context.document.showMessage("PixelCode: No artboard selected.");
     }
     else {
         layers.iterate(function(layer) {
-            if (layer.isArtboard) 
-                exportJSON(layer, "/Users/Young/Documents/pixelcode/app/tests/");
+            if (layer.isArtboard) {
 
-            var options = { "scales" : "1", "formats" : "svg", "overwriting" : "true", "output": "~/Documents/pixelcode/app/tests" };
-            layer.export(options);
+                if (exportJSON(layer, filepath)) {
+                    var options = { "scales" : "1", "formats" : "svg", "overwriting" : "true", "output": filepath };
+                    layer.export(options);
+                    context.document.showMessage("PixelCode: Export finished!");
+                } 
+                
+                else {
+                    context.document.showMessage("PixelCode: Layer is incorrectly labeled. Please check documentation.");
+                }
 
-            context.document.showMessage("PixelCode: Export Finished.");
+            }
         });
     }
 };
 
-function exportJSON(artboard, file_path){
+function exportJSON(artboard, filepath){
     var layerArray = [];
+    var layerNames = [];
+    var ret = true;
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
-            var options = { "scales" : "1", "formats" : "png", "overwriting" : "true", "output": "~/Documents/pixelcode/app/tests" };
+            var options = { "scales" : "1", "formats" : "png", "overwriting" : "true", "output": filepath };
             layer.export(options);
         }
 
+        layerName = String(layer.name);
+        if (hasWhiteSpace(layerName)) ret = false;
+        if (arrayContains(layerName, layerNames)) ret = false;
+
         var currentDict = {};
-        currentDict["name"] = String(layer.name);
-        currentDict["x"] = String(layer.frame.x); 
-        currentDict["y"] = String(layer.frame.y); 
-        currentDict["height"] = String(layer.frame.height); 
-        currentDict["width"] = String(layer.frame.width); 
+        currentDict["name"] = layerName;
+        currentDict["x"] = String(layer.frame.x);
+        currentDict["y"] = String(layer.frame.y);
+        currentDict["height"] = String(layer.frame.height);
+        currentDict["width"] = String(layer.frame.width);
 
         if (layer.isText) currentDict["text_align"] = String(layer.alignment);
         layerArray.push(currentDict);
+        layerNames.push(layerName);
     });
 
     // Create JSON and save to file
     artboardName = artboard.name;
     var jsonObj = { layers : layerArray };
     var file = NSString.stringWithString(JSON.stringify(jsonObj, null, "\t"));
-    [file writeToFile:file_path+artboardName+".json" atomically:true encoding:NSUTF8StringEncoding error:null];
+    [file writeToFile:filepath+artboardName+".json" atomically:true encoding:NSUTF8StringEncoding error:null];
+    return ret;
+}
+
+function hasWhiteSpace(s) {
+    return s.indexOf(' ') >= 0;
+}
+
+function arrayContains(needle, arrhaystack) {
+    return (arrhaystack.indexOf(needle) > -1);
 }
