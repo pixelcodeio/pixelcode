@@ -6,11 +6,9 @@ class Rect(BaseLayer):
   Class representing a Rectangle layer in Sketch
   """
   def parse_elem(self, elem):
-    if elem["fill"] != "none":
-      elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
     if "rx" in elem.attrs:
       elem["border-radius"] = elem["rx"]
-    if "stroke" in elem.attrs:
+    if "stroke" in elem.attrs and elem["stroke"] != "none":
       elem["stroke-color"] = utils.convert_hex_to_rgb(elem["stroke"])
 
       if "stroke-width" in elem:
