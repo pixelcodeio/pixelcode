@@ -77,9 +77,12 @@ class Parser(object):
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
         elem = self.inherit_from_json(elem)
+        elem["x"] = int(float(elem["x"]))
+        elem["y"] = int(float(elem["y"]))
+        elem["width"] = int(float(elem["width"]))
+        elem["height"] = int(float(elem["height"]))
         elements.append(elem)
-    elements.sort(key=lambda e: (int(e["x"]) + int(e["y"]) +
-                                 int(e["width"]) + int(e["height"])))
+    elements.sort(key=lambda e: (e["x"] + e["y"] + e["width"] + e["height"]))
 
     parsed_elements = []
     for elem in elements:
@@ -152,10 +155,10 @@ class Parser(object):
     Returns: elem with coords set relative to global height/width
     """
     # convert units to percentages
-    elem["width"] = int(elem["width"]) / (1.0 * self.globals["width"])
-    elem["height"] = int(elem["height"]) / (1.0 * self.globals["height"])
-    elem["x"] = int(elem["x"]) / (1.0 * self.globals["width"])
-    elem["y"] = int(elem["y"]) / (1.0 * self.globals["height"])
+    elem["width"] = elem["width"] / (1.0 * self.globals["width"])
+    elem["height"] = elem["height"] / (1.0 * self.globals["height"])
+    elem["x"] = elem["x"] / (1.0 * self.globals["width"])
+    elem["y"] = elem["y"] / (1.0 * self.globals["height"])
 
     # generate center
     elem["x"] = elem["x"] + elem["width"] / 2
