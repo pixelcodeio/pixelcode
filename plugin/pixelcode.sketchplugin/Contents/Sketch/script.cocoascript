@@ -16,7 +16,7 @@ var onRun = function(context) {
                     layer.export(options);
                     context.document.showMessage("PixelCode: Export finished!");
                 } 
-                
+
                 else {
                     context.document.showMessage("PixelCode: Layer is incorrectly labeled. Please check documentation.");
                 }

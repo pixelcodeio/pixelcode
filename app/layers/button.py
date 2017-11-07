@@ -10,12 +10,18 @@ class Button(BaseLayer):
     if rect != None:
       if "rx" in rect.attrs:
         elem["border-radius"] = rect["rx"]
+      if "fill" in rect.attrs:
+        elem["fill"] = rect["fill"]
       if "stroke" in rect.attrs:
         elem["stroke-color"] = utils.convert_hex_to_rgb(rect["stroke"])
+
         if "stroke-width" in rect:
           elem["stroke-width"] = rect["stroke-width"]
         else:
           elem["stroke-width"] = 1
+      else:
+        elem["stroke-color"] = None
+        elem["stroke-width"] = None
 
     text = elem.find('text')
     elem["title"] = ""
