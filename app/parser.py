@@ -181,7 +181,11 @@ class Parser(object):
     for layer in self.json["layers"]:
       if child["id"] == layer["name"]:
         for key in layer.keys():
-          if key != "name":
+          name_constraint = key == "name"
+          height_constraint = key == "height" and "height" in child.attrs
+          width_constraint = key == "width" and "width" in child.attrs
+
+          if not (name_constraint or height_constraint or width_constraint):
             child[key] = layer[key]
         break
     return child
