@@ -11,7 +11,7 @@ class Rect(BaseLayer):
     if "stroke" in elem.attrs and elem["stroke"] != "none":
       elem["stroke-color"] = utils.convert_hex_to_rgb(elem["stroke"])
 
-      if "stroke-width" in elem:
+      if "stroke-width" in elem.attrs:
         elem["stroke-width"] = elem["stroke-width"]
       else:
         elem["stroke-width"] = 1
