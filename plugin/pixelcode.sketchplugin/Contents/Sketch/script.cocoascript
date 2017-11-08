@@ -1,8 +1,11 @@
+@import "globals.cocoascript";
+
 var onRun = function(context) {
     var sketch = context.api();
     var app = [NSApplication sharedApplication];
     var layers = sketch.selectedDocument.selectedLayers;
-    var filepath = "/Users/Young/Documents/pixelcode/app/tests/";
+    //var filepath = "/Users/Young/Documents/pixelcode/app/tests/";
+    var filepath = globals.filepath;
 
     if (layers.isEmpty) {
         context.document.showMessage("PixelCode: No artboard selected.");
@@ -38,28 +41,27 @@ function exportJSON(artboard, filepath){
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
-            var options = { 
-                "scales" : "1", 
-                "formats" : "png", 
-                "overwriting" : "true", 
-                "output": filepath 
+            var options = {
+                "scales" : "1",
+                "formats" : "png",
+                "overwriting" : "true",
+                "output": filepath
             };
             layer.export(options);
         }
+
+        var currentDict = {};
+        currentDict["name"] = String(layer.name);
+        currentDict["x"] = String(layer.frame.x);
+        currentDict["y"] = String(layer.frame.y);
+        currentDict["height"] = String(layer.frame.height);
+        currentDict["width"] = String(layer.frame.width);
+        if (layer.isText) currentDict["text_align"] = String(layer.alignment);
 
         if (ret["isCorrect"]) {
             output = checkFormatting(layer, ret["layerNames"]);
             ret = output;
         }
-
-        var currentDict = {};
-        currentDict["name"] = layerName;
-        currentDict["x"] = String(layer.frame.x);
-        currentDict["y"] = String(layer.frame.y);
-        currentDict["height"] = String(layer.frame.height);
-        currentDict["width"] = String(layer.frame.width);
-
-        if (layer.isText) currentDict["text_align"] = String(layer.alignment);
 
         layerArray.push(currentDict);
     });
@@ -82,7 +84,7 @@ function checkFormatting(layer, layerNames) {
         layerName = String(currentLayer.name);
 
         var f = layerName.charAt(0);
-        if (hasWhiteSpace(layerName) || 
+        if (hasWhiteSpace(layerName) ||
             arrayContains(layerName, ret["layerNames"]) ||
             f !== f.toLowerCase()) {
             ret["isCorrect"] = false;

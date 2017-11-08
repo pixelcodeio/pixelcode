@@ -109,9 +109,13 @@ class Parser(object):
         elem["type"] = "UIImageView"
         parsed_elem = Image(elem)
 
-      elif elem.name == "g" and "Button" in elem["id"]:
-        elem["type"] = "UIButton"
-        parsed_elem = Button(elem)
+      elif elem.name == "g":
+        if "Button" in elem["id"]:
+          elem["type"] = "UIButton"
+          parsed_elem = Button(elem)
+        elif "TextField" in elem["id"]:
+          elem["type"] = "TextField"
+          parsed_elem = TextField(elem)
 
       # finished creating new element
       new_elem = parsed_elem.elem

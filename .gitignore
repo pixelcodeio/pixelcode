@@ -11,3 +11,6 @@ venv
 
 # test files 
 app/tests
+
+# global files
+plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript
