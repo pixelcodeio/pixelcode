@@ -188,8 +188,13 @@ class Parser(object):
           name_constraint = key == "name"
           height_constraint = key == "height" and "height" in child.attrs
           width_constraint = key == "width" and "width" in child.attrs
+          x_constraint = key == "x" and "x" in child.attrs
+          y_constraint = key == "y" and "y" in child.attrs
 
-          if not (name_constraint or height_constraint or width_constraint):
+          constraint = name_constraint or height_constraint or \
+            width_constraint or x_constraint or y_constraint
+
+          if not constraint:
             child[key] = layer[key]
         break
     return child

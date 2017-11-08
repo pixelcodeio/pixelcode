@@ -18,4 +18,5 @@ class Rect(BaseLayer):
     else:
       elem["stroke-color"] = None
       elem["stroke-width"] = None
+    print elem.attrs
     return super(Rect, self).parse_elem(elem)
