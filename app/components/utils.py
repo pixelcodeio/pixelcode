@@ -1,3 +1,5 @@
+from . import *
+
 def translates_false(elem):
   """
   Returns: The line that sets the translatesAutoResizing property
