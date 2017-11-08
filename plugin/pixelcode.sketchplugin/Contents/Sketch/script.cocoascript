@@ -10,17 +10,23 @@ var onRun = function(context) {
     else {
         layers.iterate(function(layer) {
             if (layer.isArtboard) {
+                output = exportJSON(layer, filepath);
 
-                if (exportJSON(layer, filepath)) {
-                    var options = { "scales" : "1", "formats" : "svg", "overwriting" : "true", "output": filepath };
+                if (output["isCorrect"]) {
+                    var options = { 
+                        "scales" : "1", 
+                        "formats" : "svg", 
+                        "overwriting" : "true", 
+                        "output": filepath 
+                    };
                     layer.export(options);
                     context.document.showMessage("PixelCode: Export finished!");
-                } 
-
-                else {
-                    context.document.showMessage("PixelCode: Layer is incorrectly labeled. Please check documentation.");
+                } else { 
+                    context.document.showMessage("PixelCode: Layer '" + output["incorrectLayer"] + "' is incorrectly labeled. Please check documentation.");
                 }
 
+            } else {
+                context.document.showMessage("PixelCode: No artboard selected.");
             }
         });
     }
@@ -28,18 +34,23 @@ var onRun = function(context) {
 
 function exportJSON(artboard, filepath){
     var layerArray = [];
-    var layerNames = [];
-    var ret = true;
+    var ret = { "isCorrect": true, "layerNames": [] };
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
-            var options = { "scales" : "1", "formats" : "png", "overwriting" : "true", "output": filepath };
+            var options = { 
+                "scales" : "1", 
+                "formats" : "png", 
+                "overwriting" : "true", 
+                "output": filepath 
+            };
             layer.export(options);
         }
 
-        layerName = String(layer.name);
-        if (hasWhiteSpace(layerName)) ret = false;
-        if (arrayContains(layerName, layerNames)) ret = false;
+        if (ret["isCorrect"]) {
+            output = checkFormatting(layer, ret["layerNames"]);
+            ret = output;
+        }
 
         var currentDict = {};
         currentDict["name"] = layerName;
@@ -49,8 +60,8 @@ function exportJSON(artboard, filepath){
         currentDict["width"] = String(layer.frame.width);
 
         if (layer.isText) currentDict["text_align"] = String(layer.alignment);
+
         layerArray.push(currentDict);
-        layerNames.push(layerName);
     });
 
     // Create JSON and save to file
@@ -58,6 +69,34 @@ function exportJSON(artboard, filepath){
     var jsonObj = { layers : layerArray };
     var file = NSString.stringWithString(JSON.stringify(jsonObj, null, "\t"));
     [file writeToFile:filepath+artboardName+".json" atomically:true encoding:NSUTF8StringEncoding error:null];
+    return ret;
+}
+
+// Account for sublayers in checking formatting
+function checkFormatting(layer, layerNames) {
+    var ret = {"isCorrect": true, "layerNames": layerNames}
+    var stack = [layer];
+
+    while (stack.length >= 1) {
+        var currentLayer = stack.pop();
+        layerName = String(currentLayer.name);
+
+        var f = layerName.charAt(0);
+        if (hasWhiteSpace(layerName) || 
+            arrayContains(layerName, ret["layerNames"]) ||
+            f !== f.toLowerCase()) {
+            ret["isCorrect"] = false;
+            ret["incorrectLayer"] = layerName;
+        }
+
+        ret["layerNames"].push(layerName);
+
+        if (currentLayer.isGroup) {
+            currentLayer.iterate(function(subLayer) {
+                stack.push(subLayer);
+            });
+        }
+    }
     return ret;
 }
 
