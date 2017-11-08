@@ -1,4 +1,4 @@
-from components import *
+from components.base_component import BaseComponent
 
 class Interpreter(object):
   """
@@ -40,19 +40,13 @@ class Interpreter(object):
     """
     c = self.generate_header()
     c += self.set_view_bg()
-    for ele in elements:
-      t = ele["type"]
-      if t == "UIView":
-        v = UIView(ele)
-        c += v.swift
-      elif t == "UIButton":
-        b = UIButton(ele)
-        c += b.swift
-      elif t == "UIImageView":
-        iv = UIImageView(ele)
-        c += iv.swift
-      elif t == "UILabel":
-        l = UILabel(ele, self.globals['background_color'])
-        c += l.swift
+    for elem in elements:
+      comp = elem["type"]
+      if comp == 'UILabel':
+        bc = BaseComponent(comp, elem, self.globals['background_color'])
+        c += bc.swift
+      else:
+        bc = BaseComponent(comp, elem)
+        c += bc.swift
     c += "\n}\n}"
     self.swift = c
