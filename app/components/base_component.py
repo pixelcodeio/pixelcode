@@ -29,24 +29,27 @@ class BaseComponent(object):
       return UIImageView()
     elif comp == 'UIButton':
       return UIButton()
+    elif comp == 'UITextField':
+      return UITextField()
+    elif comp == 'UITextView':
+      return UITextView()
     return ""
 
   def generate_component(self, comp, info, bgColor):
     """
     Args:
       comp (str): represents the component that is to be generated
-      info (dict): is a dictionary of keys:
+      info (dict): is a dictionary of keys (values may be None):
         - id: (str) name of view
         - text: (str) text that is to be displayed
         - text-color: (tuple) r, g, b values of the text color
         - text-align: (str) alignment center of text
         - title: (str) title that is to be displayed on the button
         - title-color: (tuple) r, g, b values of the title color
-        - fill: (optional tuple) r, g, b values for background color. Has value
+        - fill: (tuple) r, g, b values for background color. Has value
                 None if no value is provided
         - font-size: (int) font-size of the text
-        - font-weight: (optional int) font weight of title. Has value None if
-                       no value is provided
+        - font-weight: (int) font weight of title.
         - font-family: (str) name of the font of title
         - x: (float) x-coor of view's center as percentage of screen's width
         - y: (float) y-coor of view's center as percentage of screen's height
@@ -54,12 +57,16 @@ class BaseComponent(object):
         - horizontal: (dict) dict containing constraints for left/right of view
         - width: (float) width of view as percentage of screen's width
         - height: (float) height of view as percentage of screen's height
-        - stroke-color: (optional tuple) r, g, b values representing the border
+        - stroke-color: (tuple) r, g, b values representing the border
                         color. Has value None if no value is provided
-        - stroke-width: (optional int) the number of pixels representing the
+        - stroke-width: (int) the number of pixels representing the
                         border width. Has value None if no value is provided
-        - border-radius: (optional int) the number of pixels representing the
+        - border-radius: (int) the number of pixels representing the
                          corner radius. Has value None if no value is provided
+        - placeholder: (str) the text to be displayed in an empty textfield
+                       or textview
+        - left-inset: (int) the number of pixels of the left-inset of a
+                      textfield or textview
       bgColor: (optional tuple) background color of as r, g, b values
                (used for labels)
 
@@ -91,6 +98,8 @@ class BaseComponent(object):
     verticalDist = vertical['distance']
     verticalID = vertical['id']
     width = info['width']
+    placeholder = info['placeholder']
+    leftInset = info['left-inset']
     c = "var {} = {}()\n".format(cid, comp)
     c += utils.translates_false(cid)
     if fill != None:
@@ -120,6 +129,9 @@ class BaseComponent(object):
       c += obj.set_font_family(cid, fontFamily, fontSize)
     elif comp == 'UIImageView':
       c += obj.set_image(cid)
+    elif comp == 'UITextField' or comp == 'UITextView':
+      c += obj.set_placeholder(cid, placeholder)
+      c += obj.set_left_inset(cid, leftInset)
     c += utils.set_border_color(cid, borColor) if borColor != None else ""
     c += utils.set_border_width(cid, borWidth) if borWidth != None else ""
     c += utils.set_corner_radius(cid, corRad) if corRad != None else ""
