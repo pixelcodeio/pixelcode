@@ -64,3 +64,9 @@ class UILabel(object):
     """
     return ("{}.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
+
+  def set_num_of_lines(self, elem):
+    """
+    Returns: The swift code to set numberOfLines to be 0 for elem.
+    """
+    return "{}.numberOfLines = 0\n".format(elem)

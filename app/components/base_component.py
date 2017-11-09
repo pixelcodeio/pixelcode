@@ -49,7 +49,6 @@ class BaseComponent(object):
         - fill: (tuple) r, g, b values for background color. Has value
                 None if no value is provided
         - font-size: (int) font-size of the text
-        - font-weight: (int) font weight of title.
         - font-family: (str) name of the font of title
         - x: (float) x-coor of view's center as percentage of screen's width
         - y: (float) y-coor of view's center as percentage of screen's height
@@ -82,7 +81,6 @@ class BaseComponent(object):
     fill = info['fill']
     fontFamily = info['font-family']
     fontSize = info['font-size']
-    fontW = info['font-weight']
     height = info['height']
     horizontal = info['horizontal']
     horizontalDir = horizontal['direction']
@@ -111,21 +109,16 @@ class BaseComponent(object):
       c += obj.set_text(cid, txt) if txt != None else ""
       c += obj.set_text_color(cid, txtColor) if txtColor != None else ""
       c += obj.set_bg_color(cid)
-      if fontW != None:
-        c += obj.set_font_size_weight(cid, fontSize, fontW)
-      else:
-        c += obj.set_font_size(cid, fontSize)
+      c += obj.set_font_size(cid, fontSize)
       if txtAlign is None:
-        txtAlign = "center"
+        c += obj.center_and_wrap(cid, "center")
+      else:
         c += obj.center_and_wrap(cid, txtAlign)
-        c += obj.set_font_family(cid, fontFamily, fontSize)
+      c += obj.set_font_family(cid, fontFamily, fontSize)
     elif comp == 'UIButton':
       c += obj.set_title(cid, title)
       c += obj.set_title_color(cid, titleColor)
-      if fontW != None:
-        c += obj.set_font_size_weight(cid, fontSize, fontW)
-      else:
-        c += obj.set_font_size(cid, fontSize)
+      c += obj.set_font_size(cid, fontSize)
       c += obj.set_font_family(cid, fontFamily, fontSize)
     elif comp == 'UIImageView':
       c += obj.set_image(cid)
