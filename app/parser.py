@@ -77,10 +77,10 @@ class Parser(object):
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
         elem = self.inherit_from_json(elem)
-        elem["x"] = int(float(elem["x"]))
-        elem["y"] = int(float(elem["y"]))
-        elem["width"] = int(float(elem["width"]))
-        elem["height"] = int(float(elem["height"]))
+        elem["x"] = float(elem["x"])
+        elem["y"] = float(elem["y"])
+        elem["width"] = float(elem["width"])
+        elem["height"] = float(elem["height"])
         elements.append(elem)
     elements.sort(key=lambda e: (e["x"] + e["y"] + e["width"] + e["height"]))
 

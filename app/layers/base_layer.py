@@ -52,6 +52,8 @@ class BaseLayer(object):
         "height",
         "horizontal",
         "id",
+        "left-inset",
+        "placeholder",
         "stroke-color",
         "stroke-width",
         "text",
