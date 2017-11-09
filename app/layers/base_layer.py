@@ -48,7 +48,6 @@ class BaseLayer(object):
         "fill",
         "font-family",
         "font-size",
-        "font-weight",
         "height",
         "horizontal",
         "id",

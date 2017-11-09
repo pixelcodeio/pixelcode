@@ -91,11 +91,6 @@ class Parser(object):
 
       elem["horizontal"] = spacing["horizontal"]
       elem["vertical"] = spacing["vertical"]
-      if "font-weight" in elem.attrs:
-        if elem["font-weight"] == "normal":
-          elem["font-weight"] = "400"
-        elif elem["font-weight"] == "bold":
-          elem["font-weight"] = "700"
 
       if elem.name == "rect":
         elem["type"] = "UIView"
