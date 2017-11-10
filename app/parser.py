@@ -29,20 +29,11 @@ class Parser(object):
     """
     Parses artboard with name [self.artboard]
     """
-    self.parse_json()
-    self.parse_svg()
-
-  def parse_json(self):
-    """
-    Initializes self.json
-    """
+    # initializes self.json
     f = open(self.path + self.artboard + ".json", "r+")
     self.json = json.loads(f.read())
 
-  def parse_svg(self):
-    """
-    Returns: Parses an SVG and sets instance variables appropriately
-    """
+    # parses svg and sets instance variables appropriately
     f = open(self.path + self.artboard + ".svg", "r+")
     soup = BeautifulSoup(f, "lxml")
     f.close()
@@ -86,11 +77,8 @@ class Parser(object):
 
     parsed_elements = []
     for elem in elements:
-      spacing = self.calculate_spacing(elem, parsed_elements)
+      elem = self.calculate_spacing(elem, parsed_elements)
       elem = self.convert_coords(elem)
-
-      elem["horizontal"] = spacing["horizontal"]
-      elem["vertical"] = spacing["vertical"]
 
       if elem.name == "rect":
         elem["type"] = "UIView"
@@ -115,13 +103,14 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
-    return parsed_elements[::-1]
+    return parsed_elements[::-1] # reverse so top-left element is first
 
   def calculate_spacing(self, elem, parsed_elements):
     """
     Returns:
-      dict with keys vertical and horizontal, where vertical and horizontal
-      represent the relative spacing between elem and parsed_elements
+      elem with keys vertical and horizontal added, where vertical
+      and horizontal represent the relative spacing between elem
+      and parsed_elements
     """
     vertical = {}
     horizontal = {}
@@ -144,20 +133,21 @@ class Parser(object):
     if horizontal == {}:
       horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
 
-    # convert units to percentages
-    horizontal["distance"] /= (1.0 * self.globals["width"])
-    vertical["distance"] /= (1.0 * self.globals["height"])
-    return {"vertical": vertical, "horizontal": horizontal}
+    elem["horizontal"] = horizontal
+    elem["vertical"] = vertical
+    return elem
 
   def convert_coords(self, elem):
     """
     Returns: elem with coords set relative to global height/width
     """
     # convert units to percentages
-    elem["width"] = elem["width"] / (1.0 * self.globals["width"])
-    elem["height"] = elem["height"] / (1.0 * self.globals["height"])
-    elem["x"] = elem["x"] / (1.0 * self.globals["width"])
-    elem["y"] = elem["y"] / (1.0 * self.globals["height"])
+    elem["width"] /= self.globals["width"]
+    elem["height"] /= self.globals["height"]
+    elem["x"] /= self.globals["width"]
+    elem["y"] /= self.globals["height"]
+    elem["horizontal"]["distance"] /= self.globals["width"]
+    elem["vertical"]["distance"] /= self.globals["height"]
 
     # generate center
     elem["x"] = elem["x"] + elem["width"] / 2
@@ -180,16 +170,7 @@ class Parser(object):
     for layer in self.json["layers"]:
       if child["id"] == layer["name"]:
         for key in layer.keys():
-          name_constraint = key == "name"
-          height_constraint = key == "height" and "height" in child.attrs
-          width_constraint = key == "width" and "width" in child.attrs
-          x_constraint = key == "x" and "x" in child.attrs
-          y_constraint = key == "y" and "y" in child.attrs
-
-          constraint = name_constraint or height_constraint or \
-            width_constraint or x_constraint or y_constraint
-
-          if not constraint:
+          if key not in child.attrs:
             child[key] = layer[key]
         break
     return child

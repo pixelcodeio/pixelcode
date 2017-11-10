@@ -28,7 +28,7 @@ def update_test_dir():
   """
   Generates ".out" files for any files in "./tests"
   """
-  path = "./tests/"
+  path = "./exports/"
   files = os.listdir(path)
   svg = []
   for f in files:
