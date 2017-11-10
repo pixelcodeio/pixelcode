@@ -9,8 +9,8 @@
 # venv
 venv
 
-# test files 
-app/tests
+# export files 
+app/exports
 
 # global files
 plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript
