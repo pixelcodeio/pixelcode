@@ -53,8 +53,8 @@ class Parser(object):
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
     return {"background_color": utils.convert_hex_to_rgb(bg_color),
-            "width": int(width),
-            "height": int(height),
+            "width": float(width),
+            "height": float(height),
             "pagename": pagename,
             "artboard": artboard}
 
@@ -129,9 +129,9 @@ class Parser(object):
         break
 
     if vertical == {}:
-      vertical = {"direction": "up", "id": "", "distance": int(elem["y"])}
+      vertical = {"direction": "up", "id": "", "distance": elem["y"]}
     if horizontal == {}:
-      horizontal = {"direction": "left", "id": "", "distance": int(elem["x"])}
+      horizontal = {"direction": "left", "id": "", "distance": elem["x"]}
 
     elem["horizontal"] = horizontal
     elem["vertical"] = vertical
