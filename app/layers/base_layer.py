@@ -21,6 +21,8 @@ class BaseLayer(object):
       if param == "fill":
         if "fill" in elem.attrs and elem["fill"] != "none":
           elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
+        else:
+          elem["fill"] = None
       elif param == "font-family":
         if "font-family" in elem.attrs:
           elem["font-family"] = elem["font-family"].split(",")[0]
