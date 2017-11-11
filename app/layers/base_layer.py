@@ -4,11 +4,13 @@ class BaseLayer(object):
   """
   Base class for layers
   """
-  def __init__(self, elem):
+  def __init__(self, elem, json):
     """
     Args:
       elem (dict): represents a high-level layer of from sketch to be parsed.
+      json (dict): json to inherit from
     """
+    self.json = json
     self.elem = self.parse_elem(elem)
 
   def init_optional_params(self, elem, params):
@@ -80,3 +82,15 @@ class BaseLayer(object):
     Returns: object to be sent to the interpreter class
     """
     return self.generate_object(elem)
+
+  def inherit_from_json(self, child):
+    """
+    Returns: child with attributes from json not defined in child passed down
+    """
+    for layer in self.json["layers"]:
+      if child["id"] == layer["name"]:
+        for key in layer.keys():
+          if key not in child.attrs:
+            child[key] = layer[key]
+        break
+    return child

@@ -87,15 +87,15 @@ class Parser(object):
       # parse elements into their layers
       if elem.name == "rect":
         elem["type"] = "UIView"
-        parsed_elem = Rect(elem)
+        parsed_elem = Rect(elem, self.json)
 
       elif elem.name == "text":
         elem["type"] = "UILabel"
-        parsed_elem = Text(elem)
+        parsed_elem = Text(elem, self.json)
 
       elif elem.name == "image":
         elem["type"] = "UIImageView"
-        parsed_elem = Image(elem)
+        parsed_elem = Image(elem, self.json)
 
       elif elem.name == "g":
         for child in elem.children:
@@ -104,11 +104,11 @@ class Parser(object):
 
         if "Button" in elem["id"]:
           elem["type"] = "UIButton"
-          parsed_elem = Button(elem)
+          parsed_elem = Button(elem, self.json)
 
         elif "TextField" in elem["id"]:
           elem["type"] = "UITextField"
-          parsed_elem = TextField(elem)
+          parsed_elem = TextField(elem, self.json)
 
       # finished creating new element
       new_elem = parsed_elem.elem

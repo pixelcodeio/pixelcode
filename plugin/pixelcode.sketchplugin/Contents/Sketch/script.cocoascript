@@ -37,7 +37,7 @@ var onRun = function(context) {
 
 function exportJSON(artboard, filepath){
     var layerArray = [];
-    var ret = { "isCorrect": true, "layerNames": [] };
+    var ret = { "isCorrect": true, "layerNames": [], "dictList": [] };
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
@@ -50,20 +50,14 @@ function exportJSON(artboard, filepath){
             layer.export(options);
         }
 
-        var currentDict = {};
-        currentDict["name"] = String(layer.name);
-        currentDict["x"] = String(layer.frame.x);
-        currentDict["y"] = String(layer.frame.y);
-        currentDict["height"] = String(layer.frame.height);
-        currentDict["width"] = String(layer.frame.width);
-        if (layer.isText) currentDict["text_align"] = String(layer.alignment);
-
         if (ret["isCorrect"]) {
             output = checkFormatting(layer, ret["layerNames"]);
             ret = output;
         }
 
-        layerArray.push(currentDict);
+        for (var i = 0; i < ret["dictList"].length; i++) {
+            layerArray.push(ret["dictList"][i]);
+        }
     });
 
     // Create JSON and save to file
@@ -76,12 +70,20 @@ function exportJSON(artboard, filepath){
 
 // Account for sublayers in checking formatting
 function checkFormatting(layer, layerNames) {
-    var ret = {"isCorrect": true, "layerNames": layerNames}
+    var ret = {"isCorrect": true, "layerNames": layerNames, "dictList": [] }
     var stack = [layer];
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
         layerName = String(currentLayer.name);
+
+        var currentDict = {};
+        currentDict["name"] = String(currentLayer.name);
+        currentDict["x"] = String(currentLayer.frame.x);
+        currentDict["y"] = String(currentLayer.frame.y);
+        currentDict["height"] = String(currentLayer.frame.height);
+        currentDict["width"] = String(currentLayer.frame.width);
+        if (layer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
         var f = layerName.charAt(0);
         if (hasWhiteSpace(layerName) ||
@@ -92,6 +94,7 @@ function checkFormatting(layer, layerNames) {
         }
 
         ret["layerNames"].push(layerName);
+        ret["dictList"].push(currentDict);
 
         if (currentLayer.isGroup) {
             currentLayer.iterate(function(subLayer) {

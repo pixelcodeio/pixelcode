@@ -6,7 +6,7 @@ class TextField(BaseLayer):
   Class representing an TextField layer in Sketch
   """
   def parse_elem(self, elem):
-    rect = elem.rect
+    rect = self.inherit_from_json(elem.rect)
     if "rx" in rect.attrs:
       elem["border-radius"] = rect["rx"]
     if "fill" in rect.attrs:
@@ -22,7 +22,7 @@ class TextField(BaseLayer):
       elem["stroke-color"] = None
       elem["stroke-width"] = None
 
-    text = elem.find('text')
+    text = self.inherit_from_json(elem.find('text'))
     elem["title"] = ""
     for child in text.children:
       if child != "\n":
@@ -35,6 +35,6 @@ class TextField(BaseLayer):
     else:
       elem["title-color"] = utils.convert_hex_to_rgb(elem["fill"])
 
-    #elem["left-inset"] = float(rect["x"]) - float(rect["width"])/2
-    #elem["left-inset"] -= float(text["x"]) - float(text["width"])/2
+    elem["left-inset"] = float(rect["x"]) - float(rect["width"])/2
+    elem["left-inset"] -= float(text["x"]) - float(text["width"])/2
     return super(TextField, self).parse_elem(elem)
