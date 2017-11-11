@@ -14,8 +14,6 @@ class Text(BaseLayer):
     elem["stroke-width"] = None
     elem["stroke-color"] = None
     elem["text"] = ""
-    for child in elem.children:
-      if child != "\n":
-        elem["text"] += child.contents[0]
-
+    for child in elem["children"]:
+      elem["text"] += child.contents[0]
     return super(Text, self).parse_elem(elem)
