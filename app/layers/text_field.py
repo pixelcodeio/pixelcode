@@ -36,5 +36,4 @@ class TextField(BaseLayer):
       elem["title-color"] = utils.convert_hex_to_rgb(elem["fill"])
 
     elem["left-inset"] = float(text["x"]) - float(rect["x"])
-    print elem["left-inset"]
     return super(TextField, self).parse_elem(elem)
