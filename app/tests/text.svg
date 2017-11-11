@@ -9,9 +9,9 @@
             <text id="text3" font-family="SanFranciscoText-HeavyItalic, San Francisco Text" font-size="36" font-style="italic" font-weight="600" fill="#FFFFFF">
                 <tspan x="26.2089844" y="283">differenttext</tspan>
             </text>
-            <text id="text1" fill="#000000" font-family="Roboto-Regular, Roboto" font-size="64" font-weight="normal">
-                <tspan x="48.765625" y="469">testing </tspan>
-                <tspan x="84.4375" y="544">here</tspan>
+            <text id="text1" fill="#000000" font-family=".SFNSDisplay, .SF NS Display" font-size="64" font-weight="normal">
+                <tspan x="51.875" y="472">testing </tspan>
+                <tspan x="85.0625" y="548">here</tspan>
             </text>
         </g>
     </g>

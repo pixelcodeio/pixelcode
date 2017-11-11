@@ -16,5 +16,8 @@ class TestStringMethods(unittest.TestCase):
   def test_rect_borders(self):
     self.filename_helper("rectBorders.out")
 
+  def test_input(self):
+    self.filename_helper("input.out")
+
 if __name__ == '__main__':
   unittest.main()
