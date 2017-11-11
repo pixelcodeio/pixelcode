@@ -35,6 +35,6 @@ class TextField(BaseLayer):
     else:
       elem["title-color"] = utils.convert_hex_to_rgb(elem["fill"])
 
-    elem["left-inset"] = rect["x"] - rect["width"]/2
-    elem["left-inset"] -= text["x"] - text["width"]/2
+    #elem["left-inset"] = float(rect["x"]) - float(rect["width"])/2
+    #elem["left-inset"] -= float(text["x"]) - float(text["width"])/2
     return super(TextField, self).parse_elem(elem)
