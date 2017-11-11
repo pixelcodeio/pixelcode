@@ -24,11 +24,10 @@ class Main(object):
     i.generate_code(p.elements)
     return i.swift
 
-def update_test_dir():
+def update_test_dir(path):
   """
   Generates ".out" files for any files in "./tests"
   """
-  path = "./exports/"
   files = os.listdir(path)
   svg = []
   for f in files:
@@ -42,4 +41,4 @@ def update_test_dir():
     o.close()
 
 if __name__ == "__main__":
-  update_test_dir()
+  update_test_dir("./exports/")
