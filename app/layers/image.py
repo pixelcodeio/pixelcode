@@ -8,4 +8,4 @@ class Image(BaseLayer):
   def parse_elem(self, elem):
     elem["stroke-color"] = None
     elem["stroke-width"] = None
-    return super(Rect, self).parse_elem(elem)
+    return super(Image, self).parse_elem(elem)
