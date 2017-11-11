@@ -40,7 +40,7 @@ class Parser(object):
 
     self.globals = self.parse_globals(soup.svg)
     self.elements = self.parse_elements(
-        self.inherit_from(soup.svg.g, soup.svg.g.g)
+        self.inherit_from(soup.svg.g, soup.svg.g.g, True)
     )
 
   def parse_globals(self, svg):
@@ -67,7 +67,7 @@ class Parser(object):
     for elem in artboard.children: #pylint: disable=R1702
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
-        elem = self.inherit_from_json(elem)
+        elem = self.create_children(elem)
 
         if elem.name == "g":
           elem = self.parse_fake_group(elem)
@@ -87,33 +87,46 @@ class Parser(object):
       # parse elements into their layers
       if elem.name == "rect":
         elem["type"] = "UIView"
-        parsed_elem = Rect(elem, self.json)
+        parsed_elem = Rect(elem)
 
       elif elem.name == "text":
         elem["type"] = "UILabel"
-        parsed_elem = Text(elem, self.json)
+        parsed_elem = Text(elem)
 
       elif elem.name == "image":
         elem["type"] = "UIImageView"
-        parsed_elem = Image(elem, self.json)
+        parsed_elem = Image(elem)
 
       elif elem.name == "g":
-        for child in elem.children:
+        for ind, child in enumerate(elem["children"]):
           if child.name == "g":
-            elem.g.replace_with(self.parse_fake_group(child))
+            elem["children"][ind] = self.parse_fake_group(child)
 
         if "Button" in elem["id"]:
           elem["type"] = "UIButton"
-          parsed_elem = Button(elem, self.json)
+          parsed_elem = Button(elem)
 
         elif "TextField" in elem["id"]:
           elem["type"] = "UITextField"
-          parsed_elem = TextField(elem, self.json)
+          parsed_elem = TextField(elem)
 
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
     return parsed_elements[::-1] # reverse so top-left element is first
+
+  def create_children(self, elem):
+    elem = self.inherit_from_json(elem)
+    num_children = sum(1 for _ in elem.children)
+    if num_children == 0:
+      elem["children"] = []
+      return self.inherit_from(elem.parent, elem)
+    children = []
+    for child in elem.children:
+      if child != "\n" and child.name != None:
+        children.append(self.create_children(child))
+    elem["children"] = children
+    return elem
 
   def calculate_spacing(self, elem, parsed_elements):
     """
@@ -164,25 +177,38 @@ class Parser(object):
     elem["y"] = elem["y"] + elem["height"] / 2
     return elem
 
-  def inherit_from(self, parent, child):
+  def inherit_from(self, parent, child, first=False):
     """
     Returns: child with attributes from parent not defined in child passed down
     """
     for attr in parent.attrs:
-      if attr not in child.attrs:
-        child[attr] = parent[attr]
+      if first:
+        if attr == "fill" and parent["fill"] == "none":
+          pass
+        elif attr == "stroke" and parent["stroke"] == "none":
+          pass
+        elif attr == "stroke-width" and parent["stroke"] == "none":
+          pass
+        elif attr == "fill-rule":
+          pass
+        elif attr != "id" and attr not in child.attrs:
+          child[attr] = parent[attr]
+      else:
+        if attr != "id" and attr not in child.attrs:
+          child[attr] = parent[attr]
     return child
 
   def inherit_from_json(self, child):
     """
     Returns: child with attributes from json not defined in child passed down
     """
-    for layer in self.json["layers"]:
-      if child["id"] == layer["name"]:
-        for key in layer.keys():
-          if key not in child.attrs:
-            child[key] = layer[key]
-        break
+    if "id" in child.attrs:
+      for layer in self.json["layers"]:
+        if child["id"] == layer["name"]:
+          for key in layer.keys():
+            if key not in child.attrs:
+              child[key] = layer[key]
+          break
     return child
 
   def parse_fake_group(self, elem):
@@ -190,10 +216,12 @@ class Parser(object):
     Returns: elem after checking if it is fake or not
     """
     children = []
-    for child in elem.children:
+    for child in elem["children"]:
       if child != "\n" and "id" not in child.attrs:
         children.append(child)
     if len(children) == 2:
-      elem = self.inherit_from(elem, children[0])
+      parent_id = elem["id"]
+      elem = self.inherit_from(children[0], elem)
       elem = self.inherit_from(elem, children[1])
+      elem["id"] = parent_id
     return elem

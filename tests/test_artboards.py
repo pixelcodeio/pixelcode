@@ -4,8 +4,9 @@ class TestStringMethods(unittest.TestCase):
 
   def filename_helper(self, filename):
     f1 = open("./tests/" + filename, "r+")
-    f2 = open("./app/tests/" + filename, "r+")
-    self.assertEqual(f1.read(), f2.read())
+    with open("./app/tests/" + filename, "r+") as f2:
+      for line in f2:
+        self.assertEqual(f1.readline(), line)
 
   def test_images(self):
     self.filename_helper("images.out")
