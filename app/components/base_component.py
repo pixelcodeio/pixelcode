@@ -44,8 +44,14 @@ class BaseComponent(object):
         - text: (str) text that is to be displayed
         - text-color: (tuple) r, g, b values of the text color
         - text-align: (str) alignment center of text
-        - title: (str) title that is to be displayed on the button
-        - title-color: (tuple) r, g, b values of the title color
+        - subtext-color: (dict array) dict array containing colors and indices
+                         of substrings of the text.
+        - subtext-font: (dict array) dict array containing the fonts of
+                        substrings of the text.
+        - title: (str) title that is to be displayed on the button OR the
+                 placeholder to be displayed in an empty text(field/view)
+        - title-color: (tuple) r, g, b values of the title color OR of the
+                       placeholder to be displayed in an empty text(field/view)
         - fill: (tuple) r, g, b values for background color. Has value
                 None if no value is provided
         - font-size: (int) font-size of the text
@@ -86,6 +92,8 @@ class BaseComponent(object):
     horizontalDir = horizontal['direction']
     horizontalDist = horizontal['distance']
     horizontalID = horizontal['id']
+    #subtextColor = info['subtext-color']
+    #subtextFont = info['subtext-font']
     title = info['title']
     titleColor = info['title-color']
     txt = info['text']
@@ -106,6 +114,19 @@ class BaseComponent(object):
       b = fill[2]
       c += utils.set_bg(cid, r, g, b)
     if comp == 'UILabel':
+      # if subtextColor != None and txt != None:
+      #   c += obj.create_attributed_str(cid, txt)
+      #   for sub in subtextColor:
+      #     strID = "{}AttributedStr".format(cid)
+      #     r = sub[0]
+      #     g = sub[1]
+      #     b = sub[2]
+      #     start = sub['start']
+      #     length = sub['length']
+      #     c += obj.set_substring_color(strID, r, g, b, start, length)
+      # if subtextFont != None:
+      #   for font in subtextFont:
+      #
       c += obj.set_text(cid, txt) if txt != None else ""
       c += obj.set_text_color(cid, txtColor) if txtColor != None else ""
       c += obj.set_bg_color(cid)
@@ -123,8 +144,13 @@ class BaseComponent(object):
     elif comp == 'UIImageView':
       c += obj.set_image(cid)
     elif comp == 'UITextField' or comp == 'UITextView':
-      c += obj.set_placeholder(cid, placeholder)
-      c += obj.set_left_inset(cid, leftInset)
+      if title != None and titleColor != None:
+        r = titleColor[0]
+        g = titleColor[1]
+        b = titleColor[2]
+        c += obj.set_placeholder_text_and_color(cid, title, r, g, b)
+      if leftInset != None:
+        c += obj.set_left_inset(cid, leftInset)
     c += utils.set_border_color(cid, borColor) if borColor != None else ""
     c += utils.set_border_width(cid, borWidth) if borWidth != None else ""
     c += utils.set_corner_radius(cid, corRad) if corRad != None else ""

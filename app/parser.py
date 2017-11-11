@@ -107,7 +107,7 @@ class Parser(object):
           parsed_elem = Button(elem)
 
         elif "TextField" in elem["id"]:
-          elem["type"] = "TextField"
+          elem["type"] = "UITextField"
           parsed_elem = TextField(elem)
 
       # finished creating new element
