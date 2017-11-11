@@ -1,0 +1,20 @@
+{
+	"layers": [
+		{
+			"name": "text3",
+			"x": "26",
+			"y": "249",
+			"height": "43",
+			"width": "227",
+			"text_align": "center"
+		},
+		{
+			"name": "text1",
+			"x": "24",
+			"y": "410",
+			"height": "158",
+			"width": "245",
+			"text_align": "center"
+		}
+	]
+}

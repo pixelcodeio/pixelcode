@@ -28,6 +28,7 @@ def update_test_dir(path):
   """
   Generates ".out" files for any files in "./tests"
   """
+  print "Directory: " + path
   files = os.listdir(path)
   svg = []
   for f in files:
@@ -42,3 +43,4 @@ def update_test_dir(path):
 
 if __name__ == "__main__":
   update_test_dir("./exports/")
+  update_test_dir("./tests/")

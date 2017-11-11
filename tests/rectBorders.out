@@ -1,0 +1,51 @@
+import UIKit
+class rectBordersViewController: UIViewController {
+
+override func viewDidLoad() {
+view.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
+
+var borderInside = UIView()
+borderInside.translatesAutoresizingMaskIntoConstraints = false
+borderInside.layer.borderColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0).cgColor
+borderInside.layer.borderWidth = 10
+borderInside.layer.cornerRadius = 4
+view.addSubview(borderInside)
+
+borderInside.widthAnchor.constraint(equalToConstant: view.frame.width*0.632).isActive = true
+borderInside.heightAnchor.constraint(equalToConstant: view.frame.height*0.0989505247376).isActive = true
+borderInside.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.492).isActive = true
+borderInside.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.32083958021).isActive = true
+borderInside.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.176).isActive = true
+borderInside.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.271364317841).isActive = true
+
+var borderOutside = UIView()
+borderOutside.translatesAutoresizingMaskIntoConstraints = false
+borderOutside.layer.borderColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0).cgColor
+borderOutside.layer.borderWidth = 10
+borderOutside.layer.cornerRadius = 4
+view.addSubview(borderOutside)
+
+borderOutside.widthAnchor.constraint(equalToConstant: view.frame.width*0.685333333333).isActive = true
+borderOutside.heightAnchor.constraint(equalToConstant: view.frame.height*0.128935532234).isActive = true
+borderOutside.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.492).isActive = true
+borderOutside.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.55772113943).isActive = true
+borderOutside.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.149333333333).isActive = true
+borderOutside.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.493253373313).isActive = true
+
+var borderCenter = UIView()
+borderCenter.translatesAutoresizingMaskIntoConstraints = false
+borderCenter.layer.borderColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0).cgColor
+borderCenter.layer.borderWidth = 10
+borderCenter.layer.cornerRadius = 4
+view.addSubview(borderCenter)
+
+borderCenter.widthAnchor.constraint(equalToConstant: view.frame.width*0.658666666667).isActive = true
+borderCenter.heightAnchor.constraint(equalToConstant: view.frame.height*0.113943028486).isActive = true
+borderCenter.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.492).isActive = true
+borderCenter.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.772113943028).isActive = true
+borderCenter.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.162666666667).isActive = true
+borderCenter.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.715142428786).isActive = true
+
+
+}
+}

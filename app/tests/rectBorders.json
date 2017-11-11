@@ -1,0 +1,25 @@
+{
+	"layers": [
+		{
+			"name": "borderInside",
+			"x": "61",
+			"y": "176",
+			"height": "76",
+			"width": "247"
+		},
+		{
+			"name": "borderOutside",
+			"x": "61",
+			"y": "334",
+			"height": "76",
+			"width": "247"
+		},
+		{
+			"name": "borderCenter",
+			"x": "61",
+			"y": "477",
+			"height": "76",
+			"width": "247"
+		}
+	]
+}

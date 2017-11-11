@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375px" height="667px" viewBox="0 0 375 667" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background: #D6C5C5;">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>rectBorders</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="rectBorders" stroke="#B31B1B" stroke-width="10">
+            <rect id="borderInside" x="66" y="181" width="237" height="66" rx="4"></rect>
+            <rect id="borderOutside" opacity="0.900000036" x="56" y="329" width="257" height="86" rx="4"></rect>
+            <rect id="borderCenter" x="61" y="477" width="247" height="76" rx="4"></rect>
+        </g>
+    </g>
+</svg>
