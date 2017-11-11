@@ -7,11 +7,17 @@ def translates_false(elem):
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
-def set_bg(elem, r, g, b):
+def set_bg(elem, color):
   """
+  Args:
+    color: (tuple) contains the r, g, b values of the background color
+
   Returns: The line that sets the background color of elem to the
   UIColor with the corresponding r, g, b values.
   """
+  r = color[0]
+  g = color[1]
+  b = color[2]
   return ('{}.backgroundColor = UIColor(red: {}/255.0 , green: '
           '{}/255.0 , blue: {}/255.0 , alpha: 1.0)\n'
          ).format(elem, r, g, b)

@@ -9,12 +9,20 @@ class UIButton(object):
 
   def set_title(self, elem, title):
     """
+    Args:
+      elem: (str) id of element
+      title: (str) title to set the element
+
     Returns: The swift code to set title of a elem using title
     """
     return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
 
   def set_title_color(self, elem, color):
     """
+    Args:
+      elem: (str) id of element
+      color: (tuple) contains r, g, b values of the title color
+
     Returns: The swift code to set title color of elem using the r, g, b values
     """
     r = color[0]
@@ -26,6 +34,10 @@ class UIButton(object):
 
   def set_font_size(self, elem, size):
     """
+    Args:
+      elem: (str) id of element
+      size: (int) size of font
+
     Returns: The swift code to set the font size of elem using size
     """
     font = 'UIFont.systemFont(ofSize: {})'.format(size)

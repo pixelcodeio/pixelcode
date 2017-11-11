@@ -10,14 +10,30 @@ class Interpreter(object):
     self.globals = glob
     self.swift = ""
 
-  def generate_header(self):
+  def generate_global_vars(self, elements):
     """
+    Args:
+      elements: (list) list of elements
+
+    Returns: The swift code of the global variables for the swift class
+    """
+    g = ""
+    for elem in elements:
+      g += "var {}: {}!\n".format(elem['id'], elem['type'])
+    return g
+
+  def generate_header(self, elements):
+    """
+    Args:
+      elements: (list) list of elements
+
     Returns: The swift code of the header
     """
     viewController = '{}ViewController'.format(self.globals['artboard'])
-    return ("import UIKit\nclass {}: UIViewController {{\n"
-            "\noverride func viewDidLoad() {{\n"
-           ).format(viewController)
+    h = "import UIKit\nclass {}: UIViewController {{\n\n".format(viewController)
+    h += self.generate_global_vars(elements)
+    h += "\noverride func viewDidLoad() {\n"
+    return h
 
   def set_view_bg(self):
     """
@@ -38,7 +54,7 @@ class Interpreter(object):
 
     Returns: The swift code for the file to generate all the elements
     """
-    c = self.generate_header()
+    c = self.generate_header(elements)
     c += self.set_view_bg()
     for elem in elements:
       comp = elem["type"]

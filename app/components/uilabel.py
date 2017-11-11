@@ -16,11 +16,15 @@ class UILabel(object):
 
     Returns: The swift code to create an attributed string.
     """
-    return ("{}AttributedStr = NSMutableAttributedString(string: {})\n"
+    return ("var {}AttributedStr = NSMutableAttributedString(string: {})\n"
            ).format(elem, text)
 
   def set_text(self, elem, txt):
     """
+    Args:
+      elem: (str) id of element
+      txt: (str) text to set elem's text property to
+
     Returns: The swift code to set the text of elem to be txt
     """
     return '{}.text = "{}"\n'.format(elem, txt)
@@ -37,6 +41,10 @@ class UILabel(object):
 
   def set_text_color(self, elem, color):
     """
+    Args:
+      elem: (str) id of element
+      color: (tuple) contains r, g, b values representing the text color
+
     Returns: The swift code to set the text color of elem to be color
     """
     r = color[0]
@@ -48,6 +56,9 @@ class UILabel(object):
 
   def set_bg_color(self, elem):
     """
+    Args:
+      elem: (str) id of element
+
     Returns: The swift code to set the background color of elem.
     """
     r = self.bgColor[0]
@@ -59,6 +70,10 @@ class UILabel(object):
 
   def center_and_wrap(self, elem, textAlign):
     """
+    Args:
+      elem: (str) id of element
+      textAlign: (str) alignment of text (either left, center, or right)
+
     Returns: The swift code to center the text and wrap lines
     """
     return ("{}.textAlignment = .{}\n{}.numberOfLines = 0\n"
@@ -67,12 +82,21 @@ class UILabel(object):
 
   def set_font_size(self, elem, size):
     """
+    Args:
+      elem: (str) id of element
+      size: (int) size of the font
+
     Returns: The swift code to set the font size of elem to be size
     """
     return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
   def set_font_size_weight(self, elem, size, weight):
     """
+    Args:
+      elem: (str) id of element
+      size: (int) size of the font
+      weight: (int) weight of the font
+
     Returns: The swift code to set the font size and weight of elem.
     """
     return ("{}.font = UIFont.systemFont(ofSize: {}, weight: "
@@ -81,6 +105,11 @@ class UILabel(object):
 
   def set_font_family(self, elem, font, size):
     """
+    Args:
+      elem: (str) id of element
+      font: (str) font name
+      size: (int) size of the font
+
     Returns: The swift code to set the font family and size of the title in elem
     """
     return ("{}.font = UIFont(name: \"{}\", size: {})\n"
@@ -88,17 +117,18 @@ class UILabel(object):
 
   def set_num_of_lines(self, elem):
     """
+    Args:
+      elem: (str) id of element
+
     Returns: The swift code to set numberOfLines to be 0 for elem.
     """
     return "{}.numberOfLines = 0\n".format(elem)
 
-  def set_substring_color(self, strID, r, g, b, start, length):
+  def set_substring_color(self, strID, color, start, length):
     """
     Args:
       strID: (string) the variable name of string that is to be edited
-      r: (int) red rgb value
-      g: (int) green rgb value
-      b: (int) blue rgb value
+      color: (tuple) contains r, g, b values representing the color of substring
       start: (int) index of first character whose color is being changed
       length: (int) number of characters from start index whose color is being
               changed.
@@ -106,12 +136,15 @@ class UILabel(object):
     Returns: The swift code to set a substring of str to be a color with r,g,b
              values.
     """
-    color = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
-             ": 1.0)"
-            ).format(r, g, b)
+    r = color[0]
+    g = color[1]
+    b = color[2]
+    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
+         ": 1.0)"
+        ).format(r, g, b)
     return ("{}.addAttribute(NSForegroundColorAttributeName, value: {})"
             ", range: NSRange(location: {}, length: {}))\n"
-           ).format(strID, color, start, length)
+           ).format(strID, c, start, length)
 
   def set_substring_font(self, strID, font, size, start, length):
     """
