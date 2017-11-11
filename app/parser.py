@@ -64,10 +64,14 @@ class Parser(object):
     """
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = []
-    for elem in artboard.children:
+    for elem in artboard.children: #pylint: disable=R1702
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
         elem = self.inherit_from_json(elem)
+
+        if elem.name == "g":
+          elem = self.parse_fake_group(elem)
+
         elem["x"] = float(elem["x"])
         elem["y"] = float(elem["y"])
         elem["width"] = float(elem["width"])
@@ -80,6 +84,7 @@ class Parser(object):
       elem = self.calculate_spacing(elem, parsed_elements)
       elem = self.convert_coords(elem)
 
+      # parse elements into their layers
       if elem.name == "rect":
         elem["type"] = "UIView"
         parsed_elem = Rect(elem)
@@ -93,9 +98,14 @@ class Parser(object):
         parsed_elem = Image(elem)
 
       elif elem.name == "g":
+        for child in elem.children:
+          if child.name == "g":
+            elem.g.replace_with(self.parse_fake_group(child))
+
         if "Button" in elem["id"]:
           elem["type"] = "UIButton"
           parsed_elem = Button(elem)
+
         elif "TextField" in elem["id"]:
           elem["type"] = "TextField"
           parsed_elem = TextField(elem)
@@ -174,3 +184,16 @@ class Parser(object):
             child[key] = layer[key]
         break
     return child
+
+  def parse_fake_group(self, elem):
+    """
+    Returns: elem after checking if it is fake or not
+    """
+    children = []
+    for child in elem.children:
+      if child != "\n" and "id" not in child.attrs:
+        children.append(child)
+    if len(children) == 2:
+      elem = self.inherit_from(elem, children[0])
+      elem = self.inherit_from(elem, children[1])
+    return elem
