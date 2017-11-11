@@ -114,10 +114,11 @@ class Parser(object):
 
   def create_children(self, elem):
     elem = self.inherit_from_json(elem)
+    elem = self.inherit_from(elem.parent, elem)
     num_children = sum(1 for _ in elem.children)
     if num_children == 0:
       elem["children"] = []
-      return self.inherit_from(elem.parent, elem)
+      return elem
 
     children = []
     for child in elem.children:

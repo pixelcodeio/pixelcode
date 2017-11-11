@@ -38,8 +38,6 @@ class TextField(BaseLayer):
             elem[key] = text[key]
         if "fill" in text.attrs:
           elem["title-color"] = utils.convert_hex_to_rgb(text["fill"])
-        else:
-          elem["title-color"] = utils.convert_hex_to_rgb(elem["fill"])
 
     if text is not None and rect is not None:
       elem["left-inset"] = float(text["x"]) - float(rect["x"])
