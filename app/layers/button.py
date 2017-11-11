@@ -47,6 +47,4 @@ class Button(BaseLayer):
     if rect is None:
       elem["fill"] = "none"
 
-    if elem["id"] == "testButton":
-      print elem["fill"]
     return super(Button, self).parse_elem(elem)

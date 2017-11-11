@@ -98,9 +98,6 @@ class Parser(object):
         parsed_elem = Image(elem)
 
       elif elem.name == "g":
-        for ind, child in enumerate(elem["children"]):
-          if child.name == "g":
-            elem["children"][ind] = self.parse_fake_group(child)
 
         if "Button" in elem["id"]:
           elem["type"] = "UIButton"
@@ -121,10 +118,11 @@ class Parser(object):
     if num_children == 0:
       elem["children"] = []
       return self.inherit_from(elem.parent, elem)
+
     children = []
     for child in elem.children:
       if child != "\n" and child.name != None:
-        children.append(self.create_children(child))
+        children.append(self.parse_fake_group(self.create_children(child)))
     elem["children"] = children
     return elem
 
@@ -215,13 +213,14 @@ class Parser(object):
     """
     Returns: elem after checking if it is fake or not
     """
-    children = []
-    for child in elem["children"]:
-      if child != "\n" and "id" not in child.attrs:
-        children.append(child)
-    if len(children) == 2:
-      parent_id = elem["id"]
-      elem = self.inherit_from(children[0], elem)
-      elem = self.inherit_from(elem, children[1])
-      elem["id"] = parent_id
+    if elem.name == "g":
+      children = []
+      for child in elem["children"]:
+        if child != "\n" and "id" not in child.attrs:
+          children.append(child)
+      if len(children) == 2:
+        parent_id = elem["id"]
+        elem = self.inherit_from(children[0], elem)
+        elem = self.inherit_from(elem, children[1])
+        elem["id"] = parent_id
     return elem
