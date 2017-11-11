@@ -21,21 +21,22 @@ class BaseLayer(object):
       if param == "fill":
         if "fill" in elem.attrs and elem["fill"] != "none":
           elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
-        else:
-          elem["fill"] = None
       elif param == "font-family":
         if "font-family" in elem.attrs:
           elem["font-family"] = elem["font-family"].split(",")[0]
-        else:
-          elem["font-family"] = None
+      elif param == "opacity":
+        if "fill-opacity" in elem.attrs and "opacity" in elem.attrs:
+          elem["opacity"] = float(elem["opacity"]) * float(elem["fill-opacity"])
+        elif "fill-opacity" in elem.attrs:
+          elem["opacity"] = elem["fill-opacity"]
+        elif "opacity" in elem.attrs:
+          elem["opacity"] = elem["opacity"]
       elif param == "text-align":
         if "text_align" in elem.attrs:
           elem["text-align"] = elem["text_align"]
-        else:
-          elem["text-align"] = None
-      else:
-        if param not in elem.attrs:
-          elem[param] = None
+
+      if param not in elem.attrs:
+        elem[param] = None
     return elem
 
   def generate_object(self, elem):
@@ -54,6 +55,7 @@ class BaseLayer(object):
         "horizontal",
         "id",
         "left-inset",
+        "opacity",
         "placeholder",
         "stroke-color",
         "stroke-width",
