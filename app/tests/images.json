@@ -46,6 +46,20 @@
 			"width": "247"
 		},
 		{
+			"name": "button_text",
+			"x": "91",
+			"y": "21",
+			"height": "34",
+			"width": "65"
+		},
+		{
+			"name": "button_border",
+			"x": "0",
+			"y": "0",
+			"height": "76",
+			"width": "247"
+		},
+		{
 			"name": "textButton",
 			"x": "237",
 			"y": "203",
@@ -53,11 +67,18 @@
 			"width": "110"
 		},
 		{
+			"name": "button_text1",
+			"x": "0",
+			"y": "0",
+			"height": "34",
+			"width": "110"
+		},
+		{
 			"name": "buttonTitle",
-			"x": "18",
+			"x": "8",
 			"y": "203",
-			"height": "24",
-			"width": "189",
+			"height": "48",
+			"width": "199",
 			"text_align": "right"
 		}
 	]
