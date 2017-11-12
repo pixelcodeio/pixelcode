@@ -44,6 +44,7 @@ class BaseComponent(object):
         - text: (str) text that is to be displayed
         - text-color: (tuple) r, g, b values of the text color
         - text-align: (str) alignment center of text
+        - opacity: (float) between 0 and 1. global, fill, stroke.
         - subtext-colors: (dict array) dict array containing colors and indices
                          of substrings of the text.
         - subtext-fonts: (dict array) dict array containing the fonts of
@@ -129,6 +130,7 @@ class BaseComponent(object):
       #       start = sub['start']
       #       length = sub['length']
       #       c += obj.set_substring_font(strID, font, size, start, length)
+      c += obj.set_text(cid, txt) if txt != None else ""
       c += obj.set_text_color(cid, txtColor) if txtColor != None else ""
       c += obj.set_bg_color(cid)
       c += obj.set_font_size(cid, fontSize)

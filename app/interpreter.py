@@ -29,7 +29,8 @@ class Interpreter(object):
 
     Returns: The swift code of the header
     """
-    viewController = '{}ViewController'.format(self.globals['artboard'])
+    artboard = self.globals['artboard'].capitalize()
+    viewController = '{}ViewController'.format(artboard)
     h = "import UIKit\nclass {}: UIViewController {{\n\n".format(viewController)
     h += self.generate_global_vars(elements)
     h += "\noverride func viewDidLoad() {\n"
