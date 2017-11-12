@@ -1,5 +1,5 @@
 import UIKit
-class rectBordersViewController: UIViewController {
+class RectbordersViewController: UIViewController {
 
 var borderInside: UIView!
 var borderOutside: UIView!

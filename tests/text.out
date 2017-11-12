@@ -1,5 +1,5 @@
 import UIKit
-class textViewController: UIViewController {
+class TextViewController: UIViewController {
 
 var text3: UILabel!
 var text1: UILabel!
@@ -10,6 +10,7 @@ view.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, 
 text3 = UILabel()
 text3.translatesAutoresizingMaskIntoConstraints = false
 text3.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
+text3.text = "differenttext"
 text3.textColor = UIColor(red: 255/255.0, green: 255/255.0, blue: 255/255.0, alpha: 1.0)
 text3.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
 text3.font = UIFont.systemFont(ofSize: 36)
@@ -29,6 +30,7 @@ text3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*
 text1 = UILabel()
 text1.translatesAutoresizingMaskIntoConstraints = false
 text1.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
+text1.text = "testing here"
 text1.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
 text1.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
 text1.font = UIFont.systemFont(ofSize: 64)

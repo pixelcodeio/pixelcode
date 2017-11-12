@@ -1,5 +1,5 @@
 import UIKit
-class imagesViewController: UIViewController {
+class ImagesViewController: UIViewController {
 
 var bitmap2: UIImageView!
 var buttonTitle: UILabel!
@@ -28,20 +28,21 @@ bitmap2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.heigh
 buttonTitle = UILabel()
 buttonTitle.translatesAutoresizingMaskIntoConstraints = false
 buttonTitle.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
+buttonTitle.text = "Buttons (Text & Rect) asd "
 buttonTitle.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
 buttonTitle.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
 buttonTitle.font = UIFont.systemFont(ofSize: 20)
 buttonTitle.textAlignment = .right
 buttonTitle.numberOfLines = 0
 buttonTitle.lineBreakMode = .byWordWrapping
-buttonTitle.font = UIFont(name: ".SFNSDisplay", size: 20)
+buttonTitle.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
 view.addSubview(buttonTitle)
 
-buttonTitle.widthAnchor.constraint(equalToConstant: view.frame.width*0.504).isActive = true
-buttonTitle.heightAnchor.constraint(equalToConstant: view.frame.height*0.0359820089955).isActive = true
-buttonTitle.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.3).isActive = true
-buttonTitle.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.322338830585).isActive = true
-buttonTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
+buttonTitle.widthAnchor.constraint(equalToConstant: view.frame.width*0.530666666667).isActive = true
+buttonTitle.heightAnchor.constraint(equalToConstant: view.frame.height*0.071964017991).isActive = true
+buttonTitle.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.286666666667).isActive = true
+buttonTitle.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.340329835082).isActive = true
+buttonTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0213333333333).isActive = true
 buttonTitle.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
 
 bitmap = UIImageView()
@@ -92,13 +93,14 @@ testButton.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.he
 textLeft = UILabel()
 textLeft.translatesAutoresizingMaskIntoConstraints = false
 textLeft.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
+textLeft.text = "testing left-aligned text overflow."
 textLeft.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
 textLeft.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
 textLeft.font = UIFont.systemFont(ofSize: 20)
 textLeft.textAlignment = .left
 textLeft.numberOfLines = 0
 textLeft.lineBreakMode = .byWordWrapping
-textLeft.font = UIFont(name: ".SFNSDisplay", size: 20)
+textLeft.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
 view.addSubview(textLeft)
 
 textLeft.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
@@ -111,13 +113,14 @@ textLeft.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.heig
 textCenter = UILabel()
 textCenter.translatesAutoresizingMaskIntoConstraints = false
 textCenter.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
+textCenter.text = "testing center-aligned text."
 textCenter.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
 textCenter.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
 textCenter.font = UIFont.systemFont(ofSize: 20)
 textCenter.textAlignment = .center
 textCenter.numberOfLines = 0
 textCenter.lineBreakMode = .byWordWrapping
-textCenter.font = UIFont(name: ".SFNSDisplay", size: 20)
+textCenter.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
 view.addSubview(textCenter)
 
 textCenter.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
@@ -130,13 +133,14 @@ textCenter.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.he
 textRight = UILabel()
 textRight.translatesAutoresizingMaskIntoConstraints = false
 textRight.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
+textRight.text = "testing right-aligned text overflow."
 textRight.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
 textRight.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
 textRight.font = UIFont.systemFont(ofSize: 20)
 textRight.textAlignment = .right
 textRight.numberOfLines = 0
 textRight.lineBreakMode = .byWordWrapping
-textRight.font = UIFont(name: ".SFNSDisplay", size: 20)
+textRight.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
 view.addSubview(textRight)
 
 textRight.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
