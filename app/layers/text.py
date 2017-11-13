@@ -12,7 +12,7 @@ class Text(BaseLayer):
     elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
     elem["stroke-width"] = None
     elem["stroke-color"] = None
-    elem["text"] = ""
+    elem["contents"] = ""
     for child in elem["children"]:
-      elem["text"] += child.contents[0]
+      elem["contents"] += child.contents[0]
     return super(Text, self).parse_elem(elem)

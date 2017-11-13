@@ -1,3 +1,5 @@
+from layers.rect import Rect
+from layers.text import Text
 from . import *
 
 class TextField(BaseLayer):
@@ -10,37 +12,18 @@ class TextField(BaseLayer):
     for child in elem["children"]:
       if child.name == "rect":
         rect = child
-        if "rx" in rect.attrs:
-          elem["border-radius"] = rect["rx"]
-        if "fill" in rect.attrs:
-          elem["fill"] = rect["fill"]
-        if "stroke" in rect.attrs:
-          elem["stroke-color"] = utils.convert_hex_to_rgb(rect["stroke"])
-
-          if "stroke-width" in rect:
-            elem["stroke-width"] = rect["stroke-width"]
-          else:
-            elem["stroke-width"] = 1
-        else:
-          elem["stroke-color"] = None
-          elem["stroke-width"] = None
-
-    if "fill" not in elem.attrs:
-      elem["fill"] = "none"
-
-    for child in elem["children"]:
-      if child.name == "text":
+      elif child.name == "text":
         text = child
-        elem["title"] = ""
-        for tspan in text.children:
-          if tspan != "\n":
-            elem["title"] += tspan.contents[0]
-        for key in text.attrs:
-          if key not in elem.attrs:
-            elem[key] = text[key]
-        if "fill" in text.attrs:
-          elem["title-color"] = utils.convert_hex_to_rgb(text["fill"])
+
+    if text is None:
+      raise Exception("Text cannot be empty in a button.")
+
+    elem["rect"] = Rect(rect)
+    elem["text"] = Text(text)
 
     if text is not None and rect is not None:
       elem["left-inset"] = float(text["x"]) - float(rect["x"])
+    else:
+      raise Exception("Text and Rect must be defined for a TextField")
+
     return super(TextField, self).parse_elem(elem)
