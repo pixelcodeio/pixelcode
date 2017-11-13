@@ -17,19 +17,21 @@ class UIButton(object):
     """
     return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
 
-  def set_title_color(self, elem, color):
+  def set_title_color(self, elem, color, opacity):
     """
     Args:
       elem: (str) id of element
       color: (tuple) contains r, g, b values of the title color
+      opacity: (float) between 0 and 1
 
     Returns: The swift code to set title color of elem using the r, g, b values
     """
+    o = "1.0" if opacity is None else opacity
     r = color[0]
     g = color[1]
     b = color[2]
-    c = ('UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha: 1.0)'
-        ).format(r, g, b)
+    c = ('UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha: {})'
+        ).format(r, g, b, o)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
 
   def set_font_size(self, elem, size):
@@ -51,9 +53,31 @@ class UIButton(object):
             "UIFont.Weight.init(rawValue: {}))\n"
            ).format(elem, size, weight)
 
-  def set_font_family(self, elem, font, size):
+  def set_font_family_size(self, elem, font, size):
     """
     Returns: The swift code to set the font family and size of the title in elem
     """
     return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
+
+  def setup_uibutton(self, elem, text):
+    """
+    Args:
+      elem: (str) id of the component
+      text: (dict array) see generate_component docstring for more information.
+
+    Returns: The swift code to apply all the properties from text to elem.
+    """
+    if len(text) == 1:
+      # the contents of the text don't vary
+      txt = text[0]
+      contents = txt['contents']
+      fill = txt['fill']
+      font = txt['font-family']
+      size = txt['font-size']
+      opacity = txt['opacity']
+      c = self.set_title(elem, contents) if contents != None else ""
+      c += self.set_title_color(elem, fill, opacity) if fill != None else ""
+      c += self.set_font_family_size(elem, font, size)
+      return c
+    #TODO: Case for varying text.
