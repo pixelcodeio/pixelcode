@@ -18,6 +18,6 @@ class Button(BaseLayer):
     if text is None:
       raise Exception("Text cannot be empty in a button.")
 
-    elem["rect"] = Rect(rect)
-    elem["text"] = Text(text)
+    elem["rect"] = Rect(rect).elem
+    elem["text"] = Text(text).elem
     return super(Button, self).parse_elem(elem)

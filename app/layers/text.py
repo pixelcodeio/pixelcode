@@ -1,3 +1,4 @@
+from layers.text_span import TextSpan, params_equal
 from . import *
 
 class Text(BaseLayer):
@@ -9,10 +10,20 @@ class Text(BaseLayer):
     Args:
       Refer to args in __init__
     """
-    elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
-    elem["stroke-width"] = None
-    elem["stroke-color"] = None
-    elem["contents"] = ""
+    t = []
+
     for child in elem["children"]:
-      elem["contents"] += child.contents[0]
+      t.append(TextSpan(child).elem)
+
+    textspan = []
+    i = 0
+    while i < len(t):
+      tspan = t[i]
+      if i < len(t) - 1 and params_equal(tspan, t[i + 1]):
+        tspan["contents"] += t[i + 1]["contents"]
+        i += 1
+      textspan.append(elem)
+      i += 1
+
+    elem["textspan"] = textspan
     return super(Text, self).parse_elem(elem)

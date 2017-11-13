@@ -51,6 +51,7 @@ class BaseLayer(object):
     """
     params = [
         "border-radius",
+        "contents",
         "fill",
         "font-family",
         "font-size",
