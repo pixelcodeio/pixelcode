@@ -37,9 +37,6 @@ class BaseLayer(object):
           elem["text-align"] = elem["text_align"]
       elif param == "contents" and "contents" in elem.attrs:
         elem["contents"] = elem["contents"].encode('utf-8')
-      elif param == "text" and "text" in elem.attrs: # TODO: remove this later
-        if not isinstance(elem["text"], dict):
-          elem["text"] = None
       elif param == "id" and "param" in elem.attrs:
         elem["id"] = elem["id"].replace("-", "")
 
@@ -69,6 +66,7 @@ class BaseLayer(object):
         "rect",
         "stroke-color",
         "stroke-width",
+        "text",
         "textspan",
         "text-align",
         "type",
