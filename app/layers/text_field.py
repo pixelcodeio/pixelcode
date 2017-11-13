@@ -18,8 +18,8 @@ class TextField(BaseLayer):
     if text is None:
       raise Exception("Text cannot be empty in a button.")
 
-    elem["rect"] = Rect(rect)
-    elem["text"] = Text(text)
+    elem["rect"] = Rect(rect).elem if rect is not None else None
+    elem["text"] = Text(text).elem if text is not None else None
 
     if text is not None and rect is not None:
       elem["left-inset"] = float(text["x"]) - float(rect["x"])

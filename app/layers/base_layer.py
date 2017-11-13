@@ -60,6 +60,7 @@ class BaseLayer(object):
         "id",
         "left-inset",
         "opacity",
+        "path",
         "stroke-color",
         "stroke-width",
         "text",
