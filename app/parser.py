@@ -1,6 +1,6 @@
 import json
 from bs4 import BeautifulSoup
-from layers import *
+from layers._all import *
 import utils
 
 class Parser(object):
