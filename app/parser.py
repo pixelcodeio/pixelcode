@@ -64,11 +64,7 @@ class Parser(object):
     """
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = []
-    stack = []
     for elem in artboard.children:
-      stack.append(elem)
-    while stack != []:
-      elem = stack.pop()
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
         elem = self.create_children(elem)
@@ -84,7 +80,8 @@ class Parser(object):
     elements.sort(key=lambda e: (e["x"] + e["y"] + e["width"] + e["height"]))
 
     parsed_elements = []
-    for elem in elements:
+    while elements != []:
+      elem = elements.pop()
       elem = self.calculate_spacing(elem, parsed_elements)
       elem = self.convert_coords(elem)
 
@@ -102,7 +99,6 @@ class Parser(object):
         parsed_elem = Image(elem)
 
       elif elem.name == "g":
-
         if "Button" in elem["id"]:
           elem["type"] = "UIButton"
           parsed_elem = Button(elem)
@@ -110,6 +106,11 @@ class Parser(object):
         elif "TextField" in elem["id"]:
           elem["type"] = "UITextField"
           parsed_elem = TextField(elem)
+
+        else:
+          for child in elem["children"]:
+            elements.insert(0, child)
+            continue
 
       # finished creating new element
       new_elem = parsed_elem.elem
