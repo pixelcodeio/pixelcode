@@ -35,6 +35,8 @@ class BaseLayer(object):
       elif param == "text-align":
         if "text_align" in elem.attrs:
           elem["text-align"] = elem["text_align"]
+      elif param == "text" and "text" in elem.attrs:
+        elem["text"] = elem["text"].encode('utf-8').strip()
 
       if param not in elem.attrs:
         elem[param] = None

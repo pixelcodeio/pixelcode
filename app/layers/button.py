@@ -41,8 +41,6 @@ class Button(BaseLayer):
             elem[key] = text[key]
         if "fill" in text.attrs:
           elem["title-color"] = utils.convert_hex_to_rgb(text["fill"])
-        else:
-          print text.attrs
 
     if rect is None:
       elem["fill"] = "none"

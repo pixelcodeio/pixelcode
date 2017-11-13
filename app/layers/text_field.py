@@ -26,6 +26,9 @@ class TextField(BaseLayer):
           elem["stroke-color"] = None
           elem["stroke-width"] = None
 
+    if "fill" not in elem.attrs:
+      elem["fill"] = "none"
+
     for child in elem["children"]:
       if child.name == "text":
         text = child
