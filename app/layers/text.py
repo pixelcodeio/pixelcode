@@ -13,7 +13,8 @@ class Text(BaseLayer):
     t = []
 
     for child in elem["children"]:
-      t.append(TextSpan(child).elem)
+      new_tspan = TextSpan(child)
+      t.append(new_tspan.elem)
 
     textspan = []
     i = 0
@@ -22,7 +23,7 @@ class Text(BaseLayer):
       if i < len(t) - 1 and params_equal(tspan, t[i + 1]):
         tspan["contents"] += t[i + 1]["contents"]
         i += 1
-      textspan.append(elem)
+      textspan.append(tspan)
       i += 1
 
     elem["textspan"] = textspan

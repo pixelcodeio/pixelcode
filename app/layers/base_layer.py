@@ -37,6 +37,9 @@ class BaseLayer(object):
           elem["text-align"] = elem["text_align"]
       elif param == "contents" and "contents" in elem.attrs:
         elem["contents"] = elem["contents"].encode('utf-8')
+      elif param == "text" and "text" in elem.attrs:
+        if not isinstance(elem["text"], dict):
+          elem["text"] = None
 
       if param not in elem.attrs:
         elem[param] = None
