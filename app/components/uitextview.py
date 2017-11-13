@@ -45,17 +45,17 @@ class UITextView(object):
     return ("{}.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
 
-  def setup_uitextview(self, elem, text, left_inset):
+  def setup_uitextview(self, elem, textspan, left_inset):
     """
     Args:
       elem: (str) id of the component
-      text: (dict array) see generate_component docstring for more information.
+      textspan: (dict array) see generate_component docstring for more information.
       left_inset: (int) pixels representing the number of left-inset
 
-    Returns: The swift code to apply all the properties from text and
+    Returns: The swift code to apply all the properties from textspan and
     left_inset to elem.
     """
-    txt = text[0]
+    txt = textspan[0]
     placeholder = txt['contents']
     placeholder_c = txt['fill']
     font = txt['font-family']

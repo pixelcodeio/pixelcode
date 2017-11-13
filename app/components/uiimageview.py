@@ -27,22 +27,22 @@ class UIImageView(object):
 
     Returns: The swift code to set the opacity of elem.
     """
-    if opacity != None:
-      return "{}.alpha = {}".format(elem, opacity)
+    return "{}.alpha = {}".format(elem, opacity)
 
-  def setup_uiimageview(self, elem, image):
+  def setup_uiimageview(self, elem, info):
     """
     Args:
       elem: (str) id of the component
-      image: (dict) see generate_component docstring for more information.
+      info: (dict) see generate_component docstring for more information.
 
     Returns: The swift code to apply all the properties from text to elem.
     """
-    path = image['path']
-    opacity = image['opacity']
-    stroke_c = image['stroke-color']
-    stroke_w = image['stroke-width']
+    path = info['path']
+    opacity = info['opacity']
+    stroke_c = info['stroke-color']
+    stroke_w = info['stroke-width']
     c = self.set_image(elem, path)
-    c += self.set_opacity(elem, opacity)
+    c += self.set_opacity(elem, opacity) if opacity != None else ""
     c += utils.set_border_color(elem, stroke_c) if stroke_c != None else ""
     c += utils.set_border_width(elem, stroke_w) if stroke_w != None else ""
+    return c

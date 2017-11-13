@@ -60,17 +60,18 @@ class UIButton(object):
     return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
 
-  def setup_uibutton(self, elem, text):
+  def setup_uibutton(self, elem, textspan):
     """
     Args:
       elem: (str) id of the component
-      text: (dict array) see generate_component docstring for more information.
+      textspan: (dict array) see generate_component docstring for more
+                information.
 
-    Returns: The swift code to apply all the properties from text to elem.
+    Returns: The swift code to apply all the properties from textspan to elem.
     """
-    if len(text) == 1:
-      # the contents of the text don't vary
-      txt = text[0]
+    if len(textspan) == 1:
+      # the contents of the textspan don't vary
+      txt = textspan[0]
       contents = txt['contents']
       fill = txt['fill']
       font = txt['font-family']
