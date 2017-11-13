@@ -65,6 +65,7 @@ class BaseLayer(object):
         "path",
         "rect",
         "stroke-color",
+        "stroke-opacity",
         "stroke-width",
         "text",
         "textspan",
