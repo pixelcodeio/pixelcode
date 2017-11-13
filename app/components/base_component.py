@@ -84,8 +84,8 @@ class BaseComponent(object):
           - border-radius: (int) the number of pixels representing the
                            corner radius. Has value None if no value is provided
           - opacity: (float) between 0 and 1.
-        - textspan: (dict array) each element in the array is a dictionary with
-                the following keys:
+        - text: (dict) contains a key for textspan. textspan is a dict array
+          with the following keys:
           - contents: (str) the string to be displayed in the view
           - fill: (tuple) r, g, b values for string color. Has value
                   None if no value is provided
@@ -93,6 +93,7 @@ class BaseComponent(object):
           - font-size: (int) font-size of the text
           - font-family: (str) name of the font of title
           - opacity: (float) between 0 and 1.
+        - textspan: (dict array) dictionary with the keys described above
 
         # - subtext-colors: (dict array) dict array containing colors and
         #                  indices of substrings of the text.
@@ -101,8 +102,6 @@ class BaseComponent(object):
 
     Returns: The swift code to generate the component
     """
-    print(info.keys())
-    print(info['vertical'])
     obj = self.create_object(comp, info, bgColor)
     centerX = info['x']
     centerY = info['y']
@@ -115,7 +114,7 @@ class BaseComponent(object):
     rect = info['rect']
     # subtextColors = info['subtext-colors']
     # subtextFonts = info['subtext-fonts']
-    textspan = info['textspan']
+    text = info['text']
     vertical = info['vertical']
     verticalDir = vertical['direction']
     verticalDist = vertical['distance']
@@ -124,11 +123,16 @@ class BaseComponent(object):
     left_inset = info['left-inset']
     c = "{} = {}()\n".format(cid, comp)
     c += utils.translates_false(cid)
+    # if comp == 'UIView':
+    #   print('rect is:')
+    #   print(rect)
     if rect != None:
       c += self.setup_rect(cid, rect)
-    if textspan != None and comp == 'UIButton':
+    if text != None and comp == 'UIButton':
+      textspan = text['textspan']
       c += obj.setup_uibutton(cid, textspan)
-    elif textspan != None and comp == 'UILabel':
+    elif comp == 'UILabel':
+      textspan = info['textspan']
       c += obj.setup_uilabel(cid, textspan)
       # if subtextColors is None and subtextFonts is None:
       #   c += obj.set_text(cid, txt) if txt != None else ""
@@ -148,12 +152,11 @@ class BaseComponent(object):
       #       start = sub['start']
       #       length = sub['length']
       #       c += obj.set_substring_font(strID, font, size, start, length)
-    elif comp == 'UITextField':
-      print(comp)
-      print(textspan)
+    elif text != None and comp == 'UITextField':
+      textspan = text['textspan']
       c += obj.setup_uitextfield(cid, textspan, left_inset)
-    elif textspan != None and comp == 'UITextView':
-      print(comp)
+    elif text != None and comp == 'UITextView':
+      textspan = text['textspan']
       c += obj.setup_uitextview(cid, textspan, left_inset)
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info)
