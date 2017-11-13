@@ -1,39 +1,16 @@
 import UIKit
 class TextViewController: UIViewController {
 
-var text3: UILabel!
 var text1: UILabel!
+var text3: UILabel!
 
 override func viewDidLoad() {
 view.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
 
-text3 = UILabel()
-text3.translatesAutoresizingMaskIntoConstraints = false
-text3.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
-text3.text = "differenttext"
-text3.textColor = UIColor(red: 255/255.0, green: 255/255.0, blue: 255/255.0, alpha: 1.0)
-text3.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
-text3.font = UIFont.systemFont(ofSize: 36)
-text3.textAlignment = .center
-text3.numberOfLines = 0
-text3.lineBreakMode = .byWordWrapping
-text3.font = UIFont(name: "SanFranciscoText-HeavyItalic", size: 36)
-view.addSubview(text3)
-
-text3.widthAnchor.constraint(equalToConstant: view.frame.width*0.605333333333).isActive = true
-text3.heightAnchor.constraint(equalToConstant: view.frame.height*0.0644677661169).isActive = true
-text3.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.372).isActive = true
-text3.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.405547226387).isActive = true
-text3.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0693333333333).isActive = true
-text3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.373313343328).isActive = true
-
 text1 = UILabel()
 text1.translatesAutoresizingMaskIntoConstraints = false
-text1.backgroundColor = UIColor(red: 0/255.0 , green: 0/255.0 , blue: 0/255.0 , alpha: 1.0)
 text1.text = "testing here"
 text1.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-text1.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
-text1.font = UIFont.systemFont(ofSize: 64)
 text1.textAlignment = .center
 text1.numberOfLines = 0
 text1.lineBreakMode = .byWordWrapping
@@ -46,6 +23,23 @@ text1.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.wi
 text1.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.733133433283).isActive = true
 text1.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.064).isActive = true
 text1.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.614692653673).isActive = true
+
+text3 = UILabel()
+text3.translatesAutoresizingMaskIntoConstraints = false
+text3.text = "differenttext"
+text3.textColor = UIColor(red: 255/255.0, green: 255/255.0, blue: 255/255.0, alpha: 1.0)
+text3.textAlignment = .center
+text3.numberOfLines = 0
+text3.lineBreakMode = .byWordWrapping
+text3.font = UIFont(name: "SanFranciscoText-HeavyItalic", size: 36)
+view.addSubview(text3)
+
+text3.widthAnchor.constraint(equalToConstant: view.frame.width*0.605333333333).isActive = true
+text3.heightAnchor.constraint(equalToConstant: view.frame.height*0.0644677661169).isActive = true
+text3.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.372).isActive = true
+text3.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.405547226387).isActive = true
+text3.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0693333333333).isActive = true
+text3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.373313343328).isActive = true
 
 
 }
