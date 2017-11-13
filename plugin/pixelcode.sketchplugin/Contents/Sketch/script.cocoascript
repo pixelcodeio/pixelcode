@@ -75,10 +75,10 @@ function checkFormatting(layer, layerNames) {
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
-        layerName = String(currentLayer.name);
+        layerName = String(currentLayer.name.replace(/\s+/, "-"));
 
         var currentDict = {};
-        currentDict["name"] = String(currentLayer.name);
+        currentDict["name"] = layerName;
         currentDict["x"] = String(currentLayer.frame.x);
         currentDict["y"] = String(currentLayer.frame.y);
         currentDict["height"] = String(currentLayer.frame.height);
@@ -86,8 +86,7 @@ function checkFormatting(layer, layerNames) {
         if (layer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
         var f = layerName.charAt(0);
-        if (hasWhiteSpace(layerName) ||
-            arrayContains(layerName, ret["layerNames"]) ||
+        if (arrayContains(layerName, ret["layerNames"]) ||
             f !== f.toLowerCase()) {
             ret["isCorrect"] = false;
             ret["incorrectLayer"] = layerName;
