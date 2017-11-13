@@ -39,20 +39,22 @@ class UILabel(object):
     """
     return ("{}.attributedText = {}\n").format(elem, strID)
 
-  def set_text_color(self, elem, color):
+  def set_text_color(self, elem, color, opacity):
     """
     Args:
       elem: (str) id of element
       color: (tuple) contains r, g, b values representing the text color
+      opacity: (float) between 0 and 1
 
     Returns: The swift code to set the text color of elem to be color
     """
+    o = "1.0" if opacity is None else opacity
     r = color[0]
     g = color[1]
     b = color[2]
     return ("{}.textColor = UIColor(red: {}/255.0, green: {}/255.0, "
-            "blue: {}/255.0, alpha: 1.0)\n"
-           ).format(elem, r, g, b)
+            "blue: {}/255.0, alpha: {})\n"
+           ).format(elem, r, g, b, o)
 
   def set_bg_color(self, elem):
     """
@@ -103,7 +105,7 @@ class UILabel(object):
             "UIFont.Weight.init(rawValue: {}))\n"
            ).format(elem, size, weight)
 
-  def set_font_family(self, elem, font, size):
+  def set_font_family_size(self, elem, font, size):
     """
     Args:
       elem: (str) id of element
@@ -161,3 +163,30 @@ class UILabel(object):
     return ("{}.addAttribute(NSFontAttributeName, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
            ).format(strID, color, start, length)
+
+  def setup_uilabel(self, elem, text):
+    """
+    Args:
+      elem: (str) id of the component
+      text: (dict array) see generate_component docstring for more information.
+
+    Returns: The swift code to apply all the properties from text to elem.
+    """
+    if len(text) == 1:
+      # the contents of the text don't vary
+      txt = text[0]
+      contents = txt['contents']
+      fill = txt['fill']
+      txt_align = text['text-align']
+      font = txt['font-family']
+      size = txt['font-size']
+      opacity = txt['opacity']
+      c = self.set_text(elem, contents) if contents != None else ""
+      c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+      if txt_align != None:
+        c += self.center_and_wrap(elem, txt_align)
+      else:
+        c += self.center_and_wrap(elem, "center")
+      c += self.set_font_family_size(elem, font, size)
+      return c
+    #TODO: Case for varying text.

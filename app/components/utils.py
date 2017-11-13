@@ -7,20 +7,22 @@ def translates_false(elem):
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
-def set_bg(elem, color):
+def set_bg(elem, color, opacity):
   """
   Args:
     color: (tuple) contains the r, g, b values of the background color
+    opacity: (float) between 0 and 1 representing the opacity
 
   Returns: The line that sets the background color of elem to the
   UIColor with the corresponding r, g, b values.
   """
+  o = "1.0" if opacity is None else opacity
   r = color[0]
   g = color[1]
   b = color[2]
   return ('{}.backgroundColor = UIColor(red: {}/255.0 , green: '
-          '{}/255.0 , blue: {}/255.0 , alpha: 1.0)\n'
-         ).format(elem, r, g, b)
+          '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
+         ).format(elem, r, g, b, o)
 
 def add_subview(view, elem):
   return '{}.addSubview({})\n\n'.format(view, elem)
