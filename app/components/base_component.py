@@ -48,8 +48,9 @@ class BaseComponent(object):
     stroke_c = rect['stroke-color']
     stroke_w = rect['stroke-width']
     opacity = rect['opacity']
+    stroke_o = rect['stroke-opacity']
     c = utils.set_bg(cid, fill, opacity) if fill != None else ""
-    c += utils.set_border_color(cid, stroke_c) if stroke_c != None else ""
+    c += utils.set_border_color(cid, stroke_c, stroke_o) if stroke_c != None else ""
     c += utils.set_border_width(cid, stroke_w) if stroke_w != None else ""
     c += utils.set_corner_radius(cid, border_r) if border_r != None else ""
     return c
@@ -81,6 +82,7 @@ class BaseComponent(object):
                           color. Has value None if no value is provided
           - stroke-width: (int) the number of pixels representing the
                           border width. Has value None if no value is provided
+          - stroke-opacity: (float) between 0 and 1 of the border opacity
           - border-radius: (int) the number of pixels representing the
                            corner radius. Has value None if no value is provided
           - opacity: (float) between 0 and 1.

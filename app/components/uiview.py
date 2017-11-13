@@ -19,9 +19,10 @@ class UIView(object):
     border_r = info['border-radius']
     stroke_c = info['stroke-color']
     stroke_w = info['stroke-width']
+    stroke_o = info['stroke-opacity']
     opacity = info['opacity']
     c = utils.set_bg(elem, fill, opacity) if fill != None else ""
     c += utils.set_corner_radius(elem, border_r) if border_r != None else ""
-    c += utils.set_border_color(elem, stroke_c) if stroke_c != None else ""
+    c += utils.set_border_color(elem, stroke_c, stroke_o) if stroke_c != None else ""
     c += utils.set_border_width(elem, stroke_w) if stroke_w != None else ""
     return c

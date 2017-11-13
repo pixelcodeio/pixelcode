@@ -77,16 +77,17 @@ def set_border_width(elem, width):
   """
   return ("{}.layer.borderWidth = {}\n").format(elem, width)
 
-def set_border_color(elem, color):
+def set_border_color(elem, color, opacity):
   """
   Returns: The swift code to set the border color of elem.
   """
+  o = "1.0" if opacity is None else opacity
   r = color[0]
   g = color[1]
   b = color[2]
   return ("{}.layer.borderColor = UIColor(red: {}/255.0, green: {}/255.0, "
-          "blue: {}/255.0, alpha: 1.0).cgColor\n"
-         ).format(elem, r, g, b)
+          "blue: {}/255.0, alpha: {}).cgColor\n"
+         ).format(elem, r, g, b, o)
 
 def set_corner_radius(elem, radius):
   """

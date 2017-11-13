@@ -27,7 +27,7 @@ class UIImageView(object):
 
     Returns: The swift code to set the opacity of elem.
     """
-    return "{}.alpha = {}".format(elem, opacity)
+    return "{}.alpha = {}\n".format(elem, opacity)
 
   def setup_uiimageview(self, elem, info):
     """
