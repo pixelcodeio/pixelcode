@@ -128,7 +128,9 @@ class BaseComponent(object):
     #   print(rect)
     if rect != None:
       c += self.setup_rect(cid, rect)
-    if text != None and comp == 'UIButton':
+    if comp == 'UIView':
+      c += obj.setup_uiview(cid, info)
+    elif text != None and comp == 'UIButton':
       textspan = text['textspan']
       c += obj.setup_uibutton(cid, textspan)
     elif comp == 'UILabel':
