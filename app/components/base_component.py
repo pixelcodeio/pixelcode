@@ -101,6 +101,8 @@ class BaseComponent(object):
 
     Returns: The swift code to generate the component
     """
+    print(info.keys())
+    print(info['vertical'])
     obj = self.create_object(comp, info, bgColor)
     centerX = info['x']
     centerY = info['y']
@@ -124,10 +126,9 @@ class BaseComponent(object):
     c += utils.translates_false(cid)
     if rect != None:
       c += self.setup_rect(cid, rect)
-    elif textspan != None and comp == 'UIButton':
+    if textspan != None and comp == 'UIButton':
       c += obj.setup_uibutton(cid, textspan)
     elif textspan != None and comp == 'UILabel':
-      print(comp)
       c += obj.setup_uilabel(cid, textspan)
       # if subtextColors is None and subtextFonts is None:
       #   c += obj.set_text(cid, txt) if txt != None else ""
@@ -147,9 +148,12 @@ class BaseComponent(object):
       #       start = sub['start']
       #       length = sub['length']
       #       c += obj.set_substring_font(strID, font, size, start, length)
-    elif textspan != None and comp == 'UITextField':
+    elif comp == 'UITextField':
+      print(comp)
+      print(textspan)
       c += obj.setup_uitextfield(cid, textspan, left_inset)
     elif textspan != None and comp == 'UITextView':
+      print(comp)
       c += obj.setup_uitextview(cid, textspan, left_inset)
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info)
