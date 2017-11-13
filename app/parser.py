@@ -110,7 +110,7 @@ class Parser(object):
         else:
           for child in elem["children"]:
             elements.insert(0, child)
-            continue
+          continue
 
       # finished creating new element
       new_elem = parsed_elem.elem
@@ -186,7 +186,7 @@ class Parser(object):
     Returns: child with attributes from parent not defined in child passed down
     """
     for attr in parent.attrs:
-      if first:
+      if first: #TODO: fix this shit
         if attr == "fill" and parent["fill"] == "none":
           pass
         elif attr == "stroke" and parent["stroke"] == "none":
@@ -226,7 +226,10 @@ class Parser(object):
           children.append(child)
       if len(children) == 2:
         parent_id = elem["id"]
-        elem = self.inherit_from(children[0], elem)
-        elem = self.inherit_from(elem, children[1])
+        use_children = [c for c in children if c.name == "use"]
+        main_child = [c for c in children if c.name != "use"][0]
+        for child in use_children:
+          elem = self.inherit_from(child, elem)
+        elem = self.inherit_from(elem, main_child)
         elem["id"] = parent_id
     return elem
