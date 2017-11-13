@@ -64,7 +64,7 @@ class BaseLayer(object):
         "rect",
         "stroke-color",
         "stroke-width",
-        "text",
+        "textspan",
         "text-align",
         "type",
         "vertical",

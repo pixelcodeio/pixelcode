@@ -64,7 +64,11 @@ class Parser(object):
     """
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = []
-    for elem in artboard.children: #pylint: disable=R1702
+    stack = []
+    for elem in artboard.children:
+      stack.append(elem)
+    while stack != []:
+      elem = stack.pop()
       if elem != "\n":
         elem = self.inherit_from(artboard, elem)
         elem = self.create_children(elem)
