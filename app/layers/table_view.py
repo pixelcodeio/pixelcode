@@ -7,6 +7,8 @@ class TableView(BaseLayer):
   Class representing a TableView layer in Sketch
   """
   def parse_elem(self, elem):
+    for c in elem["cells"]:
+      print c["type"]
     rect = None
     text = None
     for child in elem["children"]:

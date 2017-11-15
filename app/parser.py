@@ -67,20 +67,19 @@ class Parser(object):
     """
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = []
-    for elem in children:
-      if elem != "\n":
+    for elem in [c for c in children if c != "\n"]:
+      if init:
         elem = self.inherit_from(parent, elem)
-        if init:
-          elem = self.create_children(elem)
+        elem = self.create_children(elem)
 
-        if elem.name == "g":
-          elem = self.parse_fake_group(elem)
+      if elem.name == "g":
+        elem = self.parse_fake_group(elem)
 
-        elem["x"] = float(elem["x"])
-        elem["y"] = float(elem["y"])
-        elem["width"] = float(elem["width"])
-        elem["height"] = float(elem["height"])
-        elements.append(elem)
+      elem["x"] = float(elem["x"])
+      elem["y"] = float(elem["y"])
+      elem["width"] = float(elem["width"])
+      elem["height"] = float(elem["height"])
+      elements.append(elem)
     elements.sort(key=lambda e: (e["x"] + e["y"] + e["width"] + e["height"]))
 
     parsed_elements = []
@@ -113,10 +112,20 @@ class Parser(object):
 
         elif "ListView" in elem["id"]:
           elem["type"] = "UITableView"
+          elem["cells"] = self.parse_elements(elem["children"], elem)
           parsed_elem = TableView(elem)
+
+        elif "Cell" in elem["id"]:
+          elem["type"] = "Cell"
+          elem["layers"] = self.parse_elements(elem["children"], elem)
+          parsed_elem = Cell(elem)
 
         else:
           for child in elem["children"]:
+            child["x"] = float(child["x"])
+            child["y"] = float(child["y"])
+            child["width"] = float(child["width"])
+            child["height"] = float(child["height"])
             elements.insert(0, child)
           continue
 
