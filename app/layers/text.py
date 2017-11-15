@@ -20,7 +20,7 @@ class Text(BaseLayer):
     i = 0
     while i < len(t):
       tspan = t[i]
-      if i < len(t) - 1 and params_equal(tspan, t[i + 1]):
+      while i < len(t) - 1 and params_equal(tspan, t[i + 1]):
         tspan["contents"] += t[i + 1]["contents"]
         i += 1
       textspan.append(tspan)
