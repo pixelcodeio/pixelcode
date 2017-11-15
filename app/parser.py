@@ -39,8 +39,11 @@ class Parser(object):
     f.close()
 
     self.globals = self.parse_globals(soup.svg)
+    artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, True)
     self.elements = self.parse_elements(
-        self.inherit_from(soup.svg.g, soup.svg.g.g, True)
+        [c for c in artboard.children],
+        artboard,
+        True
     )
 
   def parse_globals(self, svg):
@@ -58,16 +61,17 @@ class Parser(object):
             "pagename": pagename,
             "artboard": artboard}
 
-  def parse_elements(self, artboard):
+  def parse_elements(self, children, parent, init=False):
     """
     Returns: list of parsed elements
     """
     # grab elements, append attributes, sort by bottom-right coordinate
     elements = []
-    for elem in artboard.children:
+    for elem in children:
       if elem != "\n":
-        elem = self.inherit_from(artboard, elem)
-        elem = self.create_children(elem)
+        elem = self.inherit_from(parent, elem)
+        if init:
+          elem = self.create_children(elem)
 
         if elem.name == "g":
           elem = self.parse_fake_group(elem)
@@ -106,6 +110,10 @@ class Parser(object):
         elif "TextField" in elem["id"]:
           elem["type"] = "UITextField"
           parsed_elem = TextField(elem)
+
+        elif "ListView" in elem["id"]:
+          elem["type"] = "UITableView"
+          parsed_elem = TableView(elem)
 
         else:
           for child in elem["children"]:
@@ -220,16 +228,17 @@ class Parser(object):
     Returns: elem after checking if it is fake or not
     """
     if elem.name == "g":
-      children = []
-      for child in elem["children"]:
-        if child != "\n" and "id" not in child.attrs:
-          children.append(child)
-      if len(children) == 2:
+      use_children = []
+      main_children = []
+      for child in [c for c in elem["children"] if c != "\n"]:
+        if child.name == "use":
+          use_children.append(child)
+        else:
+          main_children.append(child)
+      if len(main_children) == 1 and use_children:
         parent_id = elem["id"]
-        use_children = [c for c in children if c.name == "use"]
-        main_child = [c for c in children if c.name != "use"][0]
         for child in use_children:
           elem = self.inherit_from(child, elem)
-        elem = self.inherit_from(elem, main_child)
+        elem = self.inherit_from(elem, main_children[0])
         elem["id"] = parent_id
     return elem
