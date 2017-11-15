@@ -20,5 +20,8 @@ class TestStringMethods(unittest.TestCase):
   def test_input(self):
     self.filename_helper("input.out")
 
+  def test_main(self):
+    self.filename_helper("Main.out")
+
 if __name__ == '__main__':
   unittest.main()

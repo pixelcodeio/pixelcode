@@ -7,7 +7,7 @@ def translates_false(elem):
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
-def set_bg(elem, color, opacity):
+def set_bg(elem, color, opacity=None):
   """
   Args:
     color: (tuple) contains the r, g, b values of the background color

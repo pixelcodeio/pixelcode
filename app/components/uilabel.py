@@ -190,4 +190,7 @@ class UILabel(object):
         c += self.center_and_wrap(elem, "center")
       c += self.set_font_family_size(elem, font, size)
       return c
+    else:
+      for t in textspan:
+        print(t)
     #TODO: Case for varying text.
