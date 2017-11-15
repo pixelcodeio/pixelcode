@@ -1,4 +1,5 @@
 import json
+from operator import itemgetter
 from bs4 import BeautifulSoup
 from layers._all import *
 import utils
@@ -40,6 +41,8 @@ class Parser(object):
 
     self.globals = self.parse_globals(soup.svg)
     artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, True)
+    artboard["rwidth"] = self.globals["width"]
+    artboard["rheight"] = self.globals["height"]
     self.elements = self.parse_elements(
         [c for c in artboard.children],
         artboard,
@@ -86,7 +89,7 @@ class Parser(object):
     while elements != []:
       elem = elements.pop()
       elem = self.calculate_spacing(elem, parsed_elements)
-      elem = self.convert_coords(elem)
+      elem = self.convert_coords(elem, parent)
 
       # parse elements into their layers
       if elem.name == "rect":
@@ -112,12 +115,12 @@ class Parser(object):
 
         elif "ListView" in elem["id"]:
           elem["type"] = "UITableView"
-          elem["cells"] = self.parse_elements(elem["children"], elem)
+          elem["children"] = self.parse_elements(elem["children"], elem)
           parsed_elem = TableView(elem)
 
         elif "Cell" in elem["id"]:
           elem["type"] = "Cell"
-          elem["layers"] = self.parse_elements(elem["children"], elem)
+          elem["children"] = self.parse_elements(elem["children"], elem)
           parsed_elem = Cell(elem)
 
         else:
@@ -132,7 +135,8 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
-    return parsed_elements[::-1] # reverse so top-left element is first
+    parsed_elements.sort(key=itemgetter('y', 'x'))
+    return parsed_elements
 
   def create_children(self, elem):
     elem = self.inherit_from_json(elem)
@@ -181,17 +185,22 @@ class Parser(object):
     elem["vertical"] = vertical
     return elem
 
-  def convert_coords(self, elem):
+  def convert_coords(self, elem, parent):
     """
-    Returns: elem with coords set relative to global height/width
+    Returns: elem with coords set relative to parent height/width
     """
+    width = parent["rwidth"]
+    height = parent["rheight"]
+    # cache pixel widths
+    elem["rwidth"] = elem["width"]
+    elem["rheight"] = elem["height"]
     # convert units to percentages
-    elem["width"] /= self.globals["width"]
-    elem["height"] /= self.globals["height"]
-    elem["x"] /= self.globals["width"]
-    elem["y"] /= self.globals["height"]
-    elem["horizontal"]["distance"] /= self.globals["width"]
-    elem["vertical"]["distance"] /= self.globals["height"]
+    elem["width"] /= width
+    elem["height"] /= height
+    elem["x"] /= width
+    elem["y"] /= height
+    elem["horizontal"]["distance"] /= width
+    elem["vertical"]["distance"] /= height
 
     # generate center
     elem["x"] = elem["x"] + elem["width"] / 2

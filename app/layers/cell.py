@@ -9,22 +9,20 @@ class Cell(BaseLayer):
     Args:
       Refer to args in __init__
     """
-    elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
-    elem["stroke-width"] = None
-    elem["stroke-color"] = None
-    elem["contents"] = elem.text
-    return super(TextSpan, self).parse_elem(elem)
+    rect = None
+    components = []
+    for child in elem["children"]:
+      if child["type"] == "UIView" and "Bound" in child["id"]:
+        if rect is None:
+          rect = child
+        else:
+          raise Exception("Multiple fields named bound.")
+      else:
+        components.append(child)
 
-def params_equal(tspan1, tspan2):
-  params = [
-      "fill",
-      "font-family",
-      "font-size",
-      "opacity",
-      "text-align",
-  ]
-  for param in params:
-    in_both = param in tspan1 and param in tspan2
-    if not (in_both and tspan1[param] == tspan2[param]):
-      return False
-  return True
+    if rect is None:
+      raise Exception("No bound field.")
+
+    elem["rect"] = rect
+    elem["components"] = components
+    return super(Cell, self).parse_elem(elem)

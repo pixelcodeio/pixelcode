@@ -7,25 +7,28 @@ class TableView(BaseLayer):
   Class representing a TableView layer in Sketch
   """
   def parse_elem(self, elem):
-    for c in elem["cells"]:
-      print c["type"]
     rect = None
-    text = None
+    components = []
     for child in elem["children"]:
-      if child.name == "rect":
-        rect = child
-      elif child.name == "text":
-        text = child
+      if child["type"] == "UIView":
+        if rect is None:
+          rect = child
+        else:
+          raise Exception("Only one wash allowed per TableView")
+      elif child["type"] == "Cell":
+        components.append(child)
+      else:
+        raise Exception("Unsupported type for TableView")
 
-    if text is None:
-      raise Exception("Text cannot be empty in a button.")
+    if not components:
+      raise Exception("Must have one component in a TableView")
 
-    elem["rect"] = Rect(rect).elem if rect is not None else None
-    elem["text"] = Text(text).elem if text is not None else None
+    separator = 0
+    if len(components) >= 2:
+      separator = components[1]["y"] - components[1]["y"]
 
-    if text is not None and rect is not None:
-      elem["left-inset"] = float(text["x"]) - float(rect["x"])
-    else:
-      raise Exception("Text and Rect must be defined for a TextField")
+    elem["rect"] = rect
+    elem["components"] = components
+    elem["separator"] = separator
 
-    return super(TextField, self).parse_elem(elem)
+    return super(TableView, self).parse_elem(elem)
