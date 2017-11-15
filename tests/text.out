@@ -1,28 +1,11 @@
 import UIKit
 class TextViewController: UIViewController {
 
-var text1: UILabel!
 var text3: UILabel!
+var text1: UILabel!
 
 override func viewDidLoad() {
 view.backgroundColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0)
-
-text1 = UILabel()
-text1.translatesAutoresizingMaskIntoConstraints = false
-text1.text = "testing here"
-text1.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-text1.textAlignment = .center
-text1.numberOfLines = 0
-text1.lineBreakMode = .byWordWrapping
-text1.font = UIFont(name: ".SFNSDisplay", size: 64)
-view.addSubview(text1)
-
-text1.widthAnchor.constraint(equalToConstant: view.frame.width*0.653333333333).isActive = true
-text1.heightAnchor.constraint(equalToConstant: view.frame.height*0.23688155922).isActive = true
-text1.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.390666666667).isActive = true
-text1.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.733133433283).isActive = true
-text1.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.064).isActive = true
-text1.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.614692653673).isActive = true
 
 text3 = UILabel()
 text3.translatesAutoresizingMaskIntoConstraints = false
@@ -40,6 +23,23 @@ text3.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.wi
 text3.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.405547226387).isActive = true
 text3.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0693333333333).isActive = true
 text3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.373313343328).isActive = true
+
+text1 = UILabel()
+text1.translatesAutoresizingMaskIntoConstraints = false
+text1.text = "testing here"
+text1.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+text1.textAlignment = .center
+text1.numberOfLines = 0
+text1.lineBreakMode = .byWordWrapping
+text1.font = UIFont(name: ".SFNSDisplay", size: 64)
+view.addSubview(text1)
+
+text1.widthAnchor.constraint(equalToConstant: view.frame.width*0.653333333333).isActive = true
+text1.heightAnchor.constraint(equalToConstant: view.frame.height*0.23688155922).isActive = true
+text1.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.390666666667).isActive = true
+text1.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.733133433283).isActive = true
+text1.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.064).isActive = true
+text1.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.614692653673).isActive = true
 
 
 }

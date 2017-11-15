@@ -1,42 +1,32 @@
 import UIKit
 class InputViewController: UIViewController {
 
-var rectangle3: UIView!
-var rectangle2: UIView!
-var oneTextField: UITextField!
 var twoTextField: UITextField!
+var oneTextField: UITextField!
+var rectangle2: UIView!
+var rectangle3: UIView!
 
 override func viewDidLoad() {
 view.backgroundColor = UIColor(red: 250/255.0, green: 250/255.0, blue: 250/255.0, alpha: 1.0)
 
-rectangle3 = UIView()
-rectangle3.translatesAutoresizingMaskIntoConstraints = false
-rectangle3.layer.cornerRadius = 4
-rectangle3.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
-rectangle3.layer.borderWidth = 1
-view.addSubview(rectangle3)
+twoTextField = UITextField()
+twoTextField.translatesAutoresizingMaskIntoConstraints = false
+twoTextField.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
+twoTextField.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
+twoTextField.layer.borderWidth = 1
+twoTextField.layer.cornerRadius = 4
+twoTextField.attributedPlaceholder = NSAttributedString(string: "Placeholder", attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 219/255.0, green: 219/255.0, blue: 219/255.0, alpha: 1.0)])
+twoTextField.font = UIFont(name: "SanFranciscoText-Regular", size: 24)
+twoTextField.layer.sublayerTransform = CATransform3DMakeTranslation(15.5, 0, 0)
+twoTextField.clipsToBounds = true
+view.addSubview(twoTextField)
 
-rectangle3.widthAnchor.constraint(equalToConstant: view.frame.width*0.826666666667).isActive = true
-rectangle3.heightAnchor.constraint(equalToConstant: view.frame.height*0.0704647676162).isActive = true
-rectangle3.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
-rectangle3.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.536731634183).isActive = true
-rectangle3.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0866666666667).isActive = true
-rectangle3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.501499250375).isActive = true
-
-rectangle2 = UIView()
-rectangle2.translatesAutoresizingMaskIntoConstraints = false
-rectangle2.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
-rectangle2.layer.cornerRadius = 4
-rectangle2.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
-rectangle2.layer.borderWidth = 1
-view.addSubview(rectangle2)
-
-rectangle2.widthAnchor.constraint(equalToConstant: view.frame.width*0.826666666667).isActive = true
-rectangle2.heightAnchor.constraint(equalToConstant: view.frame.height*0.0704647676162).isActive = true
-rectangle2.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
-rectangle2.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.431784107946).isActive = true
-rectangle2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0866666666667).isActive = true
-rectangle2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.396551724138).isActive = true
+twoTextField.widthAnchor.constraint(equalToConstant: view.frame.width*0.829333333333).isActive = true
+twoTextField.heightAnchor.constraint(equalToConstant: view.frame.height*0.071964017991).isActive = true
+twoTextField.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
+twoTextField.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.215892053973).isActive = true
+twoTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0853333333333).isActive = true
+twoTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.179910044978).isActive = true
 
 oneTextField = UITextField()
 oneTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -57,24 +47,34 @@ oneTextField.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.fr
 oneTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0853333333333).isActive = true
 oneTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.275862068966).isActive = true
 
-twoTextField = UITextField()
-twoTextField.translatesAutoresizingMaskIntoConstraints = false
-twoTextField.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
-twoTextField.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
-twoTextField.layer.borderWidth = 1
-twoTextField.layer.cornerRadius = 4
-twoTextField.attributedPlaceholder = NSAttributedString(string: "Placeholder", attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 219/255.0, green: 219/255.0, blue: 219/255.0, alpha: 1.0)])
-twoTextField.font = UIFont(name: "SanFranciscoText-Regular", size: 24)
-twoTextField.layer.sublayerTransform = CATransform3DMakeTranslation(15.5, 0, 0)
-twoTextField.clipsToBounds = true
-view.addSubview(twoTextField)
+rectangle2 = UIView()
+rectangle2.translatesAutoresizingMaskIntoConstraints = false
+rectangle2.backgroundColor = UIColor(red: 255/255.0 , green: 255/255.0 , blue: 255/255.0 , alpha: 1.0)
+rectangle2.layer.cornerRadius = 4
+rectangle2.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
+rectangle2.layer.borderWidth = 1
+view.addSubview(rectangle2)
 
-twoTextField.widthAnchor.constraint(equalToConstant: view.frame.width*0.829333333333).isActive = true
-twoTextField.heightAnchor.constraint(equalToConstant: view.frame.height*0.071964017991).isActive = true
-twoTextField.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
-twoTextField.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.215892053973).isActive = true
-twoTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0853333333333).isActive = true
-twoTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.179910044978).isActive = true
+rectangle2.widthAnchor.constraint(equalToConstant: view.frame.width*0.826666666667).isActive = true
+rectangle2.heightAnchor.constraint(equalToConstant: view.frame.height*0.0704647676162).isActive = true
+rectangle2.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
+rectangle2.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.431784107946).isActive = true
+rectangle2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0866666666667).isActive = true
+rectangle2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.396551724138).isActive = true
+
+rectangle3 = UIView()
+rectangle3.translatesAutoresizingMaskIntoConstraints = false
+rectangle3.layer.cornerRadius = 4
+rectangle3.layer.borderColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0).cgColor
+rectangle3.layer.borderWidth = 1
+view.addSubview(rectangle3)
+
+rectangle3.widthAnchor.constraint(equalToConstant: view.frame.width*0.826666666667).isActive = true
+rectangle3.heightAnchor.constraint(equalToConstant: view.frame.height*0.0704647676162).isActive = true
+rectangle3.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
+rectangle3.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.536731634183).isActive = true
+rectangle3.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0866666666667).isActive = true
+rectangle3.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.501499250375).isActive = true
 
 
 }

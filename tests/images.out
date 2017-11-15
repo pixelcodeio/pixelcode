@@ -1,85 +1,41 @@
 import UIKit
 class ImagesViewController: UIViewController {
 
-var textRight: UILabel!
-var textCenter: UILabel!
-var textLeft: UILabel!
-var testButton: UIButton!
-var textButton: UIButton!
-var bitmap: UIImageView!
-var buttonTitle: UILabel!
 var bitmap2: UIImageView!
+var bitmap: UIImageView!
+var textButton: UIButton!
+var buttonTitle: UILabel!
+var testButton: UIButton!
+var textLeft: UILabel!
+var textCenter: UILabel!
+var textRight: UILabel!
 
 override func viewDidLoad() {
 view.backgroundColor = UIColor(red: 214/255.0, green: 197/255.0, blue: 197/255.0, alpha: 1.0)
 
-textRight = UILabel()
-textRight.translatesAutoresizingMaskIntoConstraints = false
-textRight.text = "testing right-aligned text overflow."
-textRight.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-textRight.textAlignment = .right
-textRight.numberOfLines = 0
-textRight.lineBreakMode = .byWordWrapping
-textRight.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
-view.addSubview(textRight)
+bitmap2 = UIImageView()
+bitmap2.translatesAutoresizingMaskIntoConstraints = false
+bitmap2.image = UIImage(named: "bitmap2")
+view.addSubview(bitmap2)
 
-textRight.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
-textRight.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
-textRight.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.312).isActive = true
-textRight.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.856821589205).isActive = true
-textRight.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
-textRight.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.817091454273).isActive = true
+bitmap2.widthAnchor.constraint(equalToConstant: view.frame.width*0.293333333333).isActive = true
+bitmap2.heightAnchor.constraint(equalToConstant: view.frame.height*0.109445277361).isActive = true
+bitmap2.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.277333333333).isActive = true
+bitmap2.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.150674662669).isActive = true
+bitmap2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.130666666667).isActive = true
+bitmap2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.095952023988).isActive = true
 
-textCenter = UILabel()
-textCenter.translatesAutoresizingMaskIntoConstraints = false
-textCenter.text = "testing center-aligned text."
-textCenter.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-textCenter.textAlignment = .center
-textCenter.numberOfLines = 0
-textCenter.lineBreakMode = .byWordWrapping
-textCenter.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
-view.addSubview(textCenter)
+bitmap = UIImageView()
+bitmap.translatesAutoresizingMaskIntoConstraints = false
+bitmap.image = UIImage(named: "bitmap")
+view.addSubview(bitmap)
 
-textCenter.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
-textCenter.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
-textCenter.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.312).isActive = true
-textCenter.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.754872563718).isActive = true
-textCenter.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
-textCenter.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.715142428786).isActive = true
-
-textLeft = UILabel()
-textLeft.translatesAutoresizingMaskIntoConstraints = false
-textLeft.text = "testing left-aligned text overflow."
-textLeft.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-textLeft.textAlignment = .left
-textLeft.numberOfLines = 0
-textLeft.lineBreakMode = .byWordWrapping
-textLeft.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
-view.addSubview(textLeft)
-
-textLeft.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
-textLeft.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
-textLeft.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.325333333333).isActive = true
-textLeft.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.652923538231).isActive = true
-textLeft.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0613333333333).isActive = true
-textLeft.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.613193403298).isActive = true
-
-testButton = UIButton()
-testButton.translatesAutoresizingMaskIntoConstraints = false
-testButton.layer.borderColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0).cgColor
-testButton.layer.borderWidth = 1
-testButton.layer.cornerRadius = 4
-testButton.setTitle("100B", for: .normal)
-testButton.setTitleColor(UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0), for: .normal)
-testButton.titleLabel?.font = UIFont(name: "SanFranciscoText-Medium", size: 28)
-view.addSubview(testButton)
-
-testButton.widthAnchor.constraint(equalToConstant: view.frame.width*0.658666666667).isActive = true
-testButton.heightAnchor.constraint(equalToConstant: view.frame.height*0.113943028486).isActive = true
-testButton.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.377333333333).isActive = true
-testButton.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.457271364318).isActive = true
-testButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
-testButton.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.400299850075).isActive = true
+bitmap.widthAnchor.constraint(equalToConstant: view.frame.width*0.264).isActive = true
+bitmap.heightAnchor.constraint(equalToConstant: view.frame.height*0.170914542729).isActive = true
+bitmap.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.764).isActive = true
+bitmap.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.151424287856).isActive = true
+bitmap.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.632).isActive = true
+bitmap.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.0659670164918).isActive = true
 
 textButton = UIButton()
 textButton.translatesAutoresizingMaskIntoConstraints = false
@@ -94,18 +50,6 @@ textButton.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.fra
 textButton.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.329835082459).isActive = true
 textButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.632).isActive = true
 textButton.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
-
-bitmap = UIImageView()
-bitmap.translatesAutoresizingMaskIntoConstraints = false
-bitmap.image = UIImage(named: "bitmap")
-view.addSubview(bitmap)
-
-bitmap.widthAnchor.constraint(equalToConstant: view.frame.width*0.264).isActive = true
-bitmap.heightAnchor.constraint(equalToConstant: view.frame.height*0.170914542729).isActive = true
-bitmap.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.764).isActive = true
-bitmap.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.151424287856).isActive = true
-bitmap.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.632).isActive = true
-bitmap.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.0659670164918).isActive = true
 
 buttonTitle = UILabel()
 buttonTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -124,17 +68,73 @@ buttonTitle.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.fra
 buttonTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0213333333333).isActive = true
 buttonTitle.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
 
-bitmap2 = UIImageView()
-bitmap2.translatesAutoresizingMaskIntoConstraints = false
-bitmap2.image = UIImage(named: "bitmap2")
-view.addSubview(bitmap2)
+testButton = UIButton()
+testButton.translatesAutoresizingMaskIntoConstraints = false
+testButton.layer.borderColor = UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0).cgColor
+testButton.layer.borderWidth = 1
+testButton.layer.cornerRadius = 4
+testButton.setTitle("100B", for: .normal)
+testButton.setTitleColor(UIColor(red: 179/255.0, green: 27/255.0, blue: 27/255.0, alpha: 1.0), for: .normal)
+testButton.titleLabel?.font = UIFont(name: "SanFranciscoText-Medium", size: 28)
+view.addSubview(testButton)
 
-bitmap2.widthAnchor.constraint(equalToConstant: view.frame.width*0.293333333333).isActive = true
-bitmap2.heightAnchor.constraint(equalToConstant: view.frame.height*0.109445277361).isActive = true
-bitmap2.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.277333333333).isActive = true
-bitmap2.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.150674662669).isActive = true
-bitmap2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.130666666667).isActive = true
-bitmap2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.095952023988).isActive = true
+testButton.widthAnchor.constraint(equalToConstant: view.frame.width*0.658666666667).isActive = true
+testButton.heightAnchor.constraint(equalToConstant: view.frame.height*0.113943028486).isActive = true
+testButton.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.377333333333).isActive = true
+testButton.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.457271364318).isActive = true
+testButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
+testButton.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.400299850075).isActive = true
+
+textLeft = UILabel()
+textLeft.translatesAutoresizingMaskIntoConstraints = false
+textLeft.text = "testing left-aligned text overflow."
+textLeft.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+textLeft.textAlignment = .left
+textLeft.numberOfLines = 0
+textLeft.lineBreakMode = .byWordWrapping
+textLeft.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
+view.addSubview(textLeft)
+
+textLeft.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
+textLeft.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
+textLeft.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.325333333333).isActive = true
+textLeft.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.652923538231).isActive = true
+textLeft.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0613333333333).isActive = true
+textLeft.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.613193403298).isActive = true
+
+textCenter = UILabel()
+textCenter.translatesAutoresizingMaskIntoConstraints = false
+textCenter.text = "testing center-aligned text."
+textCenter.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+textCenter.textAlignment = .center
+textCenter.numberOfLines = 0
+textCenter.lineBreakMode = .byWordWrapping
+textCenter.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
+view.addSubview(textCenter)
+
+textCenter.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
+textCenter.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
+textCenter.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.312).isActive = true
+textCenter.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.754872563718).isActive = true
+textCenter.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
+textCenter.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.715142428786).isActive = true
+
+textRight = UILabel()
+textRight.translatesAutoresizingMaskIntoConstraints = false
+textRight.text = "testing right-aligned text overflow."
+textRight.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+textRight.textAlignment = .right
+textRight.numberOfLines = 0
+textRight.lineBreakMode = .byWordWrapping
+textRight.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
+view.addSubview(textRight)
+
+textRight.widthAnchor.constraint(equalToConstant: view.frame.width*0.528).isActive = true
+textRight.heightAnchor.constraint(equalToConstant: view.frame.height*0.0794602698651).isActive = true
+textRight.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.312).isActive = true
+textRight.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.856821589205).isActive = true
+textRight.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.048).isActive = true
+textRight.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.817091454273).isActive = true
 
 
 }
