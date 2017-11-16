@@ -3,8 +3,8 @@ import unittest
 class TestStringMethods(unittest.TestCase):
 
   def filename_helper(self, filename):
-    f1 = open("./src/tests/" + filename + ".out", "r+")
-    with open("./src/tests/" + filename + ".correct", "r+") as f2:
+    f1 = open("./src/tests/files/" + filename + ".out", "r+")
+    with open("./src/tests/output/" + filename + ".correct", "r+") as f2:
       for line in f2:
         self.assertEqual(f1.readline(), line)
 
