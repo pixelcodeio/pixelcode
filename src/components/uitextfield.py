@@ -4,13 +4,8 @@ class UITextField(object):
   """
   Class representing a UITextField in swift
   """
-  def __init__(self):
-    pass
-
   def set_placeholder_text_and_color(self, tid, text, color, opacity):
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     o = "1.0" if opacity is None else opacity
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"
@@ -62,11 +57,10 @@ class UITextField(object):
     font = txt['font-family']
     size = txt['font-size']
     opacity = txt['opacity']
+    c = ""
     if inView is False:
-      c = self.set_placeholder_text_and_color(elem, placeholder,
-                                              placeholder_c, opacity)
-    else:
-      c = ""
+      c += self.set_placeholder_text_and_color(elem, placeholder,
+                                               placeholder_c, opacity)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
     c += self.set_clips_to_bounds(elem)

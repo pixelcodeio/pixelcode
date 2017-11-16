@@ -85,7 +85,8 @@ class BaseLayer(object):
     elem = self.init_optional_params(elem, params)
     obj = {}
     for param in params:
-      obj[param] = elem[param]
+      if elem[param] is not None:
+        obj[param] = elem[param]
     return obj
 
   def parse_elem(self, elem):

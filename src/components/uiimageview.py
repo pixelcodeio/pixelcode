@@ -4,9 +4,6 @@ class UIImageView(object):
   """
   Class representing an UIImageView in swift
   """
-  def __init__(self):
-    pass
-
   def set_image(self, elem, image_fname):
     """
     Args:
@@ -37,15 +34,17 @@ class UIImageView(object):
 
     Returns: The swift code to apply all the properties from text to elem.
     """
-    path = info['path']
-    opacity = info['opacity']
-    stroke_c = info['stroke-color']
-    stroke_w = info['stroke-width']
+    path = info.get('path')
+    opacity = info.get('opacity')
+    stroke_c = info.get('stroke-color')
+    stroke_w = info.get('stroke-width')
+    c = ""
     if inView is False:
-      c = self.set_image(elem, path)
-    else:
-      c = ""
-    c += self.set_opacity(elem, opacity) if opacity != None else ""
-    c += utils.set_border_color(elem, stroke_c) if stroke_c != None else ""
-    c += utils.set_border_width(elem, stroke_w) if stroke_w != None else ""
+      c += self.set_image(elem, path)
+    if opacity is not None:
+      c += self.set_opacity(elem, opacity)
+    if stroke_c is not None:
+      c += utils.set_border_color(elem, stroke_c)
+    if stroke_w is not None:
+      c += utils.set_border_width(elem, stroke_w)
     return c
