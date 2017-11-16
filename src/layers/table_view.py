@@ -14,14 +14,14 @@ class TableView(BaseLayer):
         if rect is None:
           rect = child
         else:
-          raise Exception("Only one wash allowed per TableView")
+          raise Exception("TableView: Only one wash allowed per TableView")
       elif child["type"] == "Cell":
         cells.append(child)
       else:
-        raise Exception("Unsupported type for TableView")
+        raise Exception("TableView: Unsupported elem typefor TableView")
 
     if not cells:
-      raise Exception("Must have one component in a TableView")
+      raise Exception("TableView: Must have one cell in a TableView")
 
     separator = 0
     if len(cells) >= 2:

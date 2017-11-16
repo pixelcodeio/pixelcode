@@ -16,12 +16,12 @@ class Cell(BaseLayer):
         if rect is None:
           rect = child
         else:
-          raise Exception("Multiple fields named bound.")
+          raise Exception("Cell: Multiple fields named bound.")
       else:
         components.append(child)
 
     if rect is None:
-      raise Exception("No bound field. for elem " + elem["id"])
+      raise Exception("Cell: No bound field.")
 
     elem["rect"] = rect
     elem["components"] = components
