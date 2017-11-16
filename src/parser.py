@@ -201,7 +201,7 @@ class Parser(object):
 
     # generate center
     elem["cx"] = elem["x"]/width + elem["width"]/2
-    elem["cy"] = elem["y"]/width + elem["height"]/2
+    elem["cy"] = elem["y"]/height + elem["height"]/2
     return elem
 
   def inherit_from(self, parent, child, first=False):
