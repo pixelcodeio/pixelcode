@@ -25,7 +25,7 @@ class TableView(BaseLayer):
 
     separator = 0
     if len(cells) >= 2:
-      separator = cells[1]["y"] - cells[1]["y"]
+      separator = cells[1]["cy"] - cells[1]["cy"]
 
     elem["rect"] = rect
     elem["cells"] = cells

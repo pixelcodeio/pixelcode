@@ -11,7 +11,7 @@ def check_spacing(r1, r2, direction): # pylint: disable=R0911
     distance between the two rectangles in pixels.
   """
   r1_top = (int(r1["x"]), int(r1["y"])) # top-left
-  r1_bottom = (r1_top[0] + int(r1["width"]), r1_top[1] + int(r1["height"]))
+  r1_bottom = (r1_top[0] + int(r1["rwidth"]), r1_top[1] + int(r1["rheight"]))
   r2_top = (int(r2["x"]), int(r2["y"])) # top-left
   r2_bottom = (r2_top[0] + int(r2["width"]), r2_top[1] + int(r2["height"]))
 
@@ -20,19 +20,19 @@ def check_spacing(r1, r2, direction): # pylint: disable=R0911
 
   if direction == "up":
     if r2_top[1] >= r1_bottom[1]:
-      if r2_top[0] >= r1_top[0] and r2_top[0] <= r1_bottom[0]:
+      t_btwn = r2_top[0] >= r1_top[0] and r2_top[0] <= r1_bottom[0]
+      b_btwn = r2_bottom[0] >= r1_top[0] and r2_bottom[0] <= r1_bottom[0]
+      contains = r2_top[0] <= r1_top[0] and r2_bottom[0] >= r1_bottom[0]
+      if t_btwn or b_btwn or contains:
         return True, (r2_top[1] - r1_bottom[1])
-      else:
-        if r2_bottom[0] >= r1_top[0] and r2_bottom[0] <= r1_bottom[0]:
-          return True, (r2_top[1] - r1_bottom[1])
     return False, 0
   else:
     if r2_top[0] >= r1_bottom[0]:
-      if r2_top[1] >= r1_top[1] and r2_top[1] <= r1_bottom[1]:
+      t_btwn = r2_top[1] >= r1_top[1] and r2_top[1] <= r1_bottom[1]
+      b_btwn = r2_bottom[1] >= r1_top[1] and r2_bottom[1] <= r1_bottom[1]
+      contains = r2_top[1] <= r1_top[1] and r2_bottom[1] >= r1_bottom[1]
+      if t_btwn or b_btwn or contains:
         return True, (r2_top[0] - r1_bottom[0])
-      else:
-        if r2_bottom[1] >= r1_top[1] and r2_bottom[1] <= r1_bottom[1]:
-          return True, (r2_top[0] - r1_bottom[0])
     return False, 0
 
 def convert_hex_to_rgb(hex_string):

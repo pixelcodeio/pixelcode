@@ -2,9 +2,9 @@ import UIKit
 class ImagesViewController: UIViewController {
 
 var bitmap2: UIImageView!
+var buttonTitle: UILabel!
 var bitmap: UIImageView!
 var textButton: UIButton!
-var buttonTitle: UILabel!
 var testButton: UIButton!
 var textLeft: UILabel!
 var textCenter: UILabel!
@@ -24,6 +24,23 @@ bitmap2.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.
 bitmap2.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.150674662669).isActive = true
 bitmap2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.130666666667).isActive = true
 bitmap2.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.095952023988).isActive = true
+
+buttonTitle = UILabel()
+buttonTitle.translatesAutoresizingMaskIntoConstraints = false
+buttonTitle.text = "Buttons (Text & Rect) asd "
+buttonTitle.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+buttonTitle.textAlignment = .right
+buttonTitle.numberOfLines = 0
+buttonTitle.lineBreakMode = .byWordWrapping
+buttonTitle.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
+view.addSubview(buttonTitle)
+
+buttonTitle.widthAnchor.constraint(equalToConstant: view.frame.width*0.530666666667).isActive = true
+buttonTitle.heightAnchor.constraint(equalToConstant: view.frame.height*0.071964017991).isActive = true
+buttonTitle.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.286666666667).isActive = true
+buttonTitle.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.340329835082).isActive = true
+buttonTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0213333333333).isActive = true
+buttonTitle.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
 
 bitmap = UIImageView()
 bitmap.translatesAutoresizingMaskIntoConstraints = false
@@ -50,23 +67,6 @@ textButton.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.fra
 textButton.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.329835082459).isActive = true
 textButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.632).isActive = true
 textButton.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
-
-buttonTitle = UILabel()
-buttonTitle.translatesAutoresizingMaskIntoConstraints = false
-buttonTitle.text = "Buttons (Text & Rect) asd "
-buttonTitle.textColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
-buttonTitle.textAlignment = .right
-buttonTitle.numberOfLines = 0
-buttonTitle.lineBreakMode = .byWordWrapping
-buttonTitle.font = UIFont(name: "SanFranciscoText-Medium", size: 20)
-view.addSubview(buttonTitle)
-
-buttonTitle.widthAnchor.constraint(equalToConstant: view.frame.width*0.530666666667).isActive = true
-buttonTitle.heightAnchor.constraint(equalToConstant: view.frame.height*0.071964017991).isActive = true
-buttonTitle.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.286666666667).isActive = true
-buttonTitle.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.340329835082).isActive = true
-buttonTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0213333333333).isActive = true
-buttonTitle.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.304347826087).isActive = true
 
 testButton = UIButton()
 testButton.translatesAutoresizingMaskIntoConstraints = false

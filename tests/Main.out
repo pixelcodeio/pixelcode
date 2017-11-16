@@ -2,9 +2,9 @@ import UIKit
 class MainViewController: UIViewController {
 
 var header: UILabel!
-var desc: UILabel!
-var design: UILabel!
 var logo: UIImageView!
+var design: UILabel!
+var desc: UILabel!
 var save: UILabel!
 var userTextField: UITextField!
 var emailTextField: UITextField!
@@ -31,22 +31,17 @@ header.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.he
 header.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0851063829787).isActive = true
 header.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.071964017991).isActive = true
 
-desc = UILabel()
-desc.translatesAutoresizingMaskIntoConstraints = false
-desc.text = "PixelCode — a tool that exports your designs into Swift code instantaneously. No more hours wasted on pixel coding. Focus on the more important things."
-desc.textColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0)
-desc.textAlignment = .left
-desc.numberOfLines = 0
-desc.lineBreakMode = .byWordWrapping
-desc.font = UIFont(name: "SanFranciscoText-Regular", size: 20)
-view.addSubview(desc)
+logo = UIImageView()
+logo.translatesAutoresizingMaskIntoConstraints = false
+logo.image = UIImage(named: "logo")
+view.addSubview(logo)
 
-desc.widthAnchor.constraint(equalToConstant: view.frame.width*0.829787234043).isActive = true
-desc.heightAnchor.constraint(equalToConstant: view.frame.height*0.194902548726).isActive = true
-desc.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
-desc.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.269865067466).isActive = true
-desc.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0851063829787).isActive = true
-desc.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.172413793103).isActive = true
+logo.widthAnchor.constraint(equalToConstant: view.frame.width*0.148936170213).isActive = true
+logo.heightAnchor.constraint(equalToConstant: view.frame.height*0.0839580209895).isActive = true
+logo.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.159574468085).isActive = true
+logo.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.461769115442).isActive = true
+logo.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0851063829787).isActive = true
+logo.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.419790104948).isActive = true
 
 design = UILabel()
 design.translatesAutoresizingMaskIntoConstraints = false
@@ -65,17 +60,22 @@ design.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.he
 design.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.297872340426).isActive = true
 design.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.415292353823).isActive = true
 
-logo = UIImageView()
-logo.translatesAutoresizingMaskIntoConstraints = false
-logo.image = UIImage(named: "logo")
-view.addSubview(logo)
+desc = UILabel()
+desc.translatesAutoresizingMaskIntoConstraints = false
+desc.text = "PixelCode — a tool that exports your designs into Swift code instantaneously. No more hours wasted on pixel coding. Focus on the more important things."
+desc.textColor = UIColor(red: 34/255.0, green: 34/255.0, blue: 34/255.0, alpha: 1.0)
+desc.textAlignment = .left
+desc.numberOfLines = 0
+desc.lineBreakMode = .byWordWrapping
+desc.font = UIFont(name: "SanFranciscoText-Regular", size: 20)
+view.addSubview(desc)
 
-logo.widthAnchor.constraint(equalToConstant: view.frame.width*0.148936170213).isActive = true
-logo.heightAnchor.constraint(equalToConstant: view.frame.height*0.0839580209895).isActive = true
-logo.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.159574468085).isActive = true
-logo.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.461769115442).isActive = true
-logo.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0851063829787).isActive = true
-logo.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.419790104948).isActive = true
+desc.widthAnchor.constraint(equalToConstant: view.frame.width*0.829787234043).isActive = true
+desc.heightAnchor.constraint(equalToConstant: view.frame.height*0.194902548726).isActive = true
+desc.centerXAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.5).isActive = true
+desc.centerYAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.269865067466).isActive = true
+desc.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width*0.0851063829787).isActive = true
+desc.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height*0.172413793103).isActive = true
 
 save = UILabel()
 save.translatesAutoresizingMaskIntoConstraints = false

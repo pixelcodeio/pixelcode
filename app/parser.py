@@ -86,8 +86,8 @@ class Parser(object):
     elements.sort(key=lambda e: (e["x"] + e["y"] + e["width"] + e["height"]))
 
     parsed_elements = []
-    while elements != []:
-      elem = elements.pop()
+    while elements:
+      elem = elements.pop(0)
       elem = self.calculate_spacing(elem, parsed_elements)
       elem = self.convert_coords(elem, parent)
 
@@ -135,8 +135,7 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
-    parsed_elements.sort(key=itemgetter('y', 'x'))
-    return parsed_elements
+    return parsed_elements[::-1]
 
   def create_children(self, elem):
     elem = self.inherit_from_json(elem)
@@ -197,14 +196,12 @@ class Parser(object):
     # convert units to percentages
     elem["width"] /= width
     elem["height"] /= height
-    elem["x"] /= width
-    elem["y"] /= height
     elem["horizontal"]["distance"] /= width
     elem["vertical"]["distance"] /= height
 
     # generate center
-    elem["x"] = elem["x"] + elem["width"] / 2
-    elem["y"] = elem["y"] + elem["height"] / 2
+    elem["cx"] = elem["x"]/width + elem["width"]/2
+    elem["cy"] = elem["y"]/width + elem["height"]/2
     return elem
 
   def inherit_from(self, parent, child, first=False):
