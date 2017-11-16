@@ -128,7 +128,7 @@ class BaseComponent(object):
 
     Returns: The swift code for the heightForRowAt func of a UITableView.
     """
-    cellHeightPerc = cells[0]['rect']['height']
+    cellHeightPerc = cells[0]['height']
     print(cellHeightPerc)
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
@@ -266,7 +266,7 @@ class BaseComponent(object):
     if inView is False:
       c += utils.add_subview('view', cid)
     else:
-      c += utils.add_subview(None, cid)
+      c += utils.add_subview('contentView', cid)
     c += utils.wh_constraints(cid, width, height, inView)
     c += utils.position_constraints(
         cid, horizontalID, horizontalDir, horizontalDist, verticalID,

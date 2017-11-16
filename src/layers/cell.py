@@ -21,7 +21,7 @@ class Cell(BaseLayer):
         components.append(child)
 
     if rect is None:
-      raise Exception("No bound field.")
+      raise Exception("No bound field. for elem " + elem["id"])
 
     elem["rect"] = rect
     elem["components"] = components

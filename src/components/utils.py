@@ -41,10 +41,10 @@ def wh_constraints(elem, width, height, inView=False):
   of the elem.
   """
   if inView:
-    return ('{}.widthAnchor.constraint(equalToConstant: frame.width*'
+    return ('{}.widthAnchor.constraint(equalToConstant: contentView.frame.width*'
             '{}).isActive = true\n'
-            '{}.heightAnchor.constraint(equalToConstant: frame.height*'
-            '{}).isActive = true\n'
+            '{}.heightAnchor.constraint(equalToConstant: contentView.frame.'
+            'height*{}).isActive = true\n'
            ).format(elem, width, elem, height)
   # else:
   return ('{}.widthAnchor.constraint(equalToConstant: view.frame.width*'
@@ -60,13 +60,13 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
   the elem.
   """
   if inView:
-    c = ('{}.centerXAnchor.constraint(equalTo: leftAnchor, '
+    c = ('{}.centerXAnchor.constraint(equalTo: contentView.leftAnchor, '
          'constant: frame.width*{}).isActive = true\n'
-         '{}.centerYAnchor.constraint(equalTo: topAnchor, '
+         '{}.centerYAnchor.constraint(equalTo: contentView.topAnchor, '
          'constant: frame.height*{}).isActive = true\n'
         ).format(elem, centerX, elem, centerY)
     if horID == '':
-      c += ('{}.leftAnchor.constraint(equalTo: leftAnchor, '
+      c += ('{}.leftAnchor.constraint(equalTo: contentView.leftAnchor, '
             'constant: frame.width*{}).isActive = true\n'
            ).format(elem, horDist)
     else:
@@ -76,7 +76,7 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
             ').isActive = true\n'
            ).format(elem, horDir, horID, oppDir, horDist)
     if vertID == '':
-      c += ('{}.topAnchor.constraint(equalTo: topAnchor, '
+      c += ('{}.topAnchor.constraint(equalTo: contentView.topAnchor, '
             'constant: frame.height*{}).isActive = true\n\n'
            ).format(elem, vertDist)
     else:
