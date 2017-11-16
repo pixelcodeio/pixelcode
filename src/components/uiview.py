@@ -18,6 +18,7 @@ class UIView(object):
     stroke_w = info.get('stroke-width')
     stroke_o = info.get('stroke-opacity')
     opacity = info.get('opacity')
+
     c = ""
     if fill is not None:
       c += utils.set_bg(elem, fill, opacity)
@@ -27,4 +28,5 @@ class UIView(object):
       c += utils.set_border_color(elem, stroke_c, stroke_o)
     if stroke_w is not None:
       c += utils.set_border_width(elem, stroke_w)
+
     return c

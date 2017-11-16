@@ -135,7 +135,7 @@ class BaseComponent(object):
     Returns: The swift code for the heightForRowAt func of a UITableView.
     """
     cellHeightPerc = cells[0]['rect']['height']
-    print(cellHeightPerc)
+    print cellHeightPerc
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
@@ -144,57 +144,10 @@ class BaseComponent(object):
   def generate_component(self, comp, info, bgColor=None, inView=False):
     """
     Args:
-      comp (str): represents the component that is to be generated
-      info (dict): is a dictionary of keys (values may be None):
-        - id: (str) name of view
-        - x: (float) x-coor of view's center as pixels
-        - y: (float) y-coor of view's center as pixels
-        - cx: (float) x-coor of view's center as percentage of screen's width
-        - cy: (float) y-coor of view's center as percentage of screen's height
-        - vertical: (dict) dict containing constraints for top/bottom of view
-        - horizontal: (dict) dict containing constraints for left/right of view
-        - width: (float) width of view as percentage of screen's width
-        - height: (float) height of view as percentage of screen's height
-        - path: (str) name of the image file (e.g. iphone.png)
-        - opacity: (float) between 0 and 1.
-        - stroke-color: (tuple) r, g, b values representing the border
-                        color. Has value None if no value is provided
-        - stroke-width: (int) the number of pixels representing the
-                        border width. Has value None if no value is provided
-        - left-inset: (int) the number of pixels of the left-inset of a
-                      textfield or textview
-        - rect: (dict) dictionary of following keys (values may be None):
-          - fill: (tuple) r, g, b values for background color. Has value
-                  None if no value is provided
-          - stroke-color: (tuple) r, g, b values representing the border
-                          color. Has value None if no value is provided
-          - stroke-width: (int) the number of pixels representing the
-                          border width. Has value None if no value is provided
-          - stroke-opacity: (float) between 0 and 1 of the border opacity
-          - border-radius: (int) the number of pixels representing the
-                           corner radius. Has value None if no value is provided
-          - opacity: (float) between 0 and 1.
-        - text: (dict) contains a key for textspan. textspan is a dict list
-          with the following keys:
-          - contents: (str) the string to be displayed in the view
-          - fill: (tuple) r, g, b values for string color. Has value
-                  None if no value is provided
-          - text-align: (str) alignment center of text
-          - font-size: (int) font-size of the text
-          - font-family: (str) name of the font of title
-          - opacity: (float) between 0 and 1.
-        - textspan: (dict list) dictionary with the keys described above
-        - cells: (dict list) list of dictionary with keys:
-          - rect: (dict) described above
-          - components: (list) list of components (a component can be a button,
-                        textfield, textview, label, or imageview)
-        - inView: (boolean) of whether component is being generated inside a
-                  view class or not
-
-        # - subtext-colors: (dict list) dict list containing colors and
-        #                  indices of substrings of the text.
-        # - subtext-fonts: (dict list) dict list containing the fonts of
-        #                 substrings of the text.
+      comp (str): The component to be generated
+      info (dict):
+        A dictionary of keys (values may be None). Further documentation is
+        available online.
 
     Returns: The swift code to generate the component
     """
@@ -217,19 +170,23 @@ class BaseComponent(object):
     verticalID = vertical.get('id')
     width = info.get('width')
     left_inset = info.get('left-inset')
-    if inView is True:
+
+    if inView:
       c = "var {} = {}()\n".format(cid, comp)
     else:
       c = "{} = {}()\n".format(cid, comp)
+
     c += utils.translates_false(cid)
     # if comp == 'UIView':
     #   print('rect is:')
     #   print(rect)
-    if rect != None:
+
+    if rect is not None:
       c += self.setup_rect(cid, rect)
+
     if comp == 'UIView':
       c += obj.setup_uiview(cid, info)
-    elif text != None and comp == 'UIButton':
+    elif text is not None and comp == 'UIButton':
       textspan = text['textspan']
       c += obj.setup_uibutton(cid, textspan, inView)
     elif comp == 'UILabel':
@@ -253,10 +210,10 @@ class BaseComponent(object):
       #       start = sub['start']
       #       length = sub['length']
       #       c += obj.set_substring_font(strID, font, size, start, length)
-    elif text != None and comp == 'UITextField':
+    elif text is not None and comp == 'UITextField':
       textspan = text['textspan']
       c += obj.setup_uitextfield(cid, textspan, left_inset, inView)
-    elif text != None and comp == 'UITextView':
+    elif text is not None and comp == 'UITextView':
       textspan = text['textspan']
       c += obj.setup_uitextview(cid, textspan, left_inset, inView)
     elif comp == 'UIImageView':
@@ -269,10 +226,12 @@ class BaseComponent(object):
       tvm += self.number_of_rows_in_section(cells)
       tvm += self.height_for_row_at(cid, cells)
       self.tableViewMethods = tvm
-    if inView is False:
+
+    if not inView:
       c += utils.add_subview('view', cid)
     else:
       c += utils.add_subview(None, cid)
+
     c += utils.wh_constraints(cid, width, height, inView)
     c += utils.position_constraints(
         cid, horizontalID, horizontalDir, horizontalDist, verticalID,
@@ -290,6 +249,7 @@ class BaseComponent(object):
     cells = info['cells']
     capID = cid.capitalize()
     c = ("import UIKit\n class {}Cell: UITableViewCell {{\n").format(capID)
+
     for cell in cells:
       components = cell['components']
       for component in components:
@@ -297,10 +257,12 @@ class BaseComponent(object):
         ctype = component['type']
         c += 'var {} = {}()\n'.format(cid, ctype)
       break
+
     c += ("override init(style: UITableViewCellStyle, reuseIdentifier: "
           "String?) {\n"
           "super.init(style: style, reuseIdentifier: reuseIdentifier)\n\n"
          )
+
     for cell in cells:
       rect = cell['rect']
       components = cell['components']
@@ -310,6 +272,7 @@ class BaseComponent(object):
         comp = component['type']
         c += self.generate_component(comp, component, None, True)
       break # we are only considering cells with the same components
+
     c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}\n\n}'
          )

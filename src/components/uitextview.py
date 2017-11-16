@@ -47,8 +47,9 @@ class UITextView(object):
       textspan: (dict array) see generate_component docstring for more info
       left_inset: (int) pixels representing the number of left-inset
 
-    Returns: The swift code to apply all the properties from textspan and
-    left_inset to elem.
+    Returns:
+      The swift code to apply all the properties from textspan and
+      left_inset to elem.
     """
     txt = textspan[0]
     placeholder = txt['contents']
@@ -56,11 +57,10 @@ class UITextView(object):
     font = txt['font-family']
     size = txt['font-size']
     opacity = txt['opacity']
+    c = ""
     if inView is False:
-      c = self.set_placeholder_text_and_color(elem, placeholder,
-                                              placeholder_c, opacity)
-    else:
-      c = ""
+      c += self.set_placeholder_text_and_color(elem, placeholder,
+                                               placeholder_c, opacity)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
     c += self.set_clips_to_bounds(elem)
