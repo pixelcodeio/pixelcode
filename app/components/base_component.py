@@ -125,8 +125,10 @@ class BaseComponent(object):
       comp (str): represents the component that is to be generated
       info (dict): is a dictionary of keys (values may be None):
         - id: (str) name of view
-        - x: (float) x-coor of view's center as percentage of screen's width
-        - y: (float) y-coor of view's center as percentage of screen's height
+        - x: (float) x-coor of view's center as pixels
+        - y: (float) y-coor of view's center as pixels
+        - cx: (float) x-coor of view's center as percentage of screen's width
+        - cy: (float) y-coor of view's center as percentage of screen's height
         - vertical: (dict) dict containing constraints for top/bottom of view
         - horizontal: (dict) dict containing constraints for left/right of view
         - width: (float) width of view as percentage of screen's width
@@ -175,8 +177,8 @@ class BaseComponent(object):
     Returns: The swift code to generate the component
     """
     obj = self.create_object(comp, bgColor)
-    centerX = info['x']
-    centerY = info['y']
+    centerX = info['cx']
+    centerY = info['cy']
     cid = info['id']
     height = info['height']
     horizontal = info['horizontal']
