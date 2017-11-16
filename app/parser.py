@@ -135,7 +135,6 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
-    parsed_elements.sort(key=itemgetter('y', 'x'))
     return parsed_elements
 
   def create_children(self, elem):
