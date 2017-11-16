@@ -209,20 +209,16 @@ class Parser(object):
     Returns: child with attributes from parent not defined in child passed down
     """
     for attr in parent.attrs:
-      if first: #TODO: fix this shit
-        if attr == "fill" and parent["fill"] == "none":
-          pass
-        elif attr == "stroke" and parent["stroke"] == "none":
-          pass
-        elif attr == "stroke-width" and parent["stroke"] == "none":
-          pass
-        elif attr == "fill-rule":
-          pass
-        elif attr != "id" and attr not in child.attrs:
-          child[attr] = parent[attr]
-      else:
-        if attr != "id" and attr not in child.attrs:
-          child[attr] = parent[attr]
+      skip = attr == "id"
+      if first:
+        skip = skip or \
+        (attr == "fill" and parent["fill"] == "none") or \
+        (attr == "stroke" and parent["stroke"] == "none") or \
+        (attr == "stroke-width" and parent["stroke"] == "none") or \
+        attr == "fill-rule"
+
+      if not skip and attr not in child.attrs:
+        child[attr] = parent[attr]
     return child
 
   def inherit_from_json(self, child):
