@@ -43,4 +43,4 @@ def update_test_dir(path):
 
 if __name__ == "__main__":
   update_test_dir("./exports/")
-  update_test_dir("./tests/")
+  update_test_dir("./tests/files/")

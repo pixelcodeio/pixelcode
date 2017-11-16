@@ -49,9 +49,7 @@ class UILabel(object):
     Returns: The swift code to set the text color of elem to be color
     """
     o = "1.0" if opacity is None else opacity
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     return ("{}.textColor = UIColor(red: {}/255.0, green: {}/255.0, "
             "blue: {}/255.0, alpha: {})\n"
            ).format(elem, r, g, b, o)
@@ -63,9 +61,7 @@ class UILabel(object):
 
     Returns: The swift code to set the background color of elem.
     """
-    r = self.bgColor[0]
-    g = self.bgColor[1]
-    b = self.bgColor[2]
+    r, g, b = self.bgColor
     return ("{}.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0, "
             "blue: {}/255.0, alpha: 1.0)\n"
            ).format(elem, r, g, b)
@@ -138,9 +134,7 @@ class UILabel(object):
     Returns: The swift code to set a substring of str to be a color with r,g,b
              values.
     """
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
          ": 1.0)"
         ).format(r, g, b)
@@ -176,23 +170,24 @@ class UILabel(object):
     if len(textspan) == 1:
       # the contents of the textspan don't vary
       txt = textspan[0]
-      contents = txt['contents']
-      fill = txt['fill']
-      txt_align = txt['text-align']
-      font = txt['font-family']
-      size = txt['font-size']
-      opacity = txt['opacity']
+      contents = txt.get('contents')
+      fill = txt.get('fill')
+      txt_align = txt.get('text-align')
+      font = txt.get('font-family')
+      size = txt.get('font-size')
+      opacity = txt.get('opacity')
+
+      c = ""
       if inView is False:
-        c = self.set_text(elem, contents) if contents != None else ""
-      else:
-        c = ""
+        c += self.set_text(elem, contents) if contents != None else ""
       c += self.set_text_color(elem, fill, opacity) if fill != None else ""
-      if txt_align != None:
-        c += self.center_and_wrap(elem, txt_align)
-      else:
+      if txt_align is None:
         c += self.center_and_wrap(elem, "center")
+      else:
+        c += self.center_and_wrap(elem, txt_align)
       c += self.set_font_family_size(elem, font, size)
       return c
+    
     else:
       for t in textspan:
         print(t)
