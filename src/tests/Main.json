@@ -1,0 +1,127 @@
+{
+	"layers": [
+		{
+			"name": "desc",
+			"x": "32",
+			"y": "115",
+			"height": "130",
+			"width": "312",
+			"text_align": "left"
+		},
+		{
+			"name": "header",
+			"x": "32",
+			"y": "48",
+			"height": "48",
+			"width": "232",
+			"text_align": "left"
+		},
+		{
+			"name": "getstartedButton",
+			"x": "32",
+			"y": "585",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "getstarted",
+			"x": "126",
+			"y": "14",
+			"height": "21",
+			"width": "61"
+		},
+		{
+			"name": "rectangle",
+			"x": "0",
+			"y": "0",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "emailTextField",
+			"x": "32",
+			"y": "437",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "emailAddress",
+			"x": "12",
+			"y": "14",
+			"height": "21",
+			"width": "117"
+		},
+		{
+			"name": "emailRectangle",
+			"x": "0",
+			"y": "0",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "userTextField",
+			"x": "32",
+			"y": "371",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "userAddress",
+			"x": "12",
+			"y": "14",
+			"height": "21",
+			"width": "84"
+		},
+		{
+			"name": "userRectangle",
+			"x": "0",
+			"y": "0",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "passTextField",
+			"x": "32",
+			"y": "503",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "pass",
+			"x": "12",
+			"y": "14",
+			"height": "21",
+			"width": "80"
+		},
+		{
+			"name": "passRectangle",
+			"x": "0",
+			"y": "0",
+			"height": "50",
+			"width": "312"
+		},
+		{
+			"name": "design",
+			"x": "112",
+			"y": "277",
+			"height": "19",
+			"width": "126.1826870609184",
+			"text_align": "left"
+		},
+		{
+			"name": "save",
+			"x": "112",
+			"y": "299",
+			"height": "40",
+			"width": "232",
+			"text_align": "left"
+		},
+		{
+			"name": "logo",
+			"x": "32",
+			"y": "280",
+			"height": "56",
+			"width": "56"
+		}
+	]
+}
