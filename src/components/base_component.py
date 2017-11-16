@@ -76,11 +76,11 @@ class BaseComponent(object):
         ).format(elem, elem, capElem)
 
     for i, cell in enumerate(cells):
-      components = cell['components']
+      components = cell.get('components')
       c += '\ncase {}:\n'.format(i)
       for component in components:
-        comp = component['type']
-        cid = component['id']
+        comp = component.get('type')
+        cid = component.get('id')
         obj = self.create_object(comp)
         cellComp = "cell.{}".format(cid)
 
@@ -91,7 +91,7 @@ class BaseComponent(object):
             c += obj.set_title(cellComp, contents)
 
         elif comp == 'UIImageView':
-          path = component['path']
+          path = component.get('path')
           if path is not None:
             c += obj.set_image(cellComp, path)
 
@@ -135,7 +135,6 @@ class BaseComponent(object):
     Returns: The swift code for the heightForRowAt func of a UITableView.
     """
     cellHeightPerc = cells[0]['height']
-    print(cellHeightPerc)
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
@@ -244,16 +243,16 @@ class BaseComponent(object):
 
     Returns: The swift code to generate a UITableViewCell swift file
     """
-    cid = info['id']
-    cells = info['cells']
+    cid = info.get('id')
+    cells = info.get('cells')
     capID = cid.capitalize()
     c = ("import UIKit\n class {}Cell: UITableViewCell {{\n").format(capID)
 
     for cell in cells:
-      components = cell['components']
+      components = cell.get('components')
       for component in components:
-        cid = component['id']
-        ctype = component['type']
+        cid = component.get('id')
+        ctype = component.get('type')
         c += 'var {} = {}()\n'.format(cid, ctype)
       break
 
@@ -263,12 +262,12 @@ class BaseComponent(object):
          )
 
     for cell in cells:
-      rect = cell['rect']
-      components = cell['components']
+      rect = cell.get('rect')
+      components = cell.get('components')
       c += self.setup_rect(cid, rect, True)
       for component in components:
         #comp, info, bgColor=None, inView=False
-        comp = component['type']
+        comp = component.get('type')
         c += self.generate_component(comp, component, None, True)
       break # we are only considering cells with the same components
 

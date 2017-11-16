@@ -52,11 +52,11 @@ class UITextView(object):
       left_inset to elem.
     """
     txt = textspan[0]
-    placeholder = txt['contents']
-    placeholder_c = txt['fill']
-    font = txt['font-family']
-    size = txt['font-size']
-    opacity = txt['opacity']
+    placeholder = txt.get('contents')
+    placeholder_c = txt.get('fill')
+    font = txt.get('font-family')
+    size = txt.get('font-size')
+    opacity = txt.get('opacity')
     c = ""
     if inView is False:
       c += self.set_placeholder_text_and_color(elem, placeholder,
