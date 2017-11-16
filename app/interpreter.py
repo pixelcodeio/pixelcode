@@ -57,13 +57,33 @@ class Interpreter(object):
     """
     c = self.generate_header(elements)
     c += self.set_view_bg()
+    tableViewExists = False
+    tableViewElem = None
+    tableViewMethods = ""
     for elem in elements:
       comp = elem["type"]
       if comp == 'UILabel':
+        if elem['id'] == 'top':
+          print(elem)
         bc = BaseComponent(comp, elem, self.globals['background_color'])
         c += bc.swift
       else:
         bc = BaseComponent(comp, elem)
         c += bc.swift
-    c += "\n}\n}"
+        if comp == 'UITableView':
+          tableViewElem = elem
+          tableViewExists = True
+          tableViewMethods = bc.tableViewMethods
+    if tableViewExists is False:
+      c += "\n}\n}"
+      self.swift = c
+      return
+    # else:
+    indexVC = c.index(": UIViewController")
+    c = ("{}, UITableViewDelegate, UITableViewDataSource {}"
+        ).format(c[:indexVC+18], c[indexVC+18:])
+    c += "\n}}\n{}}}\n".format(tableViewMethods)
+    c += "Other File: \n"
+    bc = BaseComponent('UITableView', tableViewElem, None, True)
+    c += bc.cell
     self.swift = c

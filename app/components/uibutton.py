@@ -60,7 +60,7 @@ class UIButton(object):
     return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
 
-  def setup_uibutton(self, elem, textspan):
+  def setup_uibutton(self, elem, textspan, inView=False):
     """
     Args:
       elem: (str) id of the component
@@ -77,7 +77,10 @@ class UIButton(object):
       font = txt['font-family']
       size = txt['font-size']
       opacity = txt['opacity']
-      c = self.set_title(elem, contents) if contents != None else ""
+      if inView is False:
+        c = self.set_title(elem, contents) if contents != None else ""
+      else:
+        c = ""
       c += self.set_title_color(elem, fill, opacity) if fill != None else ""
       c += self.set_font_family_size(elem, font, size)
       return c

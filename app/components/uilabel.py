@@ -164,7 +164,7 @@ class UILabel(object):
             ", range: NSRange(location: {}, length: {}))\n"
            ).format(strID, color, start, length)
 
-  def setup_uilabel(self, elem, textspan):
+  def setup_uilabel(self, elem, textspan, inView=False):
     """
     Args:
       elem: (str) id of the component
@@ -182,7 +182,10 @@ class UILabel(object):
       font = txt['font-family']
       size = txt['font-size']
       opacity = txt['opacity']
-      c = self.set_text(elem, contents) if contents != None else ""
+      if inView is False:
+        c = self.set_text(elem, contents) if contents != None else ""
+      else:
+        c = ""
       c += self.set_text_color(elem, fill, opacity) if fill != None else ""
       if txt_align != None:
         c += self.center_and_wrap(elem, txt_align)

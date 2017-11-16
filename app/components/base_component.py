@@ -5,19 +5,21 @@ class BaseComponent(object):
   """
   Base class for components
   """
-  def __init__(self, comp, info, bgColor=None):
+  def __init__(self, comp, info, bgColor=None, generating_cell=False):
     """
     Args:
       Refer to generate_component for documentation on args
     """
-    self.swift = self.generate_component(comp, info, bgColor)
+    if generating_cell is False:
+      self.tableViewMethods = ""
+      self.swift = self.generate_component(comp, info, bgColor)
+    else:
+      self.cell = self.generate_cell(info)
 
-  def create_object(self, comp, info, bgColor):
+  def create_object(self, comp, bgColor=None):
     """
     Args:
       comp: (str) the component to be created
-      info: (dict) dictionary of keys used in base_component
-      bgColor: (tuple) background color of as r, g, b values (used for labels)
 
     Returns: An instance of the component to be created
     """
@@ -33,9 +35,11 @@ class BaseComponent(object):
       return UITextField()
     elif comp == 'UITextView':
       return UITextView()
+    elif comp == 'UITableView':
+      return UITableView()
     return ""
 
-  def setup_rect(self, cid, rect):
+  def setup_rect(self, cid, rect, inView=False):
     """
     Args:
       cid: (int) id of component
@@ -45,17 +49,77 @@ class BaseComponent(object):
     """
     fill = rect['fill']
     border_r = rect['border-radius']
-    stroke_c = rect['stroke-color']
-    stroke_w = rect['stroke-width']
+    str_c = rect['stroke-color']
+    str_w = rect['stroke-width']
     opacity = rect['opacity']
-    stroke_o = rect['stroke-opacity']
-    c = utils.set_bg(cid, fill, opacity) if fill != None else ""
-    c += utils.set_border_color(cid, stroke_c, stroke_o) if stroke_c != None else ""
-    c += utils.set_border_width(cid, stroke_w) if stroke_w != None else ""
-    c += utils.set_corner_radius(cid, border_r) if border_r != None else ""
+    str_o = rect['stroke-opacity']
+    c = utils.set_bg(cid, fill, inView, opacity) if fill != None else ""
+    c += utils.set_border_color(cid, str_c, str_o, inView) if str_c != None else ""
+    c += utils.set_border_width(cid, str_w, inView) if str_w != None else ""
+    c += utils.set_corner_radius(cid, border_r, inView) if border_r != None else ""
     return c
 
-  def generate_component(self, comp, info, bgColor):
+  def cell_for_row_at(self, elem, cells):
+    """
+    Args:
+      cells: see generate_component's docstring for more information
+
+    Returns: The swift code for the cellForRowAt function of a UITableView.
+    """
+    capElem = elem.capitalize()
+    c = ("func tableView(_ tableView: UITableView, cellForRowAt "
+         "indexPath: IndexPath) -> UITableViewCell {{\n"
+         'let cell = {}.dequeueReusableCell(withIdentifier: "{}ID") as! '
+         '{}Cell\n'
+         "switch indexPath.row {{"
+        ).format(elem, elem, capElem)
+    for i, cell in enumerate(cells):
+      components = cell['components']
+      c += '\ncase {}:\n'.format(i)
+      for component in components:
+        comp = component['type']
+        cid = component['id']
+        obj = self.create_object(comp)
+        cellComp = "cell.{}".format(cid)
+        if comp == 'UIButton':
+          contents = component['text']['textspan'][0]['contents']
+          if contents != None:
+            # assuming not varying text
+            c += obj.set_title(cellComp, contents)
+        elif comp == 'UIImageView':
+          path = component['path']
+          if path != None:
+            c += obj.set_image(cellComp, path)
+        elif comp == 'UILabel':
+          contents = component['textspan'][0]['contents']
+          if contents != None:
+            c += obj.set_text(cellComp, contents)
+        elif comp == 'UITextField' or comp == 'UITextView':
+          textspan = component['text']['textspan']
+          placeholder = textspan[0]['contents']
+          placeholder_c = textspan[0]['fill']
+          opacity = textspan[0]['opacity']
+          c += obj.set_placeholder_text_and_color(cellComp, placeholder,
+                                                  placeholder_c, opacity)
+      c += '\nreturn cell'
+    c += '\ndefault: return cell\n}\n}\n\n'
+    return c
+
+  def number_of_rows_in_section(self, cells):
+    """
+    Args:
+      cells: see generate_component's docstring for more information
+
+    Returns: The swift code for the numberOfRowsInSection of a UITableView.
+    """
+    numRows = len(cells)
+    return ("func tableView(_ tableView: UITableView, "
+            "numberOfRowsInSection section: Int) -> Int {{\n"
+            "return {} \n"
+            "}}\n"
+           ).format(numRows)
+
+  def generate_component(self, comp, info, bgColor=None, inView=False):
     """
     Args:
       comp (str): represents the component that is to be generated
@@ -86,7 +150,7 @@ class BaseComponent(object):
           - border-radius: (int) the number of pixels representing the
                            corner radius. Has value None if no value is provided
           - opacity: (float) between 0 and 1.
-        - text: (dict) contains a key for textspan. textspan is a dict array
+        - text: (dict) contains a key for textspan. textspan is a dict list
           with the following keys:
           - contents: (str) the string to be displayed in the view
           - fill: (tuple) r, g, b values for string color. Has value
@@ -95,16 +159,22 @@ class BaseComponent(object):
           - font-size: (int) font-size of the text
           - font-family: (str) name of the font of title
           - opacity: (float) between 0 and 1.
-        - textspan: (dict array) dictionary with the keys described above
+        - textspan: (dict list) dictionary with the keys described above
+        - cells: (dict list) list of dictionary with keys:
+          - rect: (dict) described above
+          - components: (list) list of components (a component can be a button,
+                        textfield, textview, label, or imageview)
+        - inView: (boolean) of whether component is being generated inside a
+                  view class or not
 
-        # - subtext-colors: (dict array) dict array containing colors and
+        # - subtext-colors: (dict list) dict list containing colors and
         #                  indices of substrings of the text.
-        # - subtext-fonts: (dict array) dict array containing the fonts of
+        # - subtext-fonts: (dict list) dict list containing the fonts of
         #                 substrings of the text.
 
     Returns: The swift code to generate the component
     """
-    obj = self.create_object(comp, info, bgColor)
+    obj = self.create_object(comp, bgColor)
     centerX = info['x']
     centerY = info['y']
     cid = info['id']
@@ -123,7 +193,10 @@ class BaseComponent(object):
     verticalID = vertical['id']
     width = info['width']
     left_inset = info['left-inset']
-    c = "{} = {}()\n".format(cid, comp)
+    if inView is True:
+      c = "var {} = {}()\n".format(cid, comp)
+    else:
+      c = "{} = {}()\n".format(cid, comp)
     c += utils.translates_false(cid)
     # if comp == 'UIView':
     #   print('rect is:')
@@ -134,10 +207,10 @@ class BaseComponent(object):
       c += obj.setup_uiview(cid, info)
     elif text != None and comp == 'UIButton':
       textspan = text['textspan']
-      c += obj.setup_uibutton(cid, textspan)
+      c += obj.setup_uibutton(cid, textspan, inView)
     elif comp == 'UILabel':
       textspan = info['textspan']
-      c += obj.setup_uilabel(cid, textspan)
+      c += obj.setup_uilabel(cid, textspan, inView)
       # if subtextColors is None and subtextFonts is None:
       #   c += obj.set_text(cid, txt) if txt != None else ""
       # else:
@@ -158,15 +231,61 @@ class BaseComponent(object):
       #       c += obj.set_substring_font(strID, font, size, start, length)
     elif text != None and comp == 'UITextField':
       textspan = text['textspan']
-      c += obj.setup_uitextfield(cid, textspan, left_inset)
+      c += obj.setup_uitextfield(cid, textspan, left_inset, inView)
     elif text != None and comp == 'UITextView':
       textspan = text['textspan']
-      c += obj.setup_uitextview(cid, textspan, left_inset)
+      c += obj.setup_uitextview(cid, textspan, left_inset, inView)
     elif comp == 'UIImageView':
-      c += obj.setup_uiimageview(cid, info)
-    c += utils.add_subview('view', cid)
-    c += utils.wh_constraints(cid, width, height)
+      c += obj.setup_uiimageview(cid, info, inView)
+    elif comp == 'UITableView':
+      # TODO: assuming no tableviews are within tableviews
+      cells = info['cells']
+      c += obj.setup_uitableview(cid, cells)
+      tvm = self.cell_for_row_at(cid, cells)
+      tvm += self.number_of_rows_in_section(cells)
+      self.tableViewMethods = tvm
+    if inView is False:
+      c += utils.add_subview('view', cid)
+    else:
+      c += utils.add_subview(None, cid)
+    c += utils.wh_constraints(cid, width, height, inView)
     c += utils.position_constraints(
         cid, horizontalID, horizontalDir, horizontalDist, verticalID,
-        verticalDir, verticalDist, centerX, centerY)
+        verticalDir, verticalDist, centerX, centerY, inView)
+    return c
+
+  def generate_cell(self, info):
+    """
+    Args:
+      info: see generate_component's docstring for more information
+
+    Returns: The swift code to generate a UITableViewCell swift file
+    """
+    cid = info['id']
+    cells = info['cells']
+    capID = cid.capitalize()
+    c = ("import UIKit\n class {}Cell: UITableViewCell {{\n").format(capID)
+    for cell in cells:
+      components = cell['components']
+      for component in components:
+        cid = component['id']
+        ctype = component['type']
+        c += 'var {}: {}!\n'.format(cid, ctype)
+      break
+    c += ("override init(style: UITableViewCellStyle, reuseIdentifier: "
+          "String?) {\n"
+          "super.init(style: style, reuseIdentifier: reuseIdentifier)\n\n"
+         )
+    for cell in cells:
+      rect = cell['rect']
+      components = cell['components']
+      c += self.setup_rect(cid, rect, True)
+      for component in components:
+        #comp, info, bgColor=None, inView=False
+        comp = component['type']
+        c += self.generate_component(comp, component, None, True)
+      break # we are only considering cells with the same components
+    c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
+          'fatalError("init(coder:) has not been implemented")\n}\n\n}'
+         )
     return c

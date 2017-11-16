@@ -53,6 +53,7 @@ class BaseLayer(object):
     """
     params = [
         "border-radius",
+        "cells",
         "components",
         "contents",
         "fill",

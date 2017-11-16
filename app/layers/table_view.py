@@ -8,7 +8,7 @@ class TableView(BaseLayer):
   """
   def parse_elem(self, elem):
     rect = None
-    components = []
+    cells = []
     for child in elem["children"]:
       if child["type"] == "UIView":
         if rect is None:
@@ -16,19 +16,19 @@ class TableView(BaseLayer):
         else:
           raise Exception("Only one wash allowed per TableView")
       elif child["type"] == "Cell":
-        components.append(child)
+        cells.append(child)
       else:
         raise Exception("Unsupported type for TableView")
 
-    if not components:
+    if not cells:
       raise Exception("Must have one component in a TableView")
 
     separator = 0
-    if len(components) >= 2:
-      separator = components[1]["y"] - components[1]["y"]
+    if len(cells) >= 2:
+      separator = cells[1]["y"] - cells[1]["y"]
 
     elem["rect"] = rect
-    elem["components"] = components
+    elem["cells"] = cells
     elem["separator"] = separator
 
     return super(TableView, self).parse_elem(elem)
