@@ -130,8 +130,8 @@ class Parser(object):
 
         else:
           for child in elem["children"]:
-            child["x"] = float(child["x"])
-            child["y"] = float(child["y"])
+            child["x"] = elem["x"] + float(child["x"])
+            child["y"] = elem["y"] + float(child["y"])
             child["width"] = float(child["width"])
             child["height"] = float(child["height"])
             elements.insert(0, child)
