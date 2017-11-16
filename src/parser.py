@@ -162,22 +162,22 @@ class Parser(object):
     vertical = {}
     horizontal = {}
     for check in parsed_elements:
-      if vertical == {}:
+      if not vertical:
         check_up = utils.check_spacing(check, elem, "up")
         if check_up[0]:
           vertical = {"direction": "up", "id": check["id"],
                       "distance": check_up[1]}
-      if horizontal == {}:
+      if not horizontal:
         check_left = utils.check_spacing(check, elem, "left")
         if check_left[0]:
           horizontal = {"direction": "left", "id": check["id"],
                         "distance": check_left[1]}
-      if vertical != {} and horizontal != {}:
+      if vertical and horizontal:
         break
 
-    if vertical == {}:
+    if not vertical:
       vertical = {"direction": "up", "id": "", "distance": elem["y"]}
-    if horizontal == {}:
+    if not horizontal:
       horizontal = {"direction": "left", "id": "", "distance": elem["x"]}
 
     elem["horizontal"] = horizontal
