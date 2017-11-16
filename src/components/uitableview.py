@@ -4,9 +4,6 @@ class UITableView(object):
   """
   Class representing a UITableView in swift
   """
-  def __init__(self):
-    pass
-
   def setup_uitableview(self, elem, cells):
     """
     Args:

@@ -4,9 +4,6 @@ class UIImageView(object):
   """
   Class representing an UIImageView in swift
   """
-  def __init__(self):
-    pass
-
   def set_image(self, elem, image_fname):
     """
     Args:

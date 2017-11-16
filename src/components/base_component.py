@@ -10,11 +10,11 @@ class BaseComponent(object):
     Args:
       Refer to generate_component for documentation on args
     """
-    if generating_cell is False:
+    if generating_cell:
+      self.cell = self.generate_cell(info)
+    else:
       self.tableViewMethods = ""
       self.swift = self.generate_component(comp, info, bgColor)
-    else:
-      self.cell = self.generate_cell(info)
 
   def create_object(self, comp, bgColor=None):
     """
@@ -47,12 +47,12 @@ class BaseComponent(object):
 
     Returns: The swift code to apply all the properties from rect.
     """
-    fill = rect['fill']
-    border_r = rect['border-radius']
-    str_c = rect['stroke-color']
-    str_w = rect['stroke-width']
-    opacity = rect['opacity']
-    str_o = rect['stroke-opacity']
+    fill = rect.get('fill')
+    border_r = rect.get('border-radius')
+    str_c = rect.get('stroke-color')
+    str_w = rect.get('stroke-width')
+    opacity = rect.get('opacity')
+    str_o = rect.get('stroke-opacity')
     c = utils.set_bg(cid, fill, inView, opacity) if fill != None else ""
     c += utils.set_border_color(cid, str_c, str_o, inView) if str_c != None else ""
     c += utils.set_border_width(cid, str_w, inView) if str_w != None else ""
@@ -83,16 +83,16 @@ class BaseComponent(object):
         cellComp = "cell.{}".format(cid)
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
-          if contents != None:
+          if contents is not None:
             # assuming not varying text
             c += obj.set_title(cellComp, contents)
         elif comp == 'UIImageView':
           path = component['path']
-          if path != None:
+          if path is not None:
             c += obj.set_image(cellComp, path)
         elif comp == 'UILabel':
           contents = component['textspan'][0]['contents']
-          if contents != None:
+          if contents is not None:
             c += obj.set_text(cellComp, contents)
         elif comp == 'UITextField' or comp == 'UITextView':
           textspan = component['text']['textspan']
@@ -193,24 +193,24 @@ class BaseComponent(object):
     Returns: The swift code to generate the component
     """
     obj = self.create_object(comp, bgColor)
-    centerX = info['cx']
-    centerY = info['cy']
-    cid = info['id']
-    height = info['height']
-    horizontal = info['horizontal']
-    horizontalDir = horizontal['direction']
-    horizontalDist = horizontal['distance']
-    horizontalID = horizontal['id']
-    rect = info['rect']
-    # subtextColors = info['subtext-colors']
-    # subtextFonts = info['subtext-fonts']
-    text = info['text']
-    vertical = info['vertical']
-    verticalDir = vertical['direction']
-    verticalDist = vertical['distance']
-    verticalID = vertical['id']
-    width = info['width']
-    left_inset = info['left-inset']
+    centerX = info.get('cx')
+    centerY = info.get('cy')
+    cid = info.get('id')
+    height = info.get('height')
+    horizontal = info.get('horizontal')
+    horizontalDir = horizontal.get('direction')
+    horizontalDist = horizontal.get('distance')
+    horizontalID = horizontal.get('id')
+    rect = info.get('rect')
+    # subtextColors = info.get('subtext-colors')
+    # subtextFonts = info.get('subtext-fonts')
+    text = info.get('text')
+    vertical = info.get('vertical')
+    verticalDir = vertical.get('direction')
+    verticalDist = vertical.get('distance')
+    verticalID = vertical.get('id')
+    width = info.get('width')
+    left_inset = info.get('left-inset')
     if inView is True:
       c = "var {} = {}()\n".format(cid, comp)
     else:

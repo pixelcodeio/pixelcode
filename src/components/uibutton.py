@@ -4,9 +4,6 @@ class UIButton(object):
   """
   Class representing a UIButton in swift
   """
-  def __init__(self):
-    pass
-
   def set_title(self, elem, title):
     """
     Args:
@@ -27,9 +24,7 @@ class UIButton(object):
     Returns: The swift code to set title color of elem using the r, g, b values
     """
     o = "1.0" if opacity is None else opacity
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     c = ('UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha: {})'
         ).format(r, g, b, o)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
@@ -72,11 +67,11 @@ class UIButton(object):
     if len(textspan) == 1:
       # the contents of the textspan don't vary
       txt = textspan[0]
-      contents = txt['contents']
-      fill = txt['fill']
-      font = txt['font-family']
-      size = txt['font-size']
-      opacity = txt['opacity']
+      contents = txt.get('contents')
+      fill = txt.get('fill')
+      font = txt.get('font-family')
+      size = txt.get('font-size')
+      opacity = txt.get('opacity')
       if inView is False:
         c = self.set_title(elem, contents) if contents != None else ""
       else:

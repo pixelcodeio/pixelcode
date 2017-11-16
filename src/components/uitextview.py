@@ -4,13 +4,8 @@ class UITextView(object):
   """
   Class representing a UITextView in swift
   """
-  def __init__(self):
-    pass
-
   def set_placeholder_text_and_color(self, tid, text, color, opacity):
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     o = "1.0" if opacity is None else opacity
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"
@@ -49,7 +44,7 @@ class UITextView(object):
     """
     Args:
       elem: (str) id of the component
-      textspan: (dict array) see generate_component docstring for more information.
+      textspan: (dict array) see generate_component docstring for more info
       left_inset: (int) pixels representing the number of left-inset
 
     Returns: The swift code to apply all the properties from textspan and

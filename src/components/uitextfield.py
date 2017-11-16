@@ -4,13 +4,8 @@ class UITextField(object):
   """
   Class representing a UITextField in swift
   """
-  def __init__(self):
-    pass
-
   def set_placeholder_text_and_color(self, tid, text, color, opacity):
-    r = color[0]
-    g = color[1]
-    b = color[2]
+    r, g, b = color
     o = "1.0" if opacity is None else opacity
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"

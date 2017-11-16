@@ -211,11 +211,11 @@ class Parser(object):
     for attr in parent.attrs:
       skip = attr == "id"
       if first:
-        skip = skip or \
-        (attr == "fill" and parent["fill"] == "none") or \
-        (attr == "stroke" and parent["stroke"] == "none") or \
-        (attr == "stroke-width" and parent["stroke"] == "none") or \
-        attr == "fill-rule"
+        skip = (skip
+                or (attr == "fill" and parent["fill"] == "none")
+                or (attr == "stroke" and parent["stroke"] == "none")
+                or (attr == "stroke-width" and parent["stroke"] == "none")
+                or attr == "fill-rule")
 
       if not skip and attr not in child.attrs:
         child[attr] = parent[attr]
