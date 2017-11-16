@@ -187,8 +187,9 @@ class UILabel(object):
         c += self.center_and_wrap(elem, txt_align)
       c += self.set_font_family_size(elem, font, size)
       return c
-    
+
     else:
+      print('textspan in label more than one line')
       for t in textspan:
         print(t)
     #TODO: Case for varying text.

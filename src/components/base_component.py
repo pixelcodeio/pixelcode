@@ -262,6 +262,7 @@ class BaseComponent(object):
          )
 
     for cell in cells:
+      print(cell)
       rect = cell.get('rect')
       components = cell.get('components')
       c += self.setup_rect(cid, rect, True)
