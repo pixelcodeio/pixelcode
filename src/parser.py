@@ -24,6 +24,7 @@ class Parser(object):
     self.elements = []
     self.json = {}
     self.globals = {}
+    self.scale = 1.0
     self.path = path
 
   def parse_artboard(self):
@@ -40,9 +41,13 @@ class Parser(object):
     f.close()
 
     self.globals = self.parse_globals(soup.svg)
+    self.scale = float(self.globals["width"]) / 375
     artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, True)
+
+    # init rwidth and rheight for inheritance
     artboard["rwidth"] = self.globals["width"]
     artboard["rheight"] = self.globals["height"]
+
     self.elements = self.parse_elements(
         [c for c in artboard.children],
         artboard,
