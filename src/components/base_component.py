@@ -23,21 +23,15 @@ class BaseComponent(object):
 
     Returns: An instance of the component to be created
     """
-    if comp == 'UIView':
-      return UIView()
-    elif comp == 'UILabel':
-      return UILabel(bgColor)
-    elif comp == 'UIImageView':
-      return UIImageView()
-    elif comp == 'UIButton':
-      return UIButton()
-    elif comp == 'UITextField':
-      return UITextField()
-    elif comp == 'UITextView':
-      return UITextView()
-    elif comp == 'UITableView':
-      return UITableView()
-    return ""
+    return {
+        "UIButton": UIButton(),
+        "UILabel": UILabel(bgColor),
+        "UIImageView": UIImageView(),
+        "UITableView": UITableView(),
+        "UITextField": UITextField(),
+        "UITextView": UITextView(),
+        "UIView": UIView(),
+    }.get(comp, None)
 
   def setup_rect(self, cid, rect, inView=False):
     """
@@ -53,10 +47,17 @@ class BaseComponent(object):
     str_w = rect.get('stroke-width')
     opacity = rect.get('opacity')
     str_o = rect.get('stroke-opacity')
-    c = utils.set_bg(cid, fill, inView, opacity) if fill != None else ""
-    c += utils.set_border_color(cid, str_c, str_o, inView) if str_c != None else ""
-    c += utils.set_border_width(cid, str_w, inView) if str_w != None else ""
-    c += utils.set_corner_radius(cid, border_r, inView) if border_r != None else ""
+
+    c = ""
+    if fill is not None:
+      c += utils.set_bg(cid, fill, inView, opacity)
+    if str_c is not None:
+      c += utils.set_border_color(cid, str_c, str_o, inView)
+    if str_w is not None:
+      c += utils.set_border_width(cid, str_w, inView)
+    if border_r is not None:
+      c += utils.set_corner_radius(cid, border_r, inView)
+
     return c
 
   def cell_for_row_at(self, elem, cells):
@@ -73,6 +74,7 @@ class BaseComponent(object):
          '{}Cell\n'
          "switch indexPath.row {{"
         ).format(elem, elem, capElem)
+
     for i, cell in enumerate(cells):
       components = cell['components']
       c += '\ncase {}:\n'.format(i)
@@ -81,19 +83,23 @@ class BaseComponent(object):
         cid = component['id']
         obj = self.create_object(comp)
         cellComp = "cell.{}".format(cid)
+
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
           if contents is not None:
             # assuming not varying text
             c += obj.set_title(cellComp, contents)
+
         elif comp == 'UIImageView':
           path = component['path']
           if path is not None:
             c += obj.set_image(cellComp, path)
+
         elif comp == 'UILabel':
           contents = component['textspan'][0]['contents']
           if contents is not None:
             c += obj.set_text(cellComp, contents)
+
         elif comp == 'UITextField' or comp == 'UITextView':
           textspan = component['text']['textspan']
           placeholder = textspan[0]['contents']
