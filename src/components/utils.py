@@ -56,29 +56,29 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
   """
   if inView:
     c = ('{}.centerXAnchor.constraint(equalTo: contentView.leftAnchor, '
-         'constant: frame.width*{}).isActive = true\n'
+         'constant: contentView.frame.width*{}).isActive = true\n'
          '{}.centerYAnchor.constraint(equalTo: contentView.topAnchor, '
-         'constant: frame.height*{}).isActive = true\n'
+         'constant: contentView.frame.height*{}).isActive = true\n'
         ).format(elem, centerX, elem, centerY)
     if horID == '':
       c += ('{}.leftAnchor.constraint(equalTo: contentView.leftAnchor, '
-            'constant: frame.width*{}).isActive = true\n'
+            'constant: contentView.frame.width*{}).isActive = true\n'
            ).format(elem, horDist)
     else:
       oppDir = 'left' if horDir == 'right' else 'right'
       c += ('{}.{}Anchor.constraint(equalTo: {}.'
-            '{}Anchor, constant: frame.width*{}'
+            '{}Anchor, constant: contentView.frame.width*{}'
             ').isActive = true\n'
            ).format(elem, horDir, horID, oppDir, horDist)
     if vertID == '':
       c += ('{}.topAnchor.constraint(equalTo: contentView.topAnchor, '
-            'constant: frame.height*{}).isActive = true\n\n'
+            'constant: contentView.frame.height*{}).isActive = true\n\n'
            ).format(elem, vertDist)
     else:
       vertDir = 'top' if vertDir == 'up' else 'bottom'
       oppDir = 'top' if vertDir == 'bottom' else 'bottom'
       c += ('{}.{}Anchor.constraint(equalTo: {}.'
-            '{}Anchor, constant: frame.height*{}'
+            '{}Anchor, constant: contentView.frame.height*{}'
             ').isActive = true\n\n'
            ).format(elem, vertDir, vertID, oppDir, vertDist)
     return c
