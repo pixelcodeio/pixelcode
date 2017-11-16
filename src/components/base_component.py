@@ -110,7 +110,7 @@ class BaseComponent(object):
     Args:
       cells: see generate_component's docstring for more information
 
-    Returns: The swift code for the numberOfRowsInSection of a UITableView.
+    Returns: The swift code for the numberOfRowsInSection func of a UITableView.
     """
     numRows = len(cells)
     return ("func tableView(_ tableView: UITableView, "
@@ -118,6 +118,22 @@ class BaseComponent(object):
             "return {} \n"
             "}}\n"
            ).format(numRows)
+
+  def height_for_row_at(self, elem, cells):
+    """
+    Args:
+      cells: see generate_component's docstring for more information
+      tvHeight: (float) height of the uitableview as percentage of screen's
+                height
+
+    Returns: The swift code for the heightForRowAt func of a UITableView.
+    """
+    cellHeightPerc = cells[0]['rect']['height']
+    print(cellHeightPerc)
+    return ("func tableView(_ tableView: UITableView, heightForRowAt "
+            "indexPath: IndexPath) -> CGFloat {{\n"
+            "return {}.frame.height * {}\n}}\n\n"
+           ).format(elem, cellHeightPerc)
 
   def generate_component(self, comp, info, bgColor=None, inView=False):
     """
@@ -245,6 +261,7 @@ class BaseComponent(object):
       c += obj.setup_uitableview(cid, cells)
       tvm = self.cell_for_row_at(cid, cells)
       tvm += self.number_of_rows_in_section(cells)
+      tvm += self.height_for_row_at(cid, cells)
       self.tableViewMethods = tvm
     if inView is False:
       c += utils.add_subview('view', cid)
@@ -272,7 +289,7 @@ class BaseComponent(object):
       for component in components:
         cid = component['id']
         ctype = component['type']
-        c += 'var {}: {}!\n'.format(cid, ctype)
+        c += 'var {} = {}()\n'.format(cid, ctype)
       break
     c += ("override init(style: UITableViewCellStyle, reuseIdentifier: "
           "String?) {\n"

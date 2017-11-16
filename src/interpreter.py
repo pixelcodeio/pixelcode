@@ -63,8 +63,8 @@ class Interpreter(object):
     for elem in elements:
       comp = elem["type"]
       if comp == 'UILabel':
-        if elem['id'] == 'top':
-          print(elem)
+        # if elem['id'] == 'top':
+        #   print(elem)
         bc = BaseComponent(comp, elem, self.globals['background_color'])
         c += bc.swift
       else:
