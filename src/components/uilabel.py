@@ -176,17 +176,18 @@ class UILabel(object):
       font = txt.get('font-family')
       size = txt.get('font-size')
       opacity = txt.get('opacity')
+
+      c = ""
       if inView is False:
-        c = self.set_text(elem, contents) if contents != None else ""
-      else:
-        c = ""
+        c += self.set_text(elem, contents) if contents != None else ""
       c += self.set_text_color(elem, fill, opacity) if fill != None else ""
-      if txt_align != None:
-        c += self.center_and_wrap(elem, txt_align)
-      else:
+      if txt_align is None:
         c += self.center_and_wrap(elem, "center")
+      else:
+        c += self.center_and_wrap(elem, txt_align)
       c += self.set_font_family_size(elem, font, size)
       return c
+    
     else:
       for t in textspan:
         print(t)
