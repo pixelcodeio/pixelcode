@@ -180,9 +180,6 @@ class BaseComponent(object):
       c += "{} = {}()\n".format(cid, comp)
 
     c += utils.translates_false(cid)
-    # if comp == 'UIView':
-    #   print('rect is:')
-    #   print(rect)
 
     if rect is not None:
       c += self.setup_rect(cid, rect)
@@ -222,7 +219,7 @@ class BaseComponent(object):
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info, inView)
     elif comp == 'UITableView':
-      # TODO: assuming no tableviews are within tableviews
+      # Assume no tableviews are within tableviews
       cells = info['cells']
       c += obj.setup_uitableview(cid, cells)
       tvm = self.cell_for_row_at(cid, cells)
@@ -237,18 +234,6 @@ class BaseComponent(object):
     c += utils.make_snp_constraints(cid, horizontalID, horizontalDir,
                                     horizontalDist, verticalID, verticalDir,
                                     verticalDist, width, height, inView)
-    #if not inView:
-    # c += utils.wh_constraints(cid, width, height, inView)
-    # c += utils.position_constraints(
-    #     cid, horizontalID, horizontalDir, horizontalDist, verticalID,
-    #     verticalDir, verticalDist, centerX, centerY, inView)
-    # else:
-    #   top = centerY - (height/2.0)
-    #   bottom = 1.0 - centerY - (height/2.0)
-    #   left = centerX - (width/2.0)
-    #   right = 1.0 - centerX - (width/2.0)
-    #   c += utils.set_edges_constraints(cid, 'contentView', top, bottom,
-    #                                    left, right)
     return c
 
   def generate_cell(self, info):
@@ -285,7 +270,6 @@ class BaseComponent(object):
       components = cell.get('components')
       c += self.setup_rect(cid, rect, True)
       for component in components:
-        #comp, info, bgColor=None, inView=False
         comp = component.get('type')
         c += self.generate_component(comp, component, None, True)
       break # we are only considering cells with the same components

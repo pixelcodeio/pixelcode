@@ -178,8 +178,6 @@ class UILabel(object):
       opacity = txt.get('opacity')
 
       c = ""
-      # print("in label")
-      # print(txt)
       if inView is False:
         c += self.set_text(elem, contents) if contents != None else ""
       c += self.set_text_color(elem, fill, opacity) if fill != None else ""
@@ -191,8 +189,7 @@ class UILabel(object):
       return c
 
     else:
-      print(elem)
       print('textspan in label more than one line')
       for t in textspan:
-        print(t.get('contents'))
+        print(t)
     #TODO: Case for varying text.
