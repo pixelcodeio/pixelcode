@@ -25,6 +25,7 @@ def params_equal(tspan1, tspan2):
   ]
   for param in params:
     in_both = param in tspan1 and param in tspan2
-    if not (in_both and tspan1[param] == tspan2[param]):
+    not_in_both = param not in tspan1 and param not in tspan2
+    if not (not_in_both or (in_both and tspan1[param] == tspan2[param])):
       return False
   return True
