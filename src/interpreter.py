@@ -31,7 +31,8 @@ class Interpreter(object):
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
-    h = "import UIKit\nclass {}: UIViewController {{\n\n".format(viewController)
+    h = ("import UIKit\nimport SnapKit\n\nclass {}: UIViewController {{\n\n"
+        ).format(viewController)
     h += self.generate_global_vars(elements)
     h += "\noverride func viewDidLoad() {\n"
     return h

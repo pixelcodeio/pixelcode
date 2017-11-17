@@ -72,17 +72,22 @@ class BaseComponent(object):
          "indexPath: IndexPath) -> UITableViewCell {{\n"
          'let cell = {}.dequeueReusableCell(withIdentifier: "{}ID") as! '
          '{}Cell\n'
+         'cell.selectionStyle = .none\n'
          "switch indexPath.row {{"
         ).format(elem, elem, capElem)
+
+    cellSubviewIDs = []
+    for component in cells[0].get('components'):
+      cellSubviewIDs.append(component.get('id'))
 
     for i, cell in enumerate(cells):
       components = cell.get('components')
       c += '\ncase {}:\n'.format(i)
-      for component in components:
+      for j, component in enumerate(components):
         comp = component.get('type')
         cid = component.get('id')
         obj = self.create_object(comp)
-        cellComp = "cell.{}".format(cid)
+        cellComp = "cell.{}".format(cellSubviewIDs[j])
 
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
@@ -170,10 +175,9 @@ class BaseComponent(object):
     width = info.get('width')
     left_inset = info.get('left-inset')
 
-    if inView:
-      c = "var {} = {}()\n".format(cid, comp)
-    else:
-      c = "{} = {}()\n".format(cid, comp)
+    c = ""
+    if not inView:
+      c += "{} = {}()\n".format(cid, comp)
 
     c += utils.translates_false(cid)
     # if comp == 'UIView':
@@ -229,11 +233,22 @@ class BaseComponent(object):
     if not inView:
       c += utils.add_subview('view', cid)
     else:
-      c += utils.add_subview('contentView', cid)
-    c += utils.wh_constraints(cid, width, height, inView)
-    c += utils.position_constraints(
-        cid, horizontalID, horizontalDir, horizontalDist, verticalID,
-        verticalDir, verticalDist, centerX, centerY, inView)
+      c += utils.add_subview(None, cid)
+    c += utils.make_snp_constraints(cid, horizontalID, horizontalDir,
+                                    horizontalDist, verticalID, verticalDir,
+                                    verticalDist, width, height, inView)
+    #if not inView:
+    # c += utils.wh_constraints(cid, width, height, inView)
+    # c += utils.position_constraints(
+    #     cid, horizontalID, horizontalDir, horizontalDist, verticalID,
+    #     verticalDir, verticalDist, centerX, centerY, inView)
+    # else:
+    #   top = centerY - (height/2.0)
+    #   bottom = 1.0 - centerY - (height/2.0)
+    #   left = centerX - (width/2.0)
+    #   right = 1.0 - centerX - (width/2.0)
+    #   c += utils.set_edges_constraints(cid, 'contentView', top, bottom,
+    #                                    left, right)
     return c
 
   def generate_cell(self, info):
@@ -246,7 +261,8 @@ class BaseComponent(object):
     cid = info.get('id')
     cells = info.get('cells')
     capID = cid.capitalize()
-    c = ("import UIKit\n class {}Cell: UITableViewCell {{\n").format(capID)
+    c = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell {{\n\n"
+        ).format(capID)
 
     for cell in cells:
       components = cell.get('components')
@@ -256,13 +272,15 @@ class BaseComponent(object):
         c += 'var {} = {}()\n'.format(cid, ctype)
       break
 
-    c += ("override init(style: UITableViewCellStyle, reuseIdentifier: "
+    c += ("\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
           "String?) {\n"
-          "super.init(style: style, reuseIdentifier: reuseIdentifier)\n\n"
+          "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
+          "layoutSubviews()\n}\n\n"
+          "override func layoutSubviews() {\n"
+          "super.layoutSubviews()\n\n"
          )
 
     for cell in cells:
-      print(cell)
       rect = cell.get('rect')
       components = cell.get('components')
       c += self.setup_rect(cid, rect, True)
