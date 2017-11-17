@@ -27,4 +27,6 @@ class Text(BaseLayer):
       i += 1
 
     elem["textspan"] = textspan
+    if elem["id"] == "portraitsnyc":
+      print elem["textspan"]
     return super(Text, self).parse_elem(elem)

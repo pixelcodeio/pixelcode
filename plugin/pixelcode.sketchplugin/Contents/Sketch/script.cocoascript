@@ -83,7 +83,7 @@ function checkFormatting(layer, layerNames) {
         currentDict["y"] = String(currentLayer.frame.y);
         currentDict["height"] = String(currentLayer.frame.height);
         currentDict["width"] = String(currentLayer.frame.width);
-        if (layer.isText) currentDict["text_align"] = String(currentLayer.alignment);
+        if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
         var f = layerName.charAt(0);
         if (arrayContains(layerName, ret["layerNames"]) ||
