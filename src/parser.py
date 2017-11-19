@@ -248,12 +248,14 @@ class Parser(object):
     elements.
     """
     if elem.name == "g":
+      # set-up children and ensure that no children have ids.
       children = []
       for child in [c for c in elem["children"] if c != "\n"]:
         if "id" in child.attrs:
           return elem
         children.append(child)
 
+      # two separate lists for easy checking later
       use_children = []
       main_children = []
       for child in children:
@@ -270,6 +272,7 @@ class Parser(object):
             main_children = [child]
             break
 
+      # ensure that there is only one main child
       if len(main_children) == 1 and use_children:
         parent_id = elem["id"]
         for child in use_children:
