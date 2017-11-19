@@ -241,7 +241,11 @@ class Parser(object):
 
   def parse_fake_group(self, elem):
     """
-    Returns: elem after checking if it is fake or not
+    Handles the case where an elem is a group but none of its children have ids.
+    We first make sure that we are in this case (by checking its children),
+    then we pick a child to make the main element. Finally, we replace the group
+    with this new element, after making sure it inherits from all the other
+    elements.
     """
     if elem.name == "g":
       children = []
