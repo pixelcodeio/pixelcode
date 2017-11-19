@@ -244,17 +244,34 @@ class Parser(object):
     Returns: elem after checking if it is fake or not
     """
     if elem.name == "g":
+      children = []
+      for child in [c for c in elem["children"] if c != "\n"]:
+        if "id" in child.attrs:
+          return elem
+        children.append(child)
+
       use_children = []
       main_children = []
-      for child in [c for c in elem["children"] if c != "\n"]:
+      for child in children:
         if child.name == "use":
           use_children.append(child)
         else:
           main_children.append(child)
+
+      if (not main_children) and use_children:
+        for ind, child in enumerate(use_children):
+          if "xlink:href" in child.attrs:
+            child.name = "rect"
+            use_children.pop(ind)
+            main_children = [child]
+            break
+
       if len(main_children) == 1 and use_children:
         parent_id = elem["id"]
         for child in use_children:
           elem = self.inherit_from(child, elem)
         elem = self.inherit_from(elem, main_children[0])
         elem["id"] = parent_id
+      else:
+        raise Exception("Unhandled case in parse_fake_group.")
     return elem
