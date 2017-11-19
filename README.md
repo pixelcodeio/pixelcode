@@ -6,11 +6,13 @@
 
 `app/`: Contains the code for the core app
 
+`assets/`: Contains assets for running tests
+
 ## Running Tests with Plugin
 
-To install the plugin, run `script.sh` in the `plugin/` directory.
+To install the plugin, run `update` in the `plugin/` directory.
 
-Next, make sure that this repository is located in `~/Documents/sketch-to-swift/`.
+Next, make sure that this repository is located in `~/Documents/pixelcode/`.
 
 Install `fswatch` and `xargs` (information on installation can be found online).
 
@@ -20,7 +22,7 @@ chmod +x run.sh
 sh run.sh
 ```
 
-Any artboards exported using the plugin should have `.svg` files created in `app/tests`, and their xcode files generated with an `.out` extension.
+Any artboards exported using the plugin should have `.svg` files created in `app/exports`, and their xcode files generated with an `.out` extension.
 
 ## XCode Setup
 

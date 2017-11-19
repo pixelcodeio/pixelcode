@@ -42,5 +42,7 @@ def update_test_dir(path):
     o.close()
 
 if __name__ == "__main__":
-  update_test_dir("./exports/")
-  update_test_dir("./tests/files/")
+  if len(sys.argv) == 2:
+    update_test_dir(sys.argv[1])
+  else:
+    update_test_dir("../exports/")
