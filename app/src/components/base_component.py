@@ -109,7 +109,9 @@ class BaseComponent(object):
       c += obj.setup_uibutton(cid, textspan, inView)
     elif comp == 'UILabel':
       textspan = info['textspan']
-      c += obj.setup_uilabel(cid, textspan, inView)
+      line_sp = info['line-spacing']
+      char_sp = info['char-spacing']
+      c += obj.setup_uilabel(cid, textspan, line_sp, char_sp, inView)
       # if subtextColors is None and subtextFonts is None:
       #   c += obj.set_text(cid, txt) if txt != None else ""
       # else:

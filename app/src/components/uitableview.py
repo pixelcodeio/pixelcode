@@ -64,9 +64,16 @@ class UITableView(object):
             c += obj.set_image(cellComp, path)
 
         elif comp == 'UILabel':
-          contents = component['textspan'][0]['contents']
-          if contents is not None:
-            c += obj.set_text(cellComp, contents)
+          line_sp = component.get('line-spacing')
+          char_sp = component.get('char-spacing')
+          textspan = component.get('textspan')
+          if line_sp is not None or char_sp is not None:
+            c += obj.setup_cell_for_row_attr_text(cid, textspan, line_sp,
+                                                  char_sp)
+          else: 
+            contents = component['textspan'][0]['contents']
+            if contents is not None:
+              c += obj.set_text(cellComp, contents)
 
         elif comp == 'UITextField' or comp == 'UITextView':
           textspan = component['text']['textspan']
@@ -169,8 +176,8 @@ class UITableView(object):
     headerHeightPerc = header['height']
     return ("func tableView(_ tableView: UITableView, heightForHeaderInSection "
             "section: Int) -> CGFloat {{\n"
-            "return view.frame.height * {}\n}}\n\n"
-           ).format(headerHeightPerc)
+            "return {}.frame.height * {}\n}}\n\n"
+           ).format(elem, headerHeightPerc)
 
   def setup_uitableview(self, elem, cells, header):
     """

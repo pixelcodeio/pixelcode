@@ -42,9 +42,7 @@ class Interpreter(object):
     Returns: The swift code to set the view's background color.
     """
     bg = self.globals['background_color']
-    r = bg[0]
-    g = bg[1]
-    b = bg[2]
+    r, g, b = bg
     return ("view.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0,"
             " blue: {}/255.0, alpha: 1.0)\n\n"
            ).format(r, g, b)

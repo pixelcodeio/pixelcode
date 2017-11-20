@@ -138,9 +138,29 @@ class UILabel(object):
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
          ": 1.0)"
         ).format(r, g, b)
-    return ("{}.addAttribute(NSForegroundColorAttributeName, value: {})"
+    return ("{}.addAttribute(.foregroundColor, value: {})"
             ", range: NSRange(location: {}, length: {}))\n"
            ).format(strID, c, start, length)
+
+  def set_attributed_color(self, strID, color, opacity):
+    """
+    Args:
+      strID: (string) the variable name of string that is to be edited
+      color: (tuple) contains r, g, b values representing the color
+
+    Returns: The swift code to set the color of an attributed string to be a
+    color.
+    """
+    o = "1.0"
+    if opacity is not None:
+      o = '{}'.format(opacity)
+    r, g, b = color
+    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
+         ": {})"
+        ).format(r, g, b, o)
+    return ("{}.addAttribute(.foregroundColor, value: {})"
+            ", range: NSRange(location: 0, length: {}.length))\n"
+           ).format(strID, c, strID)
 
   def set_substring_font(self, strID, font, size, start, length):
     """
@@ -153,17 +173,83 @@ class UILabel(object):
 
     Returns: The swift code to set a substring of str to be a font.
     """
-    font = ('UIFont(name: "{}", size: {})').format(font, size)
-    return ("{}.addAttribute(NSFontAttributeName, value: {}"
+    f = ('UIFont(name: "{}", size: {})').format(font, size)
+    return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
-           ).format(strID, color, start, length)
+           ).format(strID, f, start, length)
 
-  def setup_uilabel(self, elem, textspan, inView=False):
+  def set_attributed_font(self, strID, font, size):
+    """
+    Args:
+      strID: (string) the variable name of string that is to be edited
+      font: (string) the font family name
+      size: (int) the font size
+
+    Returns: The swift code to set the font of an attributed string.
+    """
+    f = ('UIFont(name: "{}", size: {})').format(font, size)
+    return ("{}.addAttribute(.font, value: {}"
+            ", range: NSRange(location: 0, length: {}.length))\n"
+           ).format(strID, f, strID)
+
+  def set_line_sp(self, elem, strID, line_sp):
+    """
+    Returns: The swift code to set the line spacing of an
+    attributed string
+    """
+    return ('let {}ParaStyle = NSMutableParagraphStyle()\n'
+            '{}ParaStyle.lineSpacing = {}\n'
+            '{}.addAttribute(.paragraphStyle, value: {}ParaStyle, range: '
+            'NSRange(location: 0, length: {}.length))\n'
+           ).format(elem, elem, line_sp, strID, elem, strID)
+
+  def set_char_sp(self, elem, strID, char_sp):
+    """
+    Returns: The swift code to set the character spacing of an
+    attributed string
+    """
+    return ('{}.addAttribute(.kern, value: {}, range: '
+            'NSRange(location: 0, length: {}.length))\n'
+           ).format(strID, char_sp, strID)
+
+  def setup_cell_for_row_attr_text(self, elem, textspan, line_sp, char_sp):
+    """
+    Returns: The swift code to set the attributed text of a label when called
+    from a UITableView's cellForRowAt function.
+    """
+    if len(textspan) == 1:
+      # the contents of the textspan don't vary
+      txt = textspan[0]
+      contents = txt.get('contents')
+      fill = txt.get('fill')
+      txt_align = txt.get('text-align')
+      font = txt.get('font-family')
+      size = txt.get('font-size')
+      opacity = txt.get('opacity')
+
+      c = self.create_attributed_str(elem, contents)
+      strID = '{}AttributedStr'.format(elem)
+      c += self.set_attributed_color(strID, fill, opacity)
+      c += self.set_attributed_font(strID, font, size)
+      if line_sp is not None:
+        c += self.set_line_sp(elem, strID, line_sp)
+      if char_sp is not None:
+        c += self.set_char_sp(elem, strID, char_sp)
+      cellComp = 'cell.{}'.format(elem)
+      c += self.set_attributed_text(cellComp, strID)
+      return c
+    else:
+      raise Exception("Textspan in label contains varying text.")
+      #TODO: Case for varying text.
+
+  def setup_uilabel(self, elem, textspan, line_sp, char_sp, inView=False):
     """
     Args:
       elem: (str) id of the component
       textspan: (dict array) see generate_component docstring for more
                 information.
+      line_sp: (int) the value representing the line spacing
+      char_sp: (int) the value representing the character spacing
 
     Returns: The swift code to apply all the properties from textspan to elem.
     """
@@ -176,18 +262,30 @@ class UILabel(object):
       font = txt.get('font-family')
       size = txt.get('font-size')
       opacity = txt.get('opacity')
-      line_sp = txt.get('line-spacing')
-      char_sp = txt.get('char-spacing')
 
       c = ""
-      if inView is False:
+      if (line_sp is not None or char_sp is not None) and inView is False:
+        c += self.create_attributed_str(elem, contents)
+        strID = '{}AttributedStr'.format(elem)
+        c += self.set_attributed_color(strID, fill, opacity)
+        c += self.set_attributed_font(strID, font, size)
+        if line_sp is not None:
+          c += self.set_line_sp(elem, strID, line_sp)
+        if char_sp is not None:
+          c += self.set_char_sp(elem, strID, char_sp)
+        c += self.set_attributed_text(elem, strID)
+      elif inView is False:
         c += self.set_text(elem, contents) if contents != None else ""
-      c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+        c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+        c += self.set_font_family_size(elem, font, size)
+      elif (line_sp is None and char_sp is None) and inView:
+        c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+        c += self.set_font_family_size(elem, font, size)
+
       if txt_align is None:
         c += self.center_and_wrap(elem, "center")
       else:
         c += self.center_and_wrap(elem, txt_align)
-      c += self.set_font_family_size(elem, font, size)
       return c
 
     else:
