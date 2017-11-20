@@ -26,6 +26,23 @@ def set_bg(elem, color, inView=False, opacity=None):
           '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
          ).format(elem, r, g, b, o)
 
+def set_bg_for_header(color, opacity=None):
+  """
+  Args:
+    color: (tuple) contains the r, g, b values of the background color
+    opacity: (float) between 0 and 1 representing the opacity
+
+  Returns: The line that sets the background color of UITableView header to the
+  UIColor with the corresponding r, g, b values.
+  """
+  o = "1.0" if opacity is None else opacity
+  r, g, b = color
+  return ('contentView.backgroundColor = UIColor(red: {}/255.0 , green: '
+          '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
+         ).format(r, g, b, o)
+
+
+
 def add_subview(view, elem):
   if view is None:
     return 'addSubview({})\n\n'.format(elem)

@@ -33,11 +33,11 @@ class UITableView(object):
     capElem = elem.capitalize()
     c = ("func tableView(_ tableView: UITableView, cellForRowAt "
          "indexPath: IndexPath) -> UITableViewCell {{\n"
-         'let cell = {}.dequeueReusableCell(withIdentifier: "{}ID") as! '
-         '{}Cell\n'
+         'let cell = tableView.dequeueReusableCell(withIdentifier: "{}CellID")'
+         ' as! {}Cell\n'
          'cell.selectionStyle = .none\n'
          "switch indexPath.row {{"
-        ).format(elem, elem, capElem)
+        ).format(elem, capElem)
 
     cellSubviewIDs = []
     for component in cells[0].get('components'):
@@ -68,9 +68,9 @@ class UITableView(object):
           char_sp = component.get('char-spacing')
           textspan = component.get('textspan')
           if line_sp is not None or char_sp is not None:
-            c += obj.setup_cell_for_row_attr_text(cid, textspan, line_sp,
-                                                  char_sp)
-          else: 
+            c += obj.setup_cell_or_header_attr_text(cellSubviewIDs[j], textspan,
+                                                    line_sp, char_sp)
+          else:
             contents = component['textspan'][0]['contents']
             if contents is not None:
               c += obj.set_text(cellComp, contents)
@@ -124,7 +124,6 @@ class UITableView(object):
          "section: Int) -> UIView? {{\n"
          'let header = {}.dequeueReusableHeaderFooterView(withIdentifier: '
          '"{}Header") as! {}HeaderView\n'
-         'cell.selectionStyle = .none\n'
          'switch section {{\n'
          'case 0:\n'
         ).format(elem, elem, capElem)
@@ -144,26 +143,33 @@ class UITableView(object):
         contents = component['text']['textspan'][0]['contents']
         if contents is not None:
           # assuming not varying text
-          c += obj.set_title(cellComp, contents)
+          c += obj.set_title(headerComp, contents)
 
       elif comp == 'UIImageView':
         path = component.get('path')
         if path is not None:
-          c += obj.set_image(cellComp, path)
+          c += obj.set_image(headerComp, path)
 
       elif comp == 'UILabel':
-        contents = component['textspan'][0]['contents']
-        if contents is not None:
-          c += obj.set_text(cellComp, contents)
+        line_sp = component.get('line-spacing')
+        char_sp = component.get('char-spacing')
+        textspan = component.get('textspan')
+        if line_sp is not None or char_sp is not None:
+          c += obj.setup_cell_or_header_attr_text(headerSubviewIDs[i], textspan,
+                                                  line_sp, char_sp)
+        else:
+          contents = component['textspan'][0]['contents']
+          if contents is not None:
+            c += obj.set_text(headerComp, contents)
 
       elif comp == 'UITextField' or comp == 'UITextView':
         textspan = component['text']['textspan']
         placeholder = textspan[0]['contents']
         placeholder_c = textspan[0]['fill']
         opacity = textspan[0]['opacity']
-        c += obj.set_placeholder_text_and_color(cellComp, placeholder,
+        c += obj.set_placeholder_text_and_color(headerComp, placeholder,
                                                 placeholder_c, opacity)
-    c += ('\nreturn header'
+    c += ('return header'
           '\ndefault:\nreturn header\n'
           '}\n}\n\n'
          )
@@ -192,7 +198,7 @@ class UITableView(object):
     c = ""
     if header is not None:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
-            ' "{}Header")'
+            ' "{}Header")\n'
            ).format(elem, capElem, elem)
     c += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
           '{}.delegate = self\n'

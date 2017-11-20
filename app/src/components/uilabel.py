@@ -16,7 +16,7 @@ class UILabel(object):
 
     Returns: The swift code to create an attributed string.
     """
-    return ("var {}AttributedStr = NSMutableAttributedString(string: {})\n"
+    return ('var {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
            ).format(elem, text)
 
   def set_text(self, elem, txt):
@@ -155,10 +155,10 @@ class UILabel(object):
     if opacity is not None:
       o = '{}'.format(opacity)
     r, g, b = color
-    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
+    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"
         ).format(r, g, b, o)
-    return ("{}.addAttribute(.foregroundColor, value: {})"
+    return ("{}.addAttribute(.foregroundColor, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
            ).format(strID, c, strID)
 
@@ -212,7 +212,7 @@ class UILabel(object):
             'NSRange(location: 0, length: {}.length))\n'
            ).format(strID, char_sp, strID)
 
-  def setup_cell_for_row_attr_text(self, elem, textspan, line_sp, char_sp):
+  def setup_cell_or_header_attr_text(self, elem, textspan, line_sp, char_sp):
     """
     Returns: The swift code to set the attributed text of a label when called
     from a UITableView's cellForRowAt function.
@@ -232,7 +232,8 @@ class UILabel(object):
       c += self.set_attributed_color(strID, fill, opacity)
       c += self.set_attributed_font(strID, font, size)
       if line_sp is not None:
-        c += self.set_line_sp(elem, strID, line_sp)
+        ls = str(float(line_sp) / float(size))
+        c += self.set_line_sp(elem, strID, ls)
       if char_sp is not None:
         c += self.set_char_sp(elem, strID, char_sp)
       cellComp = 'cell.{}'.format(elem)
@@ -270,7 +271,8 @@ class UILabel(object):
         c += self.set_attributed_color(strID, fill, opacity)
         c += self.set_attributed_font(strID, font, size)
         if line_sp is not None:
-          c += self.set_line_sp(elem, strID, line_sp)
+          ls = str(float(line_sp) / float(size))
+          c += self.set_line_sp(elem, strID, ls)
         if char_sp is not None:
           c += self.set_char_sp(elem, strID, char_sp)
         c += self.set_attributed_text(elem, strID)

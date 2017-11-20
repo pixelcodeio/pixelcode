@@ -63,6 +63,33 @@ class BaseComponent(object):
 
     return c
 
+  def setup_rect_for_header(self, cid, rect, inView=False):
+    """
+    Args:
+      cid: (int) id of component
+      rect: (dict) see generate_component for more information
+
+    Returns: The swift code to apply all the properties from rect.
+    """
+    fill = rect.get('fill')
+    border_r = rect.get('border-radius')
+    str_c = rect.get('stroke-color')
+    str_w = rect.get('stroke-width')
+    opacity = rect.get('opacity')
+    str_o = rect.get('stroke-opacity')
+
+    c = ""
+    if fill is not None:
+      c += utils.set_bg_for_header(fill, opacity)
+    if str_c is not None:
+      c += utils.set_border_color(cid, str_c, str_o, inView)
+    if str_w is not None:
+      c += utils.set_border_width(cid, str_w, inView)
+    if border_r is not None:
+      c += utils.set_corner_radius(cid, border_r, inView)
+
+    return c
+
   def generate_component(self, comp, info, bgColor=None, inView=False):
     """
     Args:
@@ -109,8 +136,8 @@ class BaseComponent(object):
       c += obj.setup_uibutton(cid, textspan, inView)
     elif comp == 'UILabel':
       textspan = info['textspan']
-      line_sp = info['line-spacing']
-      char_sp = info['char-spacing']
+      line_sp = info.get('line-spacing')
+      char_sp = info.get('char-spacing')
       c += obj.setup_uilabel(cid, textspan, line_sp, char_sp, inView)
       # if subtextColors is None and subtextFonts is None:
       #   c += obj.set_text(cid, txt) if txt != None else ""
@@ -191,8 +218,8 @@ class BaseComponent(object):
 
     for cell in cells:
       rect = cell.get('rect')
-      components = cell.get('components')
       c += self.setup_rect(cid, rect, True)
+      components = cell.get('components')
       for component in components:
         comp = component.get('type')
         c += self.generate_component(comp, component, None, True)
@@ -228,6 +255,8 @@ class BaseComponent(object):
           "super.layoutSubviews()\n\n"
          )
 
+    rect = header.get('rect')
+    c += self.setup_rect_for_header(cid, rect, True)
     for component in components:
       comp = component.get('type')
       c += self.generate_component(comp, component, None, True)
