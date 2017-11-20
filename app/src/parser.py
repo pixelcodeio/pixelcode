@@ -128,6 +128,11 @@ class Parser(object):
           elem["children"] = self.parse_elements(elem["children"], elem)
           parsed_elem = Cell(elem)
 
+        elif "Header" in elem["id"] or "header" in elem["id"]:
+          elem["type"] = "Header"
+          elem["children"] = self.parse_elements(elem["children"], elem)
+          parsed_elem = Cell(elem)
+
         else:
           for child in elem["children"]:
             child["x"] = elem["x"] + float(child["x"])

@@ -8,15 +8,21 @@ class TableView(BaseLayer):
   """
   def parse_elem(self, elem):
     rect = None
+    header = None
     cells = []
     for child in elem["children"]:
       if child["type"] == "UIView":
-        if rect is None:
-          rect = child
-        else:
+        if rect:
           raise Exception("TableView: Only one wash allowed per TableView")
+        else:
+          rect = child
       elif child["type"] == "Cell":
         cells.append(child)
+      elif child["type"] == "Header":
+        if header:
+          raise Exception("TableView: Only one header allowed.")
+        else:
+          header = child
       else:
         raise Exception("TableView: Unsupported elem type for TableView")
 
@@ -28,6 +34,7 @@ class TableView(BaseLayer):
       separator = cells[1]["cy"] - cells[1]["cy"]
 
     elem["rect"] = rect
+    elem["header"] = header
     elem["cells"] = cells
     elem["separator"] = separator
 

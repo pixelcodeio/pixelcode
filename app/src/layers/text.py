@@ -27,4 +27,8 @@ class Text(BaseLayer):
       i += 1
 
     elem["textspan"] = textspan
+    if "line-spacing" in elem.attrs:
+      elem["line-spacing"] = elem["line-spacing"]
+    if "letter-spacing" in elem.attrs:
+      elem["char-spacing"] = elem["letter-spacing"]
     return super(Text, self).parse_elem(elem)
