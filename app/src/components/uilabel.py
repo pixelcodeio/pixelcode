@@ -54,18 +54,6 @@ class UILabel(object):
             "blue: {}/255.0, alpha: {})\n"
            ).format(elem, r, g, b, o)
 
-  def set_bg_color(self, elem):
-    """
-    Args:
-      elem: (str) id of element
-
-    Returns: The swift code to set the background color of elem.
-    """
-    r, g, b = self.bgColor
-    return ("{}.backgroundColor = UIColor(red: {}/255.0, green: {}/255.0, "
-            "blue: {}/255.0, alpha: 1.0)\n"
-           ).format(elem, r, g, b)
-
   def center_and_wrap(self, elem, textAlign):
     """
     Args:
@@ -152,7 +140,7 @@ class UILabel(object):
     color.
     """
     o = "1.0"
-    if opacity is not None:
+    if opacity:
       o = '{}'.format(opacity)
     r, g, b = color
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
@@ -231,10 +219,10 @@ class UILabel(object):
       strID = '{}AttributedStr'.format(elem)
       c += self.set_attributed_color(strID, fill, opacity)
       c += self.set_attributed_font(strID, font, size)
-      if line_sp is not None:
+      if line_sp:
         ls = str(float(line_sp) / float(size))
         c += self.set_line_sp(elem, strID, ls)
-      if char_sp is not None:
+      if char_sp:
         c += self.set_char_sp(elem, strID, char_sp)
       cellComp = 'cell.{}'.format(elem)
       c += self.set_attributed_text(cellComp, strID)
@@ -265,18 +253,18 @@ class UILabel(object):
       opacity = txt.get('opacity')
 
       c = ""
-      if (line_sp is not None or char_sp is not None) and inView is False:
+      if (line_sp or char_sp) and not inView:
         c += self.create_attributed_str(elem, contents)
         strID = '{}AttributedStr'.format(elem)
         c += self.set_attributed_color(strID, fill, opacity)
         c += self.set_attributed_font(strID, font, size)
-        if line_sp is not None:
+        if line_sp:
           ls = str(float(line_sp) / float(size))
           c += self.set_line_sp(elem, strID, ls)
-        if char_sp is not None:
+        if char_sp:
           c += self.set_char_sp(elem, strID, char_sp)
         c += self.set_attributed_text(elem, strID)
-      elif inView is False:
+      elif not inView:
         c += self.set_text(elem, contents) if contents != None else ""
         c += self.set_text_color(elem, fill, opacity) if fill != None else ""
         c += self.set_font_family_size(elem, font, size)

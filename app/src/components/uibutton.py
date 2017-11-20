@@ -72,7 +72,7 @@ class UIButton(object):
       font = txt.get('font-family')
       size = txt.get('font-size')
       opacity = txt.get('opacity')
-      if inView is False:
+      if not inView:
         c = self.set_title(elem, contents) if contents != None else ""
       else:
         c = ""

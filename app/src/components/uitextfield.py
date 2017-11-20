@@ -58,7 +58,7 @@ class UITextField(object):
     size = txt.get('font-size')
     opacity = txt.get('opacity')
     c = ""
-    if inView is False:
+    if not inView:
       c += self.set_placeholder_text_and_color(elem, placeholder,
                                                placeholder_c, opacity)
     c += self.set_font_family_size(elem, font, size)

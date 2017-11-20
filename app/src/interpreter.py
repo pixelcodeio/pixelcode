@@ -73,7 +73,7 @@ class Interpreter(object):
           tableViewElem = elem
           tableViewExists = True
           tableViewMethods = bc.tableViewMethods
-    if tableViewExists is False:
+    if not tableViewExists:
       c += "\n}\n}"
       self.swift = c
       return
@@ -85,7 +85,7 @@ class Interpreter(object):
     c += "TableViewCell File: \n"
     bc = BaseComponent('UITableView', tableViewElem, None, True)
     c += bc.cell
-    if tableViewElem['header'] is not None:
+    if tableViewElem['header']:
       bc = BaseComponent('UITableView', tableViewElem, None, False, True)
       c += "\nTableViewHeader File: \n"
       c += bc.tableViewHeader

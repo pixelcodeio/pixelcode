@@ -20,13 +20,13 @@ class UIView(object):
     opacity = info.get('opacity')
 
     c = ""
-    if fill is not None:
+    if fill:
       c += utils.set_bg(elem, fill, opacity)
-    if border_r is not None:
+    if border_r:
       c += utils.set_corner_radius(elem, border_r)
-    if stroke_c is not None:
+    if stroke_c:
       c += utils.set_border_color(elem, stroke_c, stroke_o)
-    if stroke_w is not None:
+    if stroke_w:
       c += utils.set_border_width(elem, stroke_w)
 
     return c

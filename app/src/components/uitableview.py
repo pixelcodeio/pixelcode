@@ -40,11 +40,17 @@ class UITableView(object):
         ).format(elem, capElem)
 
     cellSubviewIDs = []
-    for component in cells[0].get('components'):
+    firstCellComponents = cells[0].get('components')
+    for component in firstCellComponents:
       cellSubviewIDs.append(component.get('id'))
+
 
     for i, cell in enumerate(cells):
       components = cell.get('components')
+      if len(components) != firstCellComponents:
+        i -= 1
+        continue
+      #print(components)
       c += '\ncase {}:\n'.format(i)
       for j, component in enumerate(components):
         comp = component.get('type')
@@ -54,25 +60,25 @@ class UITableView(object):
 
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
-          if contents is not None:
+          if contents:
             # assuming not varying text
             c += obj.set_title(cellComp, contents)
 
         elif comp == 'UIImageView':
           path = component.get('path')
-          if path is not None:
+          if path:
             c += obj.set_image(cellComp, path)
 
         elif comp == 'UILabel':
           line_sp = component.get('line-spacing')
           char_sp = component.get('char-spacing')
           textspan = component.get('textspan')
-          if line_sp is not None or char_sp is not None:
+          if line_sp or char_sp:
             c += obj.setup_cell_or_header_attr_text(cellSubviewIDs[j], textspan,
                                                     line_sp, char_sp)
           else:
             contents = component['textspan'][0]['contents']
-            if contents is not None:
+            if contents:
               c += obj.set_text(cellComp, contents)
 
         elif comp == 'UITextField' or comp == 'UITextView':
@@ -93,7 +99,12 @@ class UITableView(object):
 
     Returns: The swift code for the numberOfRowsInSection func of a UITableView.
     """
-    numRows = len(cells)
+    firstCellComponents = cells[0].get('components')
+    numRows = 0
+    for cell in cells:
+      components = cell.get('components')
+      if len(components) == firstCellComponents:
+        numRows += 1
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
             "return {} \n"
@@ -141,25 +152,25 @@ class UITableView(object):
 
       if comp == 'UIButton':
         contents = component['text']['textspan'][0]['contents']
-        if contents is not None:
+        if contents:
           # assuming not varying text
           c += obj.set_title(headerComp, contents)
 
       elif comp == 'UIImageView':
         path = component.get('path')
-        if path is not None:
+        if path:
           c += obj.set_image(headerComp, path)
 
       elif comp == 'UILabel':
         line_sp = component.get('line-spacing')
         char_sp = component.get('char-spacing')
         textspan = component.get('textspan')
-        if line_sp is not None or char_sp is not None:
+        if line_sp or char_sp:
           c += obj.setup_cell_or_header_attr_text(headerSubviewIDs[i], textspan,
                                                   line_sp, char_sp)
         else:
           contents = component['textspan'][0]['contents']
-          if contents is not None:
+          if contents:
             c += obj.set_text(headerComp, contents)
 
       elif comp == 'UITextField' or comp == 'UITextView':
@@ -196,7 +207,7 @@ class UITableView(object):
     """
     capElem = elem.capitalize()
     c = ""
-    if header is not None:
+    if header:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
            ).format(elem, capElem, elem)

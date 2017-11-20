@@ -52,13 +52,13 @@ class BaseComponent(object):
     str_o = rect.get('stroke-opacity')
 
     c = ""
-    if fill is not None:
+    if fill:
       c += utils.set_bg(cid, fill, inView, opacity)
-    if str_c is not None:
+    if str_c:
       c += utils.set_border_color(cid, str_c, str_o, inView)
-    if str_w is not None:
+    if str_w:
       c += utils.set_border_width(cid, str_w, inView)
-    if border_r is not None:
+    if border_r:
       c += utils.set_corner_radius(cid, border_r, inView)
 
     return c
@@ -79,13 +79,13 @@ class BaseComponent(object):
     str_o = rect.get('stroke-opacity')
 
     c = ""
-    if fill is not None:
+    if fill:
       c += utils.set_bg_for_header(fill, opacity)
-    if str_c is not None:
+    if str_c:
       c += utils.set_border_color(cid, str_c, str_o, inView)
-    if str_w is not None:
+    if str_w:
       c += utils.set_border_width(cid, str_w, inView)
-    if border_r is not None:
+    if border_r:
       c += utils.set_corner_radius(cid, border_r, inView)
 
     return c
@@ -126,12 +126,12 @@ class BaseComponent(object):
 
     c += utils.translates_false(cid)
 
-    if rect is not None:
+    if rect:
       c += self.setup_rect(cid, rect)
 
     if comp == 'UIView':
       c += obj.setup_uiview(cid, info)
-    elif text is not None and comp == 'UIButton':
+    elif text and comp == 'UIButton':
       textspan = text['textspan']
       c += obj.setup_uibutton(cid, textspan, inView)
     elif comp == 'UILabel':
@@ -157,10 +157,10 @@ class BaseComponent(object):
       #       start = sub['start']
       #       length = sub['length']
       #       c += obj.set_substring_font(strID, font, size, start, length)
-    elif text is not None and comp == 'UITextField':
+    elif text and comp == 'UITextField':
       textspan = text['textspan']
       c += obj.setup_uitextfield(cid, textspan, left_inset, inView)
-    elif text is not None and comp == 'UITextView':
+    elif text and comp == 'UITextView':
       textspan = text['textspan']
       c += obj.setup_uitextview(cid, textspan, left_inset, inView)
     elif comp == 'UIImageView':
@@ -173,7 +173,7 @@ class BaseComponent(object):
       tvm = obj.cell_for_row_at(cid, cells)
       tvm += obj.number_of_rows_in_section(cells)
       tvm += obj.height_for_row_at(cid, cells)
-      if header is not None:
+      if header:
         tvm += obj.view_for_header(cid, header)
         tvm += obj.height_for_header(cid, header)
       self.tableViewMethods = tvm

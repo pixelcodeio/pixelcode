@@ -88,7 +88,7 @@ class BaseLayer(object):
     elem = self.init_optional_params(elem, params)
     obj = {}
     for param in params:
-      if elem[param] is not None:
+      if elem[param]:
         obj[param] = elem[param]
     return obj
 
