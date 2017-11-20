@@ -18,7 +18,8 @@ class TableView(BaseLayer):
       elif child["type"] == "Cell":
         cells.append(child)
       else:
-        raise Exception("TableView: Unsupported elem typefor TableView")
+        print(child["type"])
+        raise Exception("TableView: Unsupported elem type for TableView")
 
     if not cells:
       raise Exception("TableView: Must have one cell in a TableView")

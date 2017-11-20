@@ -110,7 +110,7 @@ class Parser(object):
         parsed_elem = Image(elem)
 
       elif elem.name == "g":
-        if "Button" in elem["id"]:
+        if "Button" in elem["id"] or "button" in elem["id"]:
           elem["type"] = "UIButton"
           parsed_elem = Button(elem)
 
@@ -123,7 +123,7 @@ class Parser(object):
           elem["children"] = self.parse_elements(elem["children"], elem)
           parsed_elem = TableView(elem)
 
-        elif "Cell" in elem["id"]:
+        elif "Cell" in elem["id"] or "cell" in elem["id"]:
           elem["type"] = "Cell"
           elem["children"] = self.parse_elements(elem["children"], elem)
           parsed_elem = Cell(elem)

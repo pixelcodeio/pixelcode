@@ -10,7 +10,7 @@
 venv
 
 # export files 
-src/exports
+app/exports
 
 # global files
 plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript

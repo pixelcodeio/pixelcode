@@ -12,7 +12,8 @@ class Cell(BaseLayer):
     rect = None
     components = []
     for child in elem["children"]:
-      if child["type"] == "UIView" and "Bound" in child["id"]:
+      if child["type"] == "UIView" and \
+         ("Bound" in child["id"] or "bound" in child["id"]):
         if rect is None:
           rect = child
         else:
