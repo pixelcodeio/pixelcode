@@ -176,6 +176,8 @@ class UILabel(object):
       font = txt.get('font-family')
       size = txt.get('font-size')
       opacity = txt.get('opacity')
+      line_sp = txt.get('line-spacing')
+      char_sp = txt.get('char-spacing')
 
       c = ""
       if inView is False:
@@ -189,7 +191,5 @@ class UILabel(object):
       return c
 
     else:
-      print('textspan in label more than one line')
-      for t in textspan:
-        print(t)
-    #TODO: Case for varying text.
+      raise Exception("Textspan in label contains varying text.")
+      #TODO: Case for varying text.

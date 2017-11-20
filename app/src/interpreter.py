@@ -84,7 +84,11 @@ class Interpreter(object):
     c = ("{}, UITableViewDelegate, UITableViewDataSource {}"
         ).format(c[:indexVC+18], c[indexVC+18:])
     c += "\n}}\n{}}}\n".format(tableViewMethods)
-    c += "Other File: \n"
+    c += "TableViewCell File: \n"
     bc = BaseComponent('UITableView', tableViewElem, None, True)
     c += bc.cell
+    if tableViewElem['header'] is not None:
+      bc = BaseComponent('UITableView', tableViewElem, None, False, True)
+      c += "\nTableViewHeader File: \n"
+      c += bc.tableViewHeader
     self.swift = c

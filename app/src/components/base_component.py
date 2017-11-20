@@ -5,13 +5,16 @@ class BaseComponent(object):
   """
   Base class for components
   """
-  def __init__(self, comp, info, bgColor=None, generating_cell=False):
+  def __init__(self, comp, info, bgColor=None, generating_cell=False,
+               generating_header=False):
     """
     Args:
       Refer to generate_component for documentation on args
     """
     if generating_cell:
       self.cell = self.generate_cell(info)
+    elif generating_header:
+      self.tableViewHeader = self.generate_header(info)
     else:
       self.tableViewMethods = ""
       self.swift = self.generate_component(comp, info, bgColor)
@@ -59,91 +62,6 @@ class BaseComponent(object):
       c += utils.set_corner_radius(cid, border_r, inView)
 
     return c
-
-  def cell_for_row_at(self, elem, cells):
-    """
-    Args:
-      cells: see generate_component's docstring for more information
-
-    Returns: The swift code for the cellForRowAt function of a UITableView.
-    """
-    capElem = elem.capitalize()
-    c = ("func tableView(_ tableView: UITableView, cellForRowAt "
-         "indexPath: IndexPath) -> UITableViewCell {{\n"
-         'let cell = {}.dequeueReusableCell(withIdentifier: "{}ID") as! '
-         '{}Cell\n'
-         'cell.selectionStyle = .none\n'
-         "switch indexPath.row {{"
-        ).format(elem, elem, capElem)
-
-    cellSubviewIDs = []
-    for component in cells[0].get('components'):
-      cellSubviewIDs.append(component.get('id'))
-
-    for i, cell in enumerate(cells):
-      components = cell.get('components')
-      c += '\ncase {}:\n'.format(i)
-      for j, component in enumerate(components):
-        comp = component.get('type')
-        cid = component.get('id')
-        obj = self.create_object(comp)
-        cellComp = "cell.{}".format(cellSubviewIDs[j])
-
-        if comp == 'UIButton':
-          contents = component['text']['textspan'][0]['contents']
-          if contents is not None:
-            # assuming not varying text
-            c += obj.set_title(cellComp, contents)
-
-        elif comp == 'UIImageView':
-          path = component.get('path')
-          if path is not None:
-            c += obj.set_image(cellComp, path)
-
-        elif comp == 'UILabel':
-          contents = component['textspan'][0]['contents']
-          if contents is not None:
-            c += obj.set_text(cellComp, contents)
-
-        elif comp == 'UITextField' or comp == 'UITextView':
-          textspan = component['text']['textspan']
-          placeholder = textspan[0]['contents']
-          placeholder_c = textspan[0]['fill']
-          opacity = textspan[0]['opacity']
-          c += obj.set_placeholder_text_and_color(cellComp, placeholder,
-                                                  placeholder_c, opacity)
-      c += '\nreturn cell'
-    c += '\ndefault: return cell\n}\n}\n\n'
-    return c
-
-  def number_of_rows_in_section(self, cells):
-    """
-    Args:
-      cells: see generate_component's docstring for more information
-
-    Returns: The swift code for the numberOfRowsInSection func of a UITableView.
-    """
-    numRows = len(cells)
-    return ("func tableView(_ tableView: UITableView, "
-            "numberOfRowsInSection section: Int) -> Int {{\n"
-            "return {} \n"
-            "}}\n"
-           ).format(numRows)
-
-  def height_for_row_at(self, elem, cells):
-    """
-    Args:
-      cells: see generate_component's docstring for more information
-      tvHeight: (float) height of the uitableview as percentage of screen's
-                height
-
-    Returns: The swift code for the heightForRowAt func of a UITableView.
-    """
-    cellHeightPerc = cells[0]['height']
-    return ("func tableView(_ tableView: UITableView, heightForRowAt "
-            "indexPath: IndexPath) -> CGFloat {{\n"
-            "return {}.frame.height * {}\n}}\n\n"
-           ).format(elem, cellHeightPerc)
 
   def generate_component(self, comp, info, bgColor=None, inView=False):
     """
@@ -221,10 +139,14 @@ class BaseComponent(object):
     elif comp == 'UITableView':
       # Assume no tableviews are within tableviews
       cells = info['cells']
-      c += obj.setup_uitableview(cid, cells)
-      tvm = self.cell_for_row_at(cid, cells)
-      tvm += self.number_of_rows_in_section(cells)
-      tvm += self.height_for_row_at(cid, cells)
+      header = info['header']
+      c += obj.setup_uitableview(cid, cells, header)
+      tvm = obj.cell_for_row_at(cid, cells)
+      tvm += obj.number_of_rows_in_section(cells)
+      tvm += obj.height_for_row_at(cid, cells)
+      if header is not None:
+        tvm += obj.view_for_header(cid, header)
+        tvm += obj.height_for_header(cid, header)
       self.tableViewMethods = tvm
 
     if not inView:
@@ -273,6 +195,40 @@ class BaseComponent(object):
         comp = component.get('type')
         c += self.generate_component(comp, component, None, True)
       break # we are only considering cells with the same components
+
+    c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
+          'fatalError("init(coder:) has not been implemented")\n}\n\n}'
+         )
+    return c
+
+  def generate_header(self, info):
+    """
+    Returns: The swift code to generate a UITableView header class file.
+    """
+    cid = info.get('id')
+    header = info.get('header')
+    capID = cid.capitalize()
+    c = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: UITableViewHeader"
+         "FooterView {{\n\n"
+        ).format(capID)
+
+
+    components = header.get('components')
+    for component in components:
+      cid = component.get('id')
+      ctype = component.get('type')
+      c += 'var {} = {}()\n'.format(cid, ctype)
+
+    c += ("\noverride init(reuseIdentifier: String?) {\n"
+          "super.init(reuseIdentifier: reuseIdentifier)\n"
+          "layoutSubviews()\n}\n\n"
+          "override func layoutSubviews() {\n"
+          "super.layoutSubviews()\n\n"
+         )
+
+    for component in components:
+      comp = component.get('type')
+      c += self.generate_component(comp, component, None, True)
 
     c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}\n\n}'
