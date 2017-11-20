@@ -10,6 +10,8 @@ def check_spacing(r1, r2, direction): # pylint: disable=R0911
     defined in [direction] with respect to r1, where dist is the
     distance between the two rectangles in pixels.
   """
+  if "x" not in r1 or "y" not in r1:
+    raise Exception("check_spacing: x or y not present in " + r1["id"])
   r1_top = (int(r1["x"]), int(r1["y"])) # top-left
   r1_bottom = (r1_top[0] + int(r1["rwidth"]), r1_top[1] + int(r1["rheight"]))
   r2_top = (int(r2["x"]), int(r2["y"])) # top-left
