@@ -7,17 +7,17 @@ def translates_false(elem):
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
-def set_bg(elem, color, inView=False, opacity=None):
+def set_bg(elem, color, inView=False):
   """
   Args:
     color: (tuple) contains the r, g, b values of the background color
-    opacity: (float) between 0 and 1 representing the opacity
 
   Returns: The line that sets the background color of elem to the
   UIColor with the corresponding r, g, b values.
   """
-  o = "1.0" if opacity is None else opacity
-  r, g, b = color
+  r, g, b, o = color
+  if o is None:
+    o = "1.0"
   if inView:
     return ('backgroundColor = UIColor(red: {}/255.0 , green: '
             '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
@@ -25,23 +25,6 @@ def set_bg(elem, color, inView=False, opacity=None):
   return ('{}.backgroundColor = UIColor(red: {}/255.0 , green: '
           '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
          ).format(elem, r, g, b, o)
-
-def set_bg_for_header(color, opacity=None):
-  """
-  Args:
-    color: (tuple) contains the r, g, b values of the background color
-    opacity: (float) between 0 and 1 representing the opacity
-
-  Returns: The line that sets the background color of UITableView header to the
-  UIColor with the corresponding r, g, b values.
-  """
-  o = "1.0" if opacity is None else opacity
-  r, g, b = color
-  return ('contentView.backgroundColor = UIColor(red: {}/255.0 , green: '
-          '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
-         ).format(r, g, b, o)
-
-
 
 def add_subview(view, elem):
   if view is None:
@@ -203,12 +186,13 @@ def set_border_width(elem, width, inView=False):
     return ("layer.borderWidth = {}\n").format(width)
   return ("{}.layer.borderWidth = {}\n").format(elem, width)
 
-def set_border_color(elem, color, opacity=None, inView=False):
+def set_border_color(elem, color, inView=False):
   """
   Returns: The swift code to set the border color of elem.
   """
-  o = "1.0" if opacity is None else opacity
-  r, g, b = color
+  r, g, b, o = color
+  if o is None:
+    o = "1.0"
   if inView:
     return ("layer.borderColor = UIColor(red: {}/255.0, green: {}/255.0, "
             "blue: {}/255.0, alpha: {}).cgColor\n"
@@ -224,3 +208,20 @@ def set_corner_radius(elem, radius, inView=False):
   if inView:
     return ("layer.cornerRadius = {}\n").format(radius)
   return ("{}.layer.cornerRadius = {}\n").format(elem, radius)
+
+def create_object(comp, bgColor=None):
+  """
+  Args:
+    comp: (str) the component to be created
+
+  Returns: An instance of the component to be created
+  """
+  return {
+      "UIButton": UIButton(),
+      "UILabel": UILabel(bgColor),
+      "UIImageView": UIImageView(),
+      "UITableView": UITableView(),
+      "UITextField": UITextField(),
+      "UITextView": UITextView(),
+      "UIView": UIView(),
+  }.get(comp, None)

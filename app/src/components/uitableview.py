@@ -44,14 +44,12 @@ class UITableView(object):
     for component in firstCellComponents:
       cellSubviewIDs.append(component.get('id'))
 
-
-    for i, cell in enumerate(cells):
+    index = 0
+    for cell in cells:
       components = cell.get('components')
-      if len(components) != firstCellComponents:
-        i -= 1
+      if len(components) != len(firstCellComponents):
         continue
-      #print(components)
-      c += '\ncase {}:\n'.format(i)
+      c += '\ncase {}:\n'.format(index)
       for j, component in enumerate(components):
         comp = component.get('type')
         cid = component.get('id')
@@ -60,35 +58,36 @@ class UITableView(object):
 
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
-          if contents:
+          if contents is not None:
             # assuming not varying text
             c += obj.set_title(cellComp, contents)
 
         elif comp == 'UIImageView':
           path = component.get('path')
-          if path:
+          if path is not None:
             c += obj.set_image(cellComp, path)
 
         elif comp == 'UILabel':
           line_sp = component.get('line-spacing')
           char_sp = component.get('char-spacing')
           textspan = component.get('textspan')
-          if line_sp or char_sp:
+          if line_sp is not None or char_sp is not None:
             c += obj.setup_cell_or_header_attr_text(cellSubviewIDs[j], textspan,
                                                     line_sp, char_sp)
           else:
             contents = component['textspan'][0]['contents']
-            if contents:
+            if contents is not None:
               c += obj.set_text(cellComp, contents)
 
         elif comp == 'UITextField' or comp == 'UITextView':
           textspan = component['text']['textspan']
           placeholder = textspan[0]['contents']
           placeholder_c = textspan[0]['fill']
-          opacity = textspan[0]['opacity']
           c += obj.set_placeholder_text_and_color(cellComp, placeholder,
-                                                  placeholder_c, opacity)
+                                                  placeholder_c)
       c += '\nreturn cell'
+      index += 1
+
     c += '\ndefault: return cell\n}\n}\n\n'
     return c
 
@@ -103,7 +102,8 @@ class UITableView(object):
     numRows = 0
     for cell in cells:
       components = cell.get('components')
-      if len(components) == firstCellComponents:
+      if len(components) == len(firstCellComponents):
+        # all components are present
         numRows += 1
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
@@ -152,34 +152,33 @@ class UITableView(object):
 
       if comp == 'UIButton':
         contents = component['text']['textspan'][0]['contents']
-        if contents:
+        if contents is not None:
           # assuming not varying text
           c += obj.set_title(headerComp, contents)
 
       elif comp == 'UIImageView':
         path = component.get('path')
-        if path:
+        if path is not None:
           c += obj.set_image(headerComp, path)
 
       elif comp == 'UILabel':
         line_sp = component.get('line-spacing')
         char_sp = component.get('char-spacing')
         textspan = component.get('textspan')
-        if line_sp or char_sp:
+        if line_sp is not None or char_sp is not None:
           c += obj.setup_cell_or_header_attr_text(headerSubviewIDs[i], textspan,
                                                   line_sp, char_sp)
         else:
           contents = component['textspan'][0]['contents']
-          if contents:
+          if contents is not None:
             c += obj.set_text(headerComp, contents)
 
       elif comp == 'UITextField' or comp == 'UITextView':
         textspan = component['text']['textspan']
         placeholder = textspan[0]['contents']
         placeholder_c = textspan[0]['fill']
-        opacity = textspan[0]['opacity']
         c += obj.set_placeholder_text_and_color(headerComp, placeholder,
-                                                placeholder_c, opacity)
+                                                placeholder_c)
     c += ('return header'
           '\ndefault:\nreturn header\n'
           '}\n}\n\n'
@@ -207,7 +206,7 @@ class UITableView(object):
     """
     capElem = elem.capitalize()
     c = ""
-    if header:
+    if header is not None:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
            ).format(elem, capElem, elem)

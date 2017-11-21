@@ -4,9 +4,10 @@ class UITextView(object):
   """
   Class representing a UITextView in swift
   """
-  def set_placeholder_text_and_color(self, tid, text, color, opacity):
-    r, g, b = color
-    o = "1.0" if opacity is None else opacity
+  def set_placeholder_text_and_color(self, tid, text, color):
+    r, g, b, o = color
+    if o is None:
+      o = "1.0"
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"
         ).format(r, g, b, o)
@@ -56,11 +57,10 @@ class UITextView(object):
     placeholder_c = txt.get('fill')
     font = txt.get('font-family')
     size = txt.get('font-size')
-    opacity = txt.get('opacity')
     c = ""
     if not inView:
       c += self.set_placeholder_text_and_color(elem, placeholder,
-                                               placeholder_c, opacity)
+                                               placeholder_c)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
     c += self.set_clips_to_bounds(elem)

@@ -39,17 +39,17 @@ class UILabel(object):
     """
     return ("{}.attributedText = {}\n").format(elem, strID)
 
-  def set_text_color(self, elem, color, opacity):
+  def set_text_color(self, elem, color):
     """
     Args:
       elem: (str) id of element
       color: (tuple) contains r, g, b values representing the text color
-      opacity: (float) between 0 and 1
 
     Returns: The swift code to set the text color of elem to be color
     """
-    o = "1.0" if opacity is None else opacity
-    r, g, b = color
+    r, g, b, o = color
+    if o is None:
+      o = "1.0"
     return ("{}.textColor = UIColor(red: {}/255.0, green: {}/255.0, "
             "blue: {}/255.0, alpha: {})\n"
            ).format(elem, r, g, b, o)
@@ -130,7 +130,7 @@ class UILabel(object):
             ", range: NSRange(location: {}, length: {}))\n"
            ).format(strID, c, start, length)
 
-  def set_attributed_color(self, strID, color, opacity):
+  def set_attributed_color(self, strID, color):
     """
     Args:
       strID: (string) the variable name of string that is to be edited
@@ -139,10 +139,9 @@ class UILabel(object):
     Returns: The swift code to set the color of an attributed string to be a
     color.
     """
-    o = "1.0"
-    if opacity:
-      o = '{}'.format(opacity)
-    r, g, b = color
+    r, g, b, o = color
+    if o is None:
+      o = "1.0"
     c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
          ": {})"
         ).format(r, g, b, o)
@@ -213,16 +212,15 @@ class UILabel(object):
       txt_align = txt.get('text-align')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      opacity = txt.get('opacity')
 
       c = self.create_attributed_str(elem, contents)
       strID = '{}AttributedStr'.format(elem)
-      c += self.set_attributed_color(strID, fill, opacity)
+      c += self.set_attributed_color(strID, fill)
       c += self.set_attributed_font(strID, font, size)
-      if line_sp:
+      if line_sp is not None:
         ls = str(float(line_sp) / float(size))
         c += self.set_line_sp(elem, strID, ls)
-      if char_sp:
+      if char_sp is not None:
         c += self.set_char_sp(elem, strID, char_sp)
       cellComp = 'cell.{}'.format(elem)
       c += self.set_attributed_text(cellComp, strID)
@@ -250,26 +248,25 @@ class UILabel(object):
       txt_align = txt.get('text-align')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      opacity = txt.get('opacity')
 
       c = ""
-      if (line_sp or char_sp) and not inView:
+      if (line_sp is not None or char_sp is not None) and not inView:
         c += self.create_attributed_str(elem, contents)
         strID = '{}AttributedStr'.format(elem)
-        c += self.set_attributed_color(strID, fill, opacity)
+        c += self.set_attributed_color(strID, fill)
         c += self.set_attributed_font(strID, font, size)
-        if line_sp:
+        if line_sp is not None:
           ls = str(float(line_sp) / float(size))
           c += self.set_line_sp(elem, strID, ls)
-        if char_sp:
+        if char_sp is not None:
           c += self.set_char_sp(elem, strID, char_sp)
         c += self.set_attributed_text(elem, strID)
       elif not inView:
         c += self.set_text(elem, contents) if contents != None else ""
-        c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+        c += self.set_text_color(elem, fill) if fill != None else ""
         c += self.set_font_family_size(elem, font, size)
       elif (line_sp is None and char_sp is None) and inView:
-        c += self.set_text_color(elem, fill, opacity) if fill != None else ""
+        c += self.set_text_color(elem, fill) if fill != None else ""
         c += self.set_font_family_size(elem, font, size)
 
       if txt_align is None:

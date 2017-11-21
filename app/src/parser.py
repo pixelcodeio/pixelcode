@@ -157,7 +157,7 @@ class Parser(object):
 
     children = []
     for child in elem.children:
-      if child != "\n" and child.name:
+      if child != "\n" and child.name is not None:
         children.append(self.parse_fake_group(self.create_children(child)))
     elem["children"] = children
     return elem

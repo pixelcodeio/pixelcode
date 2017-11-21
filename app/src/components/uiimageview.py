@@ -41,10 +41,10 @@ class UIImageView(object):
     c = ""
     if not inView:
       c += self.set_image(elem, path)
-    if opacity:
+    if opacity is not None:
       c += self.set_opacity(elem, opacity)
-    if stroke_c:
+    if stroke_c is not None:
       c += utils.set_border_color(elem, stroke_c)
-    if stroke_w:
+    if stroke_w is not None:
       c += utils.set_border_width(elem, stroke_w)
     return c

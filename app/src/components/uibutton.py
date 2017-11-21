@@ -14,17 +14,17 @@ class UIButton(object):
     """
     return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
 
-  def set_title_color(self, elem, color, opacity):
+  def set_title_color(self, elem, color):
     """
     Args:
       elem: (str) id of element
       color: (tuple) contains r, g, b values of the title color
-      opacity: (float) between 0 and 1
 
     Returns: The swift code to set title color of elem using the r, g, b values
     """
-    o = "1.0" if opacity is None else opacity
-    r, g, b = color
+    r, g, b, o = color
+    if o is None:
+      o = "1.0"
     c = ('UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha: {})'
         ).format(r, g, b, o)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
@@ -71,12 +71,11 @@ class UIButton(object):
       fill = txt.get('fill')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      opacity = txt.get('opacity')
       if not inView:
         c = self.set_title(elem, contents) if contents != None else ""
       else:
         c = ""
-      c += self.set_title_color(elem, fill, opacity) if fill != None else ""
+      c += self.set_title_color(elem, fill) if fill != None else ""
       c += self.set_font_family_size(elem, font, size)
       return c
     #TODO: Case for varying text.

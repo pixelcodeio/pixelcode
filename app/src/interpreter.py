@@ -17,10 +17,8 @@ class Interpreter(object):
 
     Returns: The swift code of the global variables for the swift class
     """
-    g = ""
-    for elem in elements:
-      g += "var {}: {}!\n".format(elem['id'], elem['type'])
-    return g
+    variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
+    return "".join(variables)
 
   def generate_header(self, elements):
     """
@@ -31,7 +29,8 @@ class Interpreter(object):
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
-    h = ("import UIKit\nimport SnapKit\n\nclass {}: UIViewController {{\n\n"
+    h = ("import UIKit\nimport SnapKit\n\n"
+         "class {}: UIViewController {{\n\n"
         ).format(viewController)
     h += self.generate_global_vars(elements)
     h += "\noverride func viewDidLoad() {\n"
@@ -85,7 +84,7 @@ class Interpreter(object):
     c += "TableViewCell File: \n"
     bc = BaseComponent('UITableView', tableViewElem, None, True)
     c += bc.cell
-    if tableViewElem['header']:
+    if tableViewElem.get('header') is not None:
       bc = BaseComponent('UITableView', tableViewElem, None, False, True)
       c += "\nTableViewHeader File: \n"
       c += bc.tableViewHeader
