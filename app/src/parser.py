@@ -42,7 +42,7 @@ class Parser(object):
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
-    artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, True)
+    artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, first=True)
 
     # init rwidth and rheight for inheritance
     artboard["rwidth"] = self.globals["width"]
