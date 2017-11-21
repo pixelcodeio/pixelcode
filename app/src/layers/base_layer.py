@@ -42,6 +42,13 @@ class BaseLayer(object):
 
       if param not in elem.attrs:
         elem[param] = None
+
+    if "fill" in elem.attrs:
+      o = "1.0" if elem["opacity"] is None else elem["opacity"]
+      elem["fill"].append(o)
+    if "stroke-color" in elem.attrs:
+      o = "1.0" if elem["stroke-opacity"] is None else elem["stroke-opacity"]
+      elem["stroke-color"].append(o)
     return elem
 
   def generate_object(self, elem):
@@ -74,7 +81,6 @@ class BaseLayer(object):
         "rwidth",
         "rheight",
         "stroke-color",
-        "stroke-opacity",
         "stroke-width",
         "text",
         "textspan",
