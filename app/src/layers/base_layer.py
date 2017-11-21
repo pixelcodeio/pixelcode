@@ -43,10 +43,10 @@ class BaseLayer(object):
       if param not in elem.attrs:
         elem[param] = None
 
-    if "fill" in elem.attrs:
+    if elem["fill"] is not None:
       o = "1.0" if elem["opacity"] is None else elem["opacity"]
       elem["fill"] += (o,) # concat tuple
-    if "stroke-color" in elem.attrs:
+    if elem["stroke-color"] is not None:
       o = "1.0" if elem["stroke-opacity"] is None else elem["stroke-opacity"]
       elem["stroke-color"] += (o,) # concat tuple
     return elem
@@ -82,6 +82,7 @@ class BaseLayer(object):
         "rheight",
         "stroke-color",
         "stroke-width",
+        "stroke-opacity",
         "text",
         "textspan",
         "text-align",
