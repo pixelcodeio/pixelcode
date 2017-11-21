@@ -45,10 +45,10 @@ class BaseLayer(object):
 
     if "fill" in elem.attrs:
       o = "1.0" if elem["opacity"] is None else elem["opacity"]
-      elem["fill"].append(o)
+      elem["fill"] += (o,) # concat tuple
     if "stroke-color" in elem.attrs:
       o = "1.0" if elem["stroke-opacity"] is None else elem["stroke-opacity"]
-      elem["stroke-color"].append(o)
+      elem["stroke-color"] += (o,) # concat tuple
     return elem
 
   def generate_object(self, elem):
