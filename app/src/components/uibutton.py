@@ -22,11 +22,7 @@ class UIButton(object):
 
     Returns: The swift code to set title color of elem using the r, g, b values
     """
-    r, g, b, o = color
-    if o is None:
-      o = "1.0"
-    c = ('UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha: {})'
-        ).format(r, g, b, o)
+    c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
 
   def set_font_size(self, elem, size):
@@ -55,7 +51,7 @@ class UIButton(object):
     return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
 
-  def setup_uibutton(self, elem, textspan, inView=False):
+  def setup_uibutton(self, elem, textspan, in_view=False):
     """
     Args:
       elem: (str) id of the component
@@ -71,7 +67,7 @@ class UIButton(object):
       fill = txt.get('fill')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      if not inView:
+      if not in_view:
         c = self.set_title(elem, contents) if contents != None else ""
       else:
         c = ""

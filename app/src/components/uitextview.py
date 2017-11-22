@@ -5,15 +5,9 @@ class UITextView(object):
   Class representing a UITextView in swift
   """
   def set_placeholder_text_and_color(self, tid, text, color):
-    r, g, b, o = color
-    if o is None:
-      o = "1.0"
-    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
-         ": {})"
-        ).format(r, g, b, o)
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
-           ).format(tid, text, c)
+           ).format(tid, text, utils.create_uicolor(color))
 
   def set_left_inset(self, tid, left):
     return ('{}.layer.sublayerTransform = CATransform3DMakeTranslation({}'
@@ -41,7 +35,7 @@ class UITextView(object):
     return ("{}.font = UIFont(name: \"{}\", size: {})\n"
            ).format(elem, font, size)
 
-  def setup_uitextview(self, elem, textspan, left_inset, inView=False):
+  def setup_uitextview(self, elem, textspan, left_inset, in_view=False):
     """
     Args:
       elem: (str) id of the component
@@ -58,7 +52,7 @@ class UITextView(object):
     font = txt.get('font-family')
     size = txt.get('font-size')
     c = ""
-    if not inView:
+    if not in_view:
       c += self.set_placeholder_text_and_color(elem, placeholder,
                                                placeholder_c)
     c += self.set_font_family_size(elem, font, size)

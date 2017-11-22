@@ -26,7 +26,7 @@ class UIImageView(object):
     """
     return "{}.alpha = {}\n".format(elem, opacity)
 
-  def setup_uiimageview(self, elem, info, inView=False):
+  def setup_uiimageview(self, elem, info, in_view=False):
     """
     Args:
       elem: (str) id of the component
@@ -39,7 +39,7 @@ class UIImageView(object):
     stroke_c = info.get('stroke-color')
     stroke_w = info.get('stroke-width')
     c = ""
-    if not inView:
+    if not in_view:
       c += self.set_image(elem, path)
     if opacity is not None:
       c += self.set_opacity(elem, opacity)

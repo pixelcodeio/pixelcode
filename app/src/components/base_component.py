@@ -5,21 +5,16 @@ class BaseComponent(object):
   """
   Base class for components
   """
-  def __init__(self, comp, info, bgColor=None, generating_cell=False,
-               generating_header=False):
+  def __init__(self, comp, info, bgc=None, in_view=False):
     """
     Args:
+      bgc: Refers to background color
       Refer to generate_component for documentation on args
     """
-    if generating_cell:
-      self.cell = self.generate_cell(info)
-    elif generating_header:
-      self.tableViewHeader = self.generate_header(info)
-    else:
-      self.tableViewMethods = ""
-      self.swift = self.generate_component(comp, info, bgColor)
+    self.tv_methods = ""
+    self.swift = self.generate_component(comp, info, bgc=bgc, in_view=in_view)
 
-  def create_object(self, comp, bgColor=None):
+  def create_object(self, comp, bgc=None):
     """
     Args:
       comp: (str) the component to be created
@@ -28,7 +23,7 @@ class BaseComponent(object):
     """
     return {
         "UIButton": UIButton(),
-        "UILabel": UILabel(bgColor),
+        "UILabel": UILabel(bgc),
         "UIImageView": UIImageView(),
         "UITableView": UITableView(),
         "UITextField": UITextField(),
@@ -36,57 +31,7 @@ class BaseComponent(object):
         "UIView": UIView(),
     }.get(comp, None)
 
-  def setup_rect(self, cid, rect, inView=False):
-    """
-    Args:
-      cid: (int) id of component
-      rect: (dict) see generate_component for more information
-
-    Returns: The swift code to apply all the properties from rect.
-    """
-    fill = rect.get('fill')
-    border_r = rect.get('border-radius')
-    str_c = rect.get('stroke-color')
-    str_w = rect.get('stroke-width')
-
-    c = ""
-    if fill is not None:
-      c += utils.set_bg(cid, fill, inView)
-    if str_c is not None:
-      c += utils.set_border_color(cid, str_c, inView)
-    if str_w is not None:
-      c += utils.set_border_width(cid, str_w, inView)
-    if border_r is not None:
-      c += utils.set_corner_radius(cid, border_r, inView)
-
-    return c
-
-  def setup_rect_for_header(self, cid, rect, inView=False):
-    """
-    Args:
-      cid: (int) id of component
-      rect: (dict) see generate_component for more information
-
-    Returns: The swift code to apply all the properties from rect.
-    """
-    fill = rect.get('fill')
-    border_r = rect.get('border-radius')
-    str_c = rect.get('stroke-color')
-    str_w = rect.get('stroke-width')
-
-    c = ""
-    if fill is not None:
-      c += utils.set_bg('contentView', fill, False)
-    if str_c is not None:
-      c += utils.set_border_color(cid, str_c, inView)
-    if str_w is not None:
-      c += utils.set_border_width(cid, str_w, inView)
-    if border_r is not None:
-      c += utils.set_corner_radius(cid, border_r, inView)
-
-    return c
-
-  def generate_component(self, comp, info, bgColor=None, inView=False):
+  def generate_component(self, comp, info, bgc=None, in_view=False):
     """
     Args:
       comp (str): The component to be generated
@@ -96,71 +41,49 @@ class BaseComponent(object):
 
     Returns: The swift code to generate the component
     """
-    obj = self.create_object(comp, bgColor)
-    centerX = info.get('cx')
-    centerY = info.get('cy')
+    obj = self.create_object(comp, bgc=bgc)
     cid = info.get('id')
     height = info.get('height')
-    horizontal = info.get('horizontal')
-    horizontalDir = horizontal.get('direction')
-    horizontalDist = horizontal.get('distance')
-    horizontalID = horizontal.get('id')
+    hor = info.get('horizontal')
+    hor_dir = hor.get('direction')
+    hor_dist = hor.get('distance')
+    hor_id = hor.get('id')
     rect = info.get('rect')
-    # subtextColors = info.get('subtext-colors')
-    # subtextFonts = info.get('subtext-fonts')
     text = info.get('text')
-    vertical = info.get('vertical')
-    verticalDir = vertical.get('direction')
-    verticalDist = vertical.get('distance')
-    verticalID = vertical.get('id')
+    vert = info.get('vertical')
+    vert_dir = vert.get('direction')
+    vert_dist = vert.get('distance')
+    vert_id = vert.get('id')
     width = info.get('width')
     left_inset = info.get('left-inset')
 
     c = ""
-    if not inView:
+    if not in_view:
       c += "{} = {}()\n".format(cid, comp)
 
     c += utils.translates_false(cid)
 
     if rect is not None:
-      c += self.setup_rect(cid, rect)
+      c += utils.setup_rect(cid, rect)
 
     if comp == 'UIView':
       c += obj.setup_uiview(cid, info)
     elif text is not None and comp == 'UIButton':
       textspan = text['textspan']
-      c += obj.setup_uibutton(cid, textspan, inView)
+      c += obj.setup_uibutton(cid, textspan, in_view=in_view)
     elif comp == 'UILabel':
       textspan = info['textspan']
       line_sp = info.get('line-spacing')
       char_sp = info.get('char-spacing')
-      c += obj.setup_uilabel(cid, textspan, line_sp, char_sp, inView)
-      # if subtextColors is None and subtextFonts is None:
-      #   c += obj.set_text(cid, txt) if txt != None else ""
-      # else:
-      #   c += obj.create_attributed_str(cid, txt)
-      #   strID = "{}AttributedStr".format(cid)
-      #   if subtextColors != None:
-      #     for sub in subtextColors:
-      #       color = sub['color']
-      #       start = sub['start']
-      #       length = sub['length']
-      #       c += obj.set_substring_color(strID, color, start, length)
-      #   if subtextFonts != None:
-      #     for sub in subtextFonts:
-      #       font = sub['font']
-      #       size = sub['size']
-      #       start = sub['start']
-      #       length = sub['length']
-      #       c += obj.set_substring_font(strID, font, size, start, length)
+      c += obj.setup_uilabel(cid, textspan, line_sp, char_sp, in_view=in_view)
     elif text is not None and comp == 'UITextField':
       textspan = text['textspan']
-      c += obj.setup_uitextfield(cid, textspan, left_inset, inView)
+      c += obj.setup_uitextfield(cid, textspan, left_inset, in_view=in_view)
     elif text is not None and comp == 'UITextView':
       textspan = text['textspan']
-      c += obj.setup_uitextview(cid, textspan, left_inset, inView)
+      c += obj.setup_uitextview(cid, textspan, left_inset, in_view=in_view)
     elif comp == 'UIImageView':
-      c += obj.setup_uiimageview(cid, info, inView)
+      c += obj.setup_uiimageview(cid, info, in_view=in_view)
     elif comp == 'UITableView':
       # Assume no tableviews are within tableviews
       cells = info['cells']
@@ -172,92 +95,13 @@ class BaseComponent(object):
       if header is not None:
         tvm += obj.view_for_header(cid, header)
         tvm += obj.height_for_header(cid, header)
-      self.tableViewMethods = tvm
+      self.tv_methods = tvm
 
-    if not inView:
+    if not in_view:
       c += utils.add_subview('view', cid)
     else:
       c += utils.add_subview(None, cid)
-    c += utils.make_snp_constraints(cid, horizontalID, horizontalDir,
-                                    horizontalDist, verticalID, verticalDir,
-                                    verticalDist, width, height, inView)
-    return c
-
-  def generate_cell(self, info):
-    """
-    Args:
-      info: see generate_component's docstring for more information
-
-    Returns: The swift code to generate a UITableViewCell swift file
-    """
-    cid = info.get('id')
-    cells = info.get('cells')
-    capID = cid.capitalize()
-    c = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell {{\n\n"
-        ).format(capID)
-
-    for cell in cells:
-      components = cell.get('components')
-      for component in components:
-        cid = component.get('id')
-        ctype = component.get('type')
-        c += 'var {} = {}()\n'.format(cid, ctype)
-      break
-
-    c += ("\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
-          "String?) {\n"
-          "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-          "layoutSubviews()\n}\n\n"
-          "override func layoutSubviews() {\n"
-          "super.layoutSubviews()\n\n"
-         )
-
-    for cell in cells:
-      rect = cell.get('rect')
-      c += self.setup_rect(cid, rect, True)
-      components = cell.get('components')
-      for component in components:
-        comp = component.get('type')
-        c += self.generate_component(comp, component, None, True)
-      break # we are only considering cells with the same components
-
-    c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
-          'fatalError("init(coder:) has not been implemented")\n}\n\n}'
-         )
-    return c
-
-  def generate_header(self, info):
-    """
-    Returns: The swift code to generate a UITableView header class file.
-    """
-    cid = info.get('id')
-    header = info.get('header')
-    capID = cid.capitalize()
-    c = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: UITableViewHeader"
-         "FooterView {{\n\n"
-        ).format(capID)
-
-
-    components = header.get('components')
-    for component in components:
-      cid = component.get('id')
-      ctype = component.get('type')
-      c += 'var {} = {}()\n'.format(cid, ctype)
-
-    c += ("\noverride init(reuseIdentifier: String?) {\n"
-          "super.init(reuseIdentifier: reuseIdentifier)\n"
-          "layoutSubviews()\n}\n\n"
-          "override func layoutSubviews() {\n"
-          "super.layoutSubviews()\n\n"
-         )
-
-    rect = header.get('rect')
-    c += self.setup_rect_for_header(cid, rect, True)
-    for component in components:
-      comp = component.get('type')
-      c += self.generate_component(comp, component, None, True)
-
-    c += ("}\n\n required init?(coder aDecoder: NSCoder) {\n"
-          'fatalError("init(coder:) has not been implemented")\n}\n\n}'
-         )
+    c += utils.make_snp_constraints(cid, hor_id, hor_dir,
+                                    hor_dist, vert_id, vert_dir,
+                                    vert_dist, width, height, in_view)
     return c

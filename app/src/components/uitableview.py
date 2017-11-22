@@ -6,7 +6,7 @@ class UITableView(object):
   Class representing a UITableView in swift
   """
 
-  def create_object(self, comp, bgColor=None):
+  def create_object(self, comp, bgc=None):
     """
     Args:
       comp: (str) the component to be created
@@ -15,7 +15,7 @@ class UITableView(object):
     """
     return {
         "UIButton": UIButton(),
-        "UILabel": UILabel(bgColor),
+        "UILabel": UILabel(bgc),
         "UIImageView": UIImageView(),
         "UITableView": UITableView(),
         "UITextField": UITextField(),
@@ -30,60 +30,59 @@ class UITableView(object):
 
     Returns: The swift code for the cellForRowAt function of a UITableView.
     """
-    capElem = elem.capitalize()
     c = ("func tableView(_ tableView: UITableView, cellForRowAt "
          "indexPath: IndexPath) -> UITableViewCell {{\n"
          'let cell = tableView.dequeueReusableCell(withIdentifier: "{}CellID")'
          ' as! {}Cell\n'
          'cell.selectionStyle = .none\n'
          "switch indexPath.row {{"
-        ).format(elem, capElem)
+        ).format(elem, elem.capitalize())
 
-    cellSubviewIDs = []
-    firstCellComponents = cells[0].get('components')
-    for component in firstCellComponents:
-      cellSubviewIDs.append(component.get('id'))
+    subview_ids = []
+    fst_cell_comps = cells[0].get('components')
+    for component in fst_cell_comps:
+      subview_ids.append(component.get('id'))
 
     index = 0
     for cell in cells:
       components = cell.get('components')
-      if len(components) != len(firstCellComponents):
+      if len(components) != len(fst_cell_comps):
         continue
       c += '\ncase {}:\n'.format(index)
       for j, component in enumerate(components):
         comp = component.get('type')
         cid = component.get('id')
         obj = self.create_object(comp)
-        cellComp = "cell.{}".format(cellSubviewIDs[j])
+        cell_comp = "cell.{}".format(subview_ids[j])
 
         if comp == 'UIButton':
           contents = component['text']['textspan'][0]['contents']
           if contents is not None:
             # assuming not varying text
-            c += obj.set_title(cellComp, contents)
+            c += obj.set_title(cell_comp, contents)
 
         elif comp == 'UIImageView':
           path = component.get('path')
           if path is not None:
-            c += obj.set_image(cellComp, path)
+            c += obj.set_image(cell_comp, path)
 
         elif comp == 'UILabel':
           line_sp = component.get('line-spacing')
           char_sp = component.get('char-spacing')
           textspan = component.get('textspan')
           if line_sp is not None or char_sp is not None:
-            c += obj.setup_cell_or_header_attr_text(cellSubviewIDs[j], textspan,
+            c += obj.setup_cell_or_header_attr_text(subview_ids[j], textspan,
                                                     line_sp, char_sp)
           else:
             contents = component['textspan'][0]['contents']
             if contents is not None:
-              c += obj.set_text(cellComp, contents)
+              c += obj.set_text(cell_comp, contents)
 
         elif comp == 'UITextField' or comp == 'UITextView':
           textspan = component['text']['textspan']
           placeholder = textspan[0]['contents']
           placeholder_c = textspan[0]['fill']
-          c += obj.set_placeholder_text_and_color(cellComp, placeholder,
+          c += obj.set_placeholder_text_and_color(cell_comp, placeholder,
                                                   placeholder_c)
       c += '\nreturn cell'
       index += 1
@@ -98,18 +97,18 @@ class UITableView(object):
 
     Returns: The swift code for the numberOfRowsInSection func of a UITableView.
     """
-    firstCellComponents = cells[0].get('components')
-    numRows = 0
+    fst_cell_comps = cells[0].get('components')
+    num_rows = 0
     for cell in cells:
       components = cell.get('components')
-      if len(components) == len(firstCellComponents):
+      if len(components) == len(fst_cell_comps):
         # all components are present
-        numRows += 1
+        num_rows += 1
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
             "return {} \n"
             "}}\n"
-           ).format(numRows)
+           ).format(num_rows)
 
   def height_for_row_at(self, elem, cells):
     """
@@ -120,64 +119,62 @@ class UITableView(object):
 
     Returns: The swift code for the heightForRowAt func of a UITableView.
     """
-    cellHeightPerc = cells[0]['height']
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
-           ).format(elem, cellHeightPerc)
+           ).format(elem, cells[0]['height'])
 
   def view_for_header(self, elem, header):
     """
     Returns: The swift code for generating the viewForHeaderInSection function
     """
-    capElem = elem.capitalize()
     c = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
          "section: Int) -> UIView? {{\n"
          'let header = {}.dequeueReusableHeaderFooterView(withIdentifier: '
          '"{}Header") as! {}HeaderView\n'
          'switch section {{\n'
          'case 0:\n'
-        ).format(elem, elem, capElem)
+        ).format(elem, elem, elem.capitalize())
 
     components = header.get('components')
-    headerSubviewIDs = []
+    subview_ids = []
     for component in components:
-      headerSubviewIDs.append(component.get('id'))
+      subview_ids.append(component.get('id'))
 
     for i, component in enumerate(components):
       comp = component.get('type')
       cid = component.get('id')
       obj = self.create_object(comp)
-      headerComp = "header.{}".format(headerSubviewIDs[i])
+      header_comp = "header.{}".format(subview_ids[i])
 
       if comp == 'UIButton':
         contents = component['text']['textspan'][0]['contents']
         if contents is not None:
           # assuming not varying text
-          c += obj.set_title(headerComp, contents)
+          c += obj.set_title(header_comp, contents)
 
       elif comp == 'UIImageView':
         path = component.get('path')
         if path is not None:
-          c += obj.set_image(headerComp, path)
+          c += obj.set_image(header_comp, path)
 
       elif comp == 'UILabel':
         line_sp = component.get('line-spacing')
         char_sp = component.get('char-spacing')
         textspan = component.get('textspan')
         if line_sp is not None or char_sp is not None:
-          c += obj.setup_cell_or_header_attr_text(headerSubviewIDs[i], textspan,
+          c += obj.setup_cell_or_header_attr_text(subview_ids[i], textspan,
                                                   line_sp, char_sp)
         else:
           contents = component['textspan'][0]['contents']
           if contents is not None:
-            c += obj.set_text(headerComp, contents)
+            c += obj.set_text(header_comp, contents)
 
       elif comp == 'UITextField' or comp == 'UITextView':
         textspan = component['text']['textspan']
         placeholder = textspan[0]['contents']
         placeholder_c = textspan[0]['fill']
-        c += obj.set_placeholder_text_and_color(headerComp, placeholder,
+        c += obj.set_placeholder_text_and_color(header_comp, placeholder,
                                                 placeholder_c)
     c += ('return header'
           '\ndefault:\nreturn header\n'
@@ -189,11 +186,10 @@ class UITableView(object):
     """
     Returns: The swift code for heightForHeaderInSection function.
     """
-    headerHeightPerc = header['height']
     return ("func tableView(_ tableView: UITableView, heightForHeaderInSection "
             "section: Int) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
-           ).format(elem, headerHeightPerc)
+           ).format(elem, header['height'])
 
   def setup_uitableview(self, elem, cells, header):
     """
@@ -204,14 +200,13 @@ class UITableView(object):
 
     Returns: The swift code to setup a UITableView in viewDidLoad.
     """
-    capElem = elem.capitalize()
     c = ""
     if header is not None:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
-           ).format(elem, capElem, elem)
+           ).format(elem, elem.capitalize(), elem)
     c += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
           '{}.delegate = self\n'
           '{}.dataSource = self\n'
-         ).format(elem, capElem, elem, elem, elem)
+         ).format(elem, elem.capitalize(), elem, elem, elem)
     return c

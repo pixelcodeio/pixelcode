@@ -1,4 +1,4 @@
-from . import *
+from components import *
 
 def translates_false(elem):
   """
@@ -7,7 +7,16 @@ def translates_false(elem):
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
-def set_bg(elem, color, inView=False):
+def create_uicolor(color):
+  """
+  Returns: The UIColor of color.
+  """
+  r, g, b, o = color
+  return ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
+          ": {})"
+         ).format(r, g, b, o)
+
+def set_bg(elem, color, in_view=False):
   """
   Args:
     color: (tuple) contains the r, g, b values of the background color
@@ -15,30 +24,25 @@ def set_bg(elem, color, inView=False):
   Returns: The line that sets the background color of elem to the
   UIColor with the corresponding r, g, b values.
   """
-  r, g, b, o = color
-  if o is None:
-    o = "1.0"
-  if inView:
-    return ('backgroundColor = UIColor(red: {}/255.0 , green: '
-            '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
-           ).format(r, g, b, o)
-  return ('{}.backgroundColor = UIColor(red: {}/255.0 , green: '
-          '{}/255.0 , blue: {}/255.0 , alpha: {})\n'
-         ).format(elem, r, g, b, o)
+  if in_view:
+    return ('backgroundColor = {}\n'
+           ).format(create_uicolor(color))
+  return ('{}.backgroundColor = {}\n'
+         ).format(elem, create_uicolor(color))
 
 def add_subview(view, elem):
   if view is None:
     return 'addSubview({})\n\n'.format(elem)
   return '{}.addSubview({})\n\n'.format(view, elem)
 
-def wh_constraints(elem, width, height, inView=False):
+def wh_constraints(elem, width, height, in_view=False):
   """
   Returns: The swift code that sets the width and height constraints
   of the elem.
   """
-  if inView:
-    return ('{}.widthAnchor.constraint(equalToConstant: contentView.frame.width*'
-            '{}).isActive = true\n'
+  if in_view:
+    return ('{}.widthAnchor.constraint(equalToConstant: contentView.frame.width'
+            '*{}).isActive = true\n'
             '{}.heightAnchor.constraint(equalToConstant: contentView.frame.'
             'height*{}).isActive = true\n'
            ).format(elem, width, elem, height)
@@ -49,12 +53,12 @@ def wh_constraints(elem, width, height, inView=False):
          ).format(elem, width, elem, height)
 
 def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-                         vertDist, centerX, centerY, inView=False):
+                         vertDist, centerX, centerY, in_view=False):
   """
   Returns: The swift code to set the centerX and centerY constraints of
   the elem.
   """
-  if inView:
+  if in_view:
     c = ('{}.centerXAnchor.constraint(equalTo: contentView.leftAnchor, '
          'constant: contentView.frame.width*{}).isActive = true\n'
          '{}.centerYAnchor.constraint(equalTo: contentView.topAnchor, '
@@ -111,12 +115,12 @@ def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
   return c
 
 def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-                         vertDist, width, height, inView=False):
+                         vertDist, width, height, in_view=False):
   """
   Returns: The swift code to set width/height and position constraints using
   the SnapKit library.
   """
-  if inView:
+  if in_view:
     c = ("{}.snp.updateConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: frame.width*{}, height: "
          "frame.height*{}))\n"
@@ -178,50 +182,80 @@ def set_edges_constraints(elem, superview, top, bottom, left, right):
                   bottom, elem, superview, superview, left, elem, superview,
                   superview, right)
 
-def set_border_width(elem, width, inView=False):
+def set_border_width(elem, width, in_view=False):
   """
   Returns: The swift code to set the border width of elem.
   """
-  if inView:
+  if in_view:
     return ("layer.borderWidth = {}\n").format(width)
   return ("{}.layer.borderWidth = {}\n").format(elem, width)
 
-def set_border_color(elem, color, inView=False):
+def set_border_color(elem, color, in_view=False):
   """
   Returns: The swift code to set the border color of elem.
   """
-  r, g, b, o = color
-  if o is None:
-    o = "1.0"
-  if inView:
-    return ("layer.borderColor = UIColor(red: {}/255.0, green: {}/255.0, "
-            "blue: {}/255.0, alpha: {}).cgColor\n"
-           ).format(r, g, b, o)
-  return ("{}.layer.borderColor = UIColor(red: {}/255.0, green: {}/255.0, "
-          "blue: {}/255.0, alpha: {}).cgColor\n"
-         ).format(elem, r, g, b, o)
+  if in_view:
+    return ("layer.borderColor = {}.cgColor\n"
+           ).format(create_uicolor(color))
+  return ("{}.layer.borderColor = {}.cgColor\n"
+         ).format(elem, create_uicolor(color))
 
-def set_corner_radius(elem, radius, inView=False):
+def set_corner_radius(elem, radius, in_view=False):
   """
   Returns: The swift code to set the corner radius of elem.
   """
-  if inView:
+  if in_view:
     return ("layer.cornerRadius = {}\n").format(radius)
   return ("{}.layer.cornerRadius = {}\n").format(elem, radius)
 
-def create_object(comp, bgColor=None):
+def setup_rect(cid, rect, in_view=False, tv_header=False):
   """
   Args:
-    comp: (str) the component to be created
+    cid: (int) id of component
+    rect: (dict) see generate_component for more information
 
-  Returns: An instance of the component to be created
+  Returns: The swift code to apply all the properties from rect.
   """
-  return {
-      "UIButton": UIButton(),
-      "UILabel": UILabel(bgColor),
-      "UIImageView": UIImageView(),
-      "UITableView": UITableView(),
-      "UITextField": UITextField(),
-      "UITextView": UITextView(),
-      "UIView": UIView(),
-  }.get(comp, None)
+  fill = rect.get('fill')
+  border_r = rect.get('border-radius')
+  str_c = rect.get('stroke-color')
+  str_w = rect.get('stroke-width')
+
+  c = ""
+  if fill is not None:
+    if tv_header:
+      c += set_bg('contentView', fill, in_view=False)
+    else:
+      c += set_bg(cid, fill, in_view)
+  if str_c is not None:
+    c += set_border_color(cid, str_c, in_view)
+  if str_w is not None:
+    c += set_border_width(cid, str_w, in_view)
+  if border_r is not None:
+    c += set_corner_radius(cid, border_r, in_view)
+
+  return c
+
+def required_init():
+  """
+  Returns: The swift code for the required init?(coder:) function for custom
+  views.
+  """
+  return ("required init?(coder aDecoder: NSCoder) {\n"
+          'fatalError("init(coder:) has not been implemented")\n}')
+
+def find_and_ins(s, k, ins):
+  """
+  Args:
+    s: (str) the whole string phrase.
+    k: (str) the substring to search for inside str.
+    ins: (str) the string to insert right after key in str.
+
+  Returns: Given a str, insert ins right after key, returning the new string.
+  If key is not a substring of str, the empty string is returned.
+  """
+  i = s.find(k)
+  if i == -1:
+    return ""
+  end_i = i + len(k)
+  return s[:end_i] + ins + s[end_i:]

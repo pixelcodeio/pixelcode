@@ -4,23 +4,20 @@ class UITextField(object):
   """
   Class representing a UITextField in swift
   """
-  def set_placeholder_text_and_color(self, tid, text, color):
-    r, g, b, o = color
-    if o is None:
-      o = "1.0"
-    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
-         ": {})"
-        ).format(r, g, b, o)
+  def set_placeholder_tc(self, tid, text, color):
+    """
+    Returns: The swift code to set placeholder's text and color.
+    """
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
-           ).format(tid, text, c)
+           ).format(tid, text, utils.create_uicolor(color))
 
   def set_left_inset(self, tid, left):
     return ('{}.layer.sublayerTransform = CATransform3DMakeTranslation({}'
             ', 0, 0)\n'
            ).format(tid, left)
 
-  def set_clips_to_bounds(self, elem):
+  def set_cb(self, elem):
     """
     Args:
       elem: (str) id of element
@@ -29,19 +26,18 @@ class UITextField(object):
     """
     return "{}.clipsToBounds = true\n".format(elem)
 
-  def set_font_family_size(self, elem, font, size):
+  def set_font_family_size(self, e, f, s):
     """
     Args:
-      elem: (str) id of element
-      font: (str) font name
-      size: (int) size of the font
+      e: (str) id of element
+      f: (str) font name
+      s: (int) size of the font
 
-    Returns: The swift code to set the font family and size of the title in elem
+    Returns: The swift code to set the font-family and size of the title in e
     """
-    return ("{}.font = UIFont(name: \"{}\", size: {})\n"
-           ).format(elem, font, size)
+    return ("{}.font = UIFont(name: \"{}\", size: {})\n").format(e, f, s)
 
-  def setup_uitextfield(self, elem, textspan, left_inset, inView=False):
+  def setup_uitextfield(self, elem, textspan, left_inset, in_view=False):
     """
     Args:
       elem: (str) id of the component
@@ -54,14 +50,13 @@ class UITextField(object):
     """
     txt = textspan[0]
     placeholder = txt.get('contents')
-    placeholder_c = txt.get('fill')
+    p_color = txt.get('fill')
     font = txt.get('font-family')
     size = txt.get('font-size')
     c = ""
-    if not inView:
-      c += self.set_placeholder_text_and_color(elem, placeholder,
-                                               placeholder_c)
+    if not in_view:
+      c += self.set_placeholder_tc(elem, placeholder, p_color)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
-    c += self.set_clips_to_bounds(elem)
+    c += self.set_cb(elem)
     return c

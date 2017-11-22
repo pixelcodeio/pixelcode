@@ -1,12 +1,12 @@
 import components.utils as utils
 
 class UILabel(object):
-  def __init__(self, bgColor):
+  def __init__(self, bgc):
     """
     Args:
-      bgColor: (tuple) Background color of label as r, g, b values
+      bgc: (tuple) Background color of label as r, g, b values
     """
-    self.bgColor = bgColor
+    self.bgc = bgc
 
   def create_attributed_str(self, elem, text):
     """
@@ -29,15 +29,15 @@ class UILabel(object):
     """
     return '{}.text = "{}"\n'.format(elem, txt)
 
-  def set_attributed_text(self, elem, strID):
+  def set_attributed_text(self, elem, str_id):
     """
     Args:
       elem: (str) id of element
-      strID: (str) id of attributed string
+      str_id: (str) id of attributed string
 
     Returns: The swift code to set the attributedText property of elem.
     """
-    return ("{}.attributedText = {}\n").format(elem, strID)
+    return ("{}.attributedText = {}\n").format(elem, str_id)
 
   def set_text_color(self, elem, color):
     """
@@ -47,24 +47,20 @@ class UILabel(object):
 
     Returns: The swift code to set the text color of elem to be color
     """
-    r, g, b, o = color
-    if o is None:
-      o = "1.0"
-    return ("{}.textColor = UIColor(red: {}/255.0, green: {}/255.0, "
-            "blue: {}/255.0, alpha: {})\n"
-           ).format(elem, r, g, b, o)
+    return ("{}.textColor = {}\n"
+           ).format(elem, utils.create_uicolor(color))
 
-  def center_and_wrap(self, elem, textAlign):
+  def center_and_wrap(self, elem, text_align):
     """
     Args:
       elem: (str) id of element
-      textAlign: (str) alignment of text (either left, center, or right)
+      text_align: (str) alignment of text (either left, center, or right)
 
     Returns: The swift code to center the text and wrap lines
     """
     return ("{}.textAlignment = .{}\n{}.numberOfLines = 0\n"
             "{}.lineBreakMode = .byWordWrapping\n"
-           ).format(elem, textAlign, elem, elem)
+           ).format(elem, text_align, elem, elem)
 
   def set_font_size(self, elem, size):
     """
@@ -110,10 +106,10 @@ class UILabel(object):
     """
     return "{}.numberOfLines = 0\n".format(elem)
 
-  def set_substring_color(self, strID, color, start, length):
+  def set_substring_color(self, str_id, color, start, length):
     """
     Args:
-      strID: (string) the variable name of string that is to be edited
+      str_id: (string) the variable name of string that is to be edited
       color: (tuple) contains r, g, b values representing the color of substring
       start: (int) index of first character whose color is being changed
       length: (int) number of characters from start index whose color is being
@@ -122,37 +118,27 @@ class UILabel(object):
     Returns: The swift code to set a substring of str to be a color with r,g,b
              values.
     """
-    r, g, b = color
-    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha)"
-         ": 1.0)"
-        ).format(r, g, b)
     return ("{}.addAttribute(.foregroundColor, value: {})"
             ", range: NSRange(location: {}, length: {}))\n"
-           ).format(strID, c, start, length)
+           ).format(str_id, utils.create_uicolor(color), start, length)
 
-  def set_attributed_color(self, strID, color):
+  def set_attributed_color(self, str_id, color):
     """
     Args:
-      strID: (string) the variable name of string that is to be edited
+      str_id: (string) the variable name of string that is to be edited
       color: (tuple) contains r, g, b values representing the color
 
     Returns: The swift code to set the color of an attributed string to be a
     color.
     """
-    r, g, b, o = color
-    if o is None:
-      o = "1.0"
-    c = ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
-         ": {})"
-        ).format(r, g, b, o)
     return ("{}.addAttribute(.foregroundColor, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
-           ).format(strID, c, strID)
+           ).format(str_id, utils.create_uicolor(color), str_id)
 
-  def set_substring_font(self, strID, font, size, start, length):
+  def set_substring_font(self, str_id, font, size, start, length):
     """
     Args:
-      strID: (string) the variable name of string that is to be edited
+      str_id: (string) the variable name of string that is to be edited
       font: (string) the font of the substring
       start: (int) index of first character whose font is being changed
       length: (int) number of characters from start index whose font is being
@@ -163,12 +149,12 @@ class UILabel(object):
     f = ('UIFont(name: "{}", size: {})').format(font, size)
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
-           ).format(strID, f, start, length)
+           ).format(str_id, f, start, length)
 
-  def set_attributed_font(self, strID, font, size):
+  def set_attributed_font(self, str_id, font, size):
     """
     Args:
-      strID: (string) the variable name of string that is to be edited
+      str_id: (string) the variable name of string that is to be edited
       font: (string) the font family name
       size: (int) the font size
 
@@ -177,9 +163,9 @@ class UILabel(object):
     f = ('UIFont(name: "{}", size: {})').format(font, size)
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
-           ).format(strID, f, strID)
+           ).format(str_id, f, str_id)
 
-  def set_line_sp(self, elem, strID, line_sp):
+  def set_line_sp(self, elem, str_id, line_sp):
     """
     Returns: The swift code to set the line spacing of an
     attributed string
@@ -188,16 +174,16 @@ class UILabel(object):
             '{}ParaStyle.lineSpacing = {}\n'
             '{}.addAttribute(.paragraphStyle, value: {}ParaStyle, range: '
             'NSRange(location: 0, length: {}.length))\n'
-           ).format(elem, elem, line_sp, strID, elem, strID)
+           ).format(elem, elem, line_sp, str_id, elem, str_id)
 
-  def set_char_sp(self, elem, strID, char_sp):
+  def set_char_sp(self, elem, str_id, char_sp):
     """
     Returns: The swift code to set the character spacing of an
     attributed string
     """
     return ('{}.addAttribute(.kern, value: {}, range: '
             'NSRange(location: 0, length: {}.length))\n'
-           ).format(strID, char_sp, strID)
+           ).format(str_id, char_sp, str_id)
 
   def setup_cell_or_header_attr_text(self, elem, textspan, line_sp, char_sp):
     """
@@ -209,27 +195,26 @@ class UILabel(object):
       txt = textspan[0]
       contents = txt.get('contents')
       fill = txt.get('fill')
-      txt_align = txt.get('text-align')
       font = txt.get('font-family')
       size = txt.get('font-size')
 
       c = self.create_attributed_str(elem, contents)
-      strID = '{}AttributedStr'.format(elem)
-      c += self.set_attributed_color(strID, fill)
-      c += self.set_attributed_font(strID, font, size)
+      str_id = '{}AttributedStr'.format(elem)
+      c += self.set_attributed_color(str_id, fill)
+      c += self.set_attributed_font(str_id, font, size)
       if line_sp is not None:
         ls = str(float(line_sp) / float(size))
-        c += self.set_line_sp(elem, strID, ls)
+        c += self.set_line_sp(elem, str_id, ls)
       if char_sp is not None:
-        c += self.set_char_sp(elem, strID, char_sp)
+        c += self.set_char_sp(elem, str_id, char_sp)
       cellComp = 'cell.{}'.format(elem)
-      c += self.set_attributed_text(cellComp, strID)
+      c += self.set_attributed_text(cellComp, str_id)
       return c
     else:
       raise Exception("Textspan in label contains varying text.")
       #TODO: Case for varying text.
 
-  def setup_uilabel(self, elem, textspan, line_sp, char_sp, inView=False):
+  def setup_uilabel(self, elem, textspan, line_sp, char_sp, in_view=False):
     """
     Args:
       elem: (str) id of the component
@@ -250,22 +235,22 @@ class UILabel(object):
       size = txt.get('font-size')
 
       c = ""
-      if (line_sp is not None or char_sp is not None) and not inView:
+      if (line_sp is not None or char_sp is not None) and not in_view:
         c += self.create_attributed_str(elem, contents)
-        strID = '{}AttributedStr'.format(elem)
-        c += self.set_attributed_color(strID, fill)
-        c += self.set_attributed_font(strID, font, size)
+        str_id = '{}AttributedStr'.format(elem)
+        c += self.set_attributed_color(str_id, fill)
+        c += self.set_attributed_font(str_id, font, size)
         if line_sp is not None:
           ls = str(float(line_sp) / float(size))
-          c += self.set_line_sp(elem, strID, ls)
+          c += self.set_line_sp(elem, str_id, ls)
         if char_sp is not None:
-          c += self.set_char_sp(elem, strID, char_sp)
-        c += self.set_attributed_text(elem, strID)
-      elif not inView:
+          c += self.set_char_sp(elem, str_id, char_sp)
+        c += self.set_attributed_text(elem, str_id)
+      elif not in_view:
         c += self.set_text(elem, contents) if contents != None else ""
         c += self.set_text_color(elem, fill) if fill != None else ""
         c += self.set_font_family_size(elem, font, size)
-      elif (line_sp is None and char_sp is None) and inView:
+      elif (line_sp is None and char_sp is None) and in_view:
         c += self.set_text_color(elem, fill) if fill != None else ""
         c += self.set_font_family_size(elem, font, size)
 
