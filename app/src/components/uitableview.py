@@ -1,11 +1,27 @@
 import utils
-#from . import UIView, UIButton, UIImageView, UILabel, UITextField, UITextView
-from components.base_component import BaseComponent
+from . import UIView, UIButton, UIImageView, UILabel, UITextField, UITextView
 
-class UITableView(BaseComponent):
+class UITableView(object):
   """
   Class representing a UITableView in swift
   """
+
+  def create_component(self, comp, bgc=None):
+    """
+    Args:
+      comp: (str) the component to be created
+
+    Returns: (obj) An instance of the component to be created
+    """
+    return {
+        "UIButton": UIButton(),
+        "UILabel": UILabel(bgc),
+        "UIImageView": UIImageView(),
+        "UITableView": UITableView(),
+        "UITextField": UITextField(),
+        "UITextView": UITextView(),
+        "UIView": UIView(),
+    }.get(comp, None)
 
   def gen_comps_ch(self, ch, components, subview_ids):
     """
@@ -21,7 +37,7 @@ class UITableView(BaseComponent):
     c = ""
     for j, component in enumerate(components):
       typ = component.get('type')
-      obj = super().create_component(typ)
+      obj = self.create_component(typ)
       ch_comp = ""
       if ch == "cell":
         ch_comp = "cell.{}".format(subview_ids[j])
@@ -44,8 +60,12 @@ class UITableView(BaseComponent):
         char_sp = component.get('char-spacing')
         textspan = component.get('textspan')
         if line_sp is not None or char_sp is not None:
-          c += obj.setup_cell_or_header_attr_text(subview_ids[j], textspan,
-                                                  line_sp, char_sp)
+          if ch == "cell":
+            c += obj.setup_attr_text(subview_ids[j], textspan, line_sp, char_sp,
+                                     in_c=True)
+          elif ch == "header":
+            c += obj.setup_attr_text(subview_ids[j], textspan, line_sp, char_sp,
+                                     in_h=True)
         else:
           contents = component['textspan'][0]['contents']
           if contents is not None:

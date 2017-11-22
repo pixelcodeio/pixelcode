@@ -27,17 +27,6 @@ class UIButton(object):
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
 
-  def set_font_size(self, elem, size):
-    """
-    Args:
-      elem: (str) id of element
-      size: (int) size of font
-
-    Returns: (str) The swift code to set the font size of elem using size
-    """
-    font = 'UIFont.systemFont(ofSize: {})'.format(size)
-    return '{}.titleLabel?.font = {}\n'.format(elem, font)
-
   def set_font_family_size(self, elem, font, size):
     """
     Args:

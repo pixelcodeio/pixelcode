@@ -283,3 +283,13 @@ def set_clips_to_bounds(elem):
   Returns: The swift code to set the clipsToBounds property of elem to true.
   """
   return "{}.clipsToBounds = true\n".format(elem)
+
+def set_opacity(elem, opacity):
+  """
+  Args:
+    elem: (str) id of the component
+    opacity: (float) between 0 and 1
+
+  Returns: (str) The swift code to set the opacity of elem.
+  """
+  return "{}.alpha = {}\n".format(elem, opacity)

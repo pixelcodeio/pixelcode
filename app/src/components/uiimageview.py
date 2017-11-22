@@ -16,16 +16,6 @@ class UIImageView(object):
     image_name = image_fname[0:index]
     return ("{}.image = UIImage(named: \"{}\")\n").format(elem, image_name)
 
-  def set_opacity(self, elem, opacity):
-    """
-    Args:
-      elem: (str) id of the component
-      opacity: (float) between 0 and 1
-
-    Returns: (str) The swift code to set the opacity of elem.
-    """
-    return "{}.alpha = {}\n".format(elem, opacity)
-
   def setup_uiimageview(self, elem, info, in_view=False):
     """
     Args:
@@ -44,7 +34,7 @@ class UIImageView(object):
     if not in_view:
       c += self.set_image(elem, path)
     if opacity is not None:
-      c += self.set_opacity(elem, opacity)
+      c += utils.set_opacity(elem, opacity)
     if stroke_c is not None:
       c += utils.set_border_color(elem, stroke_c)
     if stroke_w is not None:

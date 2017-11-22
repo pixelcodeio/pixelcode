@@ -62,16 +62,6 @@ class UILabel(object):
             "{}.lineBreakMode = .byWordWrapping\n"
            ).format(elem, text_align, elem, elem)
 
-  def set_font_size(self, elem, size):
-    """
-    Args:
-      elem: (str) id of element
-      size: (int) size of the font
-
-    Returns: (str) The swift code to set the font size of elem to be size
-    """
-    return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
-
   def set_font_family_size(self, elem, font, size):
     """
     Args:
@@ -185,7 +175,7 @@ class UILabel(object):
             'NSRange(location: 0, length: {}.length))\n'
            ).format(str_id, char_sp, str_id)
 
-  def setup_cell_or_header_attr_text(self, elem, textspan, line_sp, char_sp):
+  def setup_attr_text(self, elem, textspan, ls, cs, in_c=False, in_h=False):
     """
     Args:
       elem: (str) id of the element
@@ -193,34 +183,37 @@ class UILabel(object):
                 information.
       line_sp: (int) the value representing the line spacing
       char_sp: (int) the value representing the character spacing
+      in_c: (bool) represents whether text is being set in tableview cell file
+      in_h: (bool) represents whether text is being set in tableview header file
 
     Returns:
-      The swift code to set the attributed text of a label when called
-      from a UITableView's cellForRowAt function.
+      The swift code to set the attributed text of a label.
+      Note: Assumes that the content of the textspans do not vary.
     """
-    if len(textspan) == 1:
-      # the contents of the textspan don't vary
-      txt = textspan[0]
-      contents = txt.get('contents')
-      fill = txt.get('fill')
-      font = txt.get('font-family')
-      size = txt.get('font-size')
+    txt = textspan[0]
+    contents = txt.get('contents')
+    fill = txt.get('fill')
+    font = txt.get('font-family')
+    size = txt.get('font-size')
 
-      c = self.create_attributed_str(elem, contents)
-      str_id = '{}AttributedStr'.format(elem)
-      c += self.set_attributed_color(str_id, fill)
-      c += self.set_attributed_font(str_id, font, size)
-      if line_sp is not None:
-        ls = str(float(line_sp) / float(size))
-        c += self.set_line_sp(elem, str_id, ls)
-      if char_sp is not None:
-        c += self.set_char_sp(elem, str_id, char_sp)
-      cellComp = 'cell.{}'.format(elem)
-      c += self.set_attributed_text(cellComp, str_id)
-      return c
+    c = self.create_attributed_str(elem, contents)
+    str_id = '{}AttributedStr'.format(elem)
+    c += self.set_attributed_color(str_id, fill)
+    c += self.set_attributed_font(str_id, font, size)
+    if ls is not None:
+      ls = str(float(ls) / float(size))
+      c += self.set_line_sp(elem, str_id, ls)
+    if cs is not None:
+      c += self.set_char_sp(elem, str_id, cs)
+    e = ""
+    if in_c:
+      e = 'cell.{}'.format(elem)
+    elif in_h:
+      e = 'header.{}'.format(elem)
     else:
-      raise Exception("Textspan in label contains varying text.")
-      #TODO: Case for varying text.
+      e = elem
+    c += self.set_attributed_text(e, str_id)
+    return c
 
   def setup_uilabel(self, elem, textspan, line_sp, char_sp, in_view=False):
     """
@@ -244,16 +237,7 @@ class UILabel(object):
 
       c = ""
       if (line_sp is not None or char_sp is not None) and not in_view:
-        c += self.create_attributed_str(elem, contents)
-        str_id = '{}AttributedStr'.format(elem)
-        c += self.set_attributed_color(str_id, fill)
-        c += self.set_attributed_font(str_id, font, size)
-        if line_sp is not None:
-          ls = str(float(line_sp) / float(size))
-          c += self.set_line_sp(elem, str_id, ls)
-        if char_sp is not None:
-          c += self.set_char_sp(elem, str_id, char_sp)
-        c += self.set_attributed_text(elem, str_id)
+        c += self.setup_attr_text(elem, textspan, line_sp, char_sp)
       elif not in_view:
         c += self.set_text(elem, contents) if contents != None else ""
         c += self.set_text_color(elem, fill) if fill != None else ""
