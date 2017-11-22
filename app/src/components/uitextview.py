@@ -4,7 +4,7 @@ class UITextView(object):
   """
   Class representing a UITextView in swift
   """
-  def set_placeholder_text_and_color(self, tid, text, color):
+  def set_placeholder_tc(self, tid, text, color):
     """
     Args:
       tid: (str) the id of the UITextView

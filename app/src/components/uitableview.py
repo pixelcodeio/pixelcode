@@ -36,47 +36,45 @@ class UITableView(object):
     """
     c = ""
     for j, component in enumerate(components):
-      typ = component.get('type')
-      obj = self.create_component(typ)
+      type_ = component.get('type')
+      obj = self.create_component(type_)
       ch_comp = ""
       if ch == "cell":
         ch_comp = "cell.{}".format(subview_ids[j])
       elif ch == "header":
         ch_comp = "header.{}".format(subview_ids[j])
 
-      if typ == 'UIButton':
+      if type_ == 'UIButton':
         contents = component['text']['textspan'][0]['contents']
         if contents is not None:
           # assuming not varying text
           c += obj.set_title(ch_comp, contents)
 
-      elif typ == 'UIImageView':
+      elif type_ == 'UIImageView':
         path = component.get('path')
         if path is not None:
           c += obj.set_image(ch_comp, path)
 
-      elif typ == 'UILabel':
+      elif type_ == 'UILabel':
         line_sp = component.get('line-spacing')
         char_sp = component.get('char-spacing')
-        textspan = component.get('textspan')
+        tspan = component.get('textspan')
         if line_sp is not None or char_sp is not None:
+          id_ = subview_ids[j]
           if ch == "cell":
-            c += obj.setup_attr_text(subview_ids[j], textspan, line_sp, char_sp,
-                                     in_c=True)
+            c += obj.setup_attr_text(id_, tspan, line_sp, char_sp, in_c=True)
           elif ch == "header":
-            c += obj.setup_attr_text(subview_ids[j], textspan, line_sp, char_sp,
-                                     in_h=True)
+            c += obj.setup_attr_text(id_, tspan, line_sp, char_sp, in_h=True)
         else:
           contents = component['textspan'][0]['contents']
           if contents is not None:
             c += obj.set_text(ch_comp, contents)
 
-      elif typ == 'UITextField' or typ == 'UITextView':
-        textspan = component['text']['textspan']
-        placeholder = textspan[0]['contents']
-        placeholder_c = textspan[0]['fill']
-        c += obj.set_placeholder_text_and_color(ch_comp, placeholder,
-                                                placeholder_c)
+      elif type_ == 'UITextField' or type_ == 'UITextView':
+        tspan = component['text']['textspan']
+        placeholder = tspan[0]['contents']
+        placeholder_c = tspan[0]['fill']
+        c += obj.set_placeholder_tc(ch_comp, placeholder, placeholder_c)
     return c
 
   def cell_for_row_at(self, elem, cells):

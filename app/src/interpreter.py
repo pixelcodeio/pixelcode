@@ -153,8 +153,7 @@ class Interpreter(object):
       tv_cells = tv_elem.get('cells')
       cap_id = tv_id.capitalize()
       tv_cell = tv_cells[0]
-      c = ""
-      c += self.gen_cell_header(cap_id, tv_cell)
+      c = self.gen_cell_header(cap_id, tv_cell)
 
       rect = tv_cell.get('rect')
       c += utils.setup_rect(tv_id, rect, in_view=True)
@@ -179,15 +178,13 @@ class Interpreter(object):
         ctv_cells = ctv_elem.get('cells')
         ctv_cell = ctv_cells[0]
         cap_ctv_id = ctv_id.capitalize()
-        c = ""
-        c += self.gen_cell_header(cap_ctv_id, ctv_cell)
+        c = self.gen_cell_header(cap_ctv_id, ctv_cell)
         self.swift[cap_ctv_id + 'Cell'] = c
         self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_view=True)
 
       tv_header = tv_elem.get('header')
       if tv_header is not None:
-        c = ""
-        c += self.gen_header_header(cap_id, tv_header)
+        c = self.gen_header_header(cap_id, tv_header)
         c += utils.setup_rect(tv_id, tv_header.get('rect'), in_view=True,
                               tv_header=True)
         c += (self.gen_comps(tv_header.get('components'), in_view=True))[0]

@@ -29,17 +29,17 @@ class UITextField(object):
             ', 0, 0)\n'
            ).format(tid, left)
 
-  def set_font_family_size(self, e, f, s):
+  def set_font_family_size(self, elem, font, size):
     """
     Args:
-      e: (str) id of element
-      f: (str) font name
-      s: (int) size of the font
+      elem: (str) id of element
+      font: (str) font name
+      size: (int) size of the font
 
     Returns:
       (str) The swift code to set the font-family and size of the title in e
     """
-    return ("{}.font = {}\n").format(e, utils.create_font(f, s))
+    return ("{}.font = {}\n").format(elem, utils.create_font(font, size))
 
   def setup_uitextfield(self, elem, textspan, left_inset, in_view=False):
     """

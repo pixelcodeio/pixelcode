@@ -261,7 +261,7 @@ def ins_after_key(s, k, ins):
   """
   i = s.find(k)
   if i == -1:
-    return ""
+    raise Exception("Key not found in s")
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
 

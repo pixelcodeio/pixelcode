@@ -85,14 +85,14 @@ class ComponentFactory(object):
       if comp == 'UITextField':
         c += obj.setup_uitextfield(cid, textspan, left_inset, in_view=in_view)
       elif comp == 'UITextView':
-          c += obj.setup_uitextview(cid, textspan, left_inset, in_view=in_view)
+        c += obj.setup_uitextview(cid, textspan, left_inset, in_view=in_view)
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info, in_view=in_view)
     elif comp == 'UITableView':
       cells = info['cells']
       header = info['header']
       c += obj.setup_uitableview(cid, cells, header)
-      tvm = obj.cell_for_row_at(cid, cells) # tvm are the tableview methods
+      tvm = obj.cell_for_row_at(cid, cells) # tableview methods
       tvm += obj.number_of_rows_in_section(cells)
       tvm += obj.height_for_row_at(cid, cells)
       if header is not None:
@@ -100,10 +100,8 @@ class ComponentFactory(object):
         tvm += obj.height_for_header(cid, header)
       self.tv_methods = tvm
 
-    if not in_view:
-      c += utils.add_subview('view', cid)
-    else:
-      c += utils.add_subview(None, cid)
+    view = 'view' if in_view else None
+    c += utils.add_subview(view, cid)
     c += utils.make_snp_constraints(cid, hor_id, hor_dir,
                                     hor_dist, vert_id, vert_dir,
                                     vert_dist, width, height, in_view)

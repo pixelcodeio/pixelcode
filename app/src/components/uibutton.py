@@ -27,18 +27,17 @@ class UIButton(object):
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
 
-  def set_font_family_size(self, elem, font, size):
+  def set_font_family_size(self, e, f, s):
     """
     Args:
-      elem: (str) id of element
-      font: (str) font family name
-      size: (int) size of font
+      e: (str) id of element
+      f: (str) font family name
+      s: (int) size of font
 
     Returns:
       (str) The swift code to set the font family and size of the title in elem
     """
-    return ("{}.titleLabel?.font = {}\n"
-           ).format(elem, utils.create_font(font, size))
+    return ("{}.titleLabel?.font = {}\n").format(e, utils.create_font(f, s))
 
   def setup_uibutton(self, elem, textspan, in_view=False):
     """
@@ -59,10 +58,9 @@ class UIButton(object):
       fill = txt.get('fill')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      if not in_view:
-        c = self.set_title(elem, contents) if contents != None else ""
-      else:
-        c = ""
+      c = ""
+      if not in_view and contents is not None:
+        c = self.set_title(elem, contents) 
       c += self.set_title_color(elem, fill) if fill != None else ""
       c += self.set_font_family_size(elem, font, size)
       return c

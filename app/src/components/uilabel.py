@@ -47,8 +47,7 @@ class UILabel(object):
 
     Returns: (str) The swift code to set the text color of elem to be color
     """
-    return ("{}.textColor = {}\n"
-           ).format(elem, utils.create_uicolor(color))
+    return ("{}.textColor = {}\n").format(elem, utils.create_uicolor(color))
 
   def center_and_wrap(self, elem, text_align):
     """
@@ -205,7 +204,6 @@ class UILabel(object):
       c += self.set_line_sp(elem, str_id, ls)
     if cs is not None:
       c += self.set_char_sp(elem, str_id, cs)
-    e = ""
     if in_c:
       e = 'cell.{}'.format(elem)
     elif in_h:
