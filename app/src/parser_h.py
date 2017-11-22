@@ -1,6 +1,6 @@
 def inherit_from(parent, child, init=False):
   """
-  Returns: child with attributes from parent not defined in child passed down
+  Returns: (dict) child with attributes from parent passed down
   """
   for attr in parent.attrs:
     skip = attr == "id"
@@ -17,7 +17,7 @@ def inherit_from(parent, child, init=False):
 
 def inherit_from_json(child, json):
   """
-  Returns: child with attributes from json not defined in child passed down
+  Returns: (dict) child with attributes from json passed down
   """
   if "id" in child.attrs:
     for layer in json["layers"]:
@@ -30,8 +30,7 @@ def inherit_from_json(child, json):
 
 def create_children(elem, json):
   """
-  Returns:
-    elem with children recursively initialized.
+  Returns: (dict) elem with children recursively initialized.
   """
   elem = inherit_from_json(elem, json)
   elem = inherit_from(elem.parent, elem)
@@ -50,8 +49,8 @@ def create_children(elem, json):
 def calculate_spacing(elem, parsed_elements):
   """
   Returns:
-    elem with keys vertical and horizontal added, where vertical
-    and horizontal represent the relative spacing between elem
+    (dict) elem with keys vertical and horizontal added, where
+    vertical and horizontal represent the relative spacing between elem
     and parsed_elements
   """
   vertical = {}
@@ -81,7 +80,7 @@ def calculate_spacing(elem, parsed_elements):
 
 def convert_coords(elem, parent):
   """
-  Returns: elem with coords set relative to parent height/width
+  Returns: (dict) elem with coords set relative to parent height/width
   """
   width = parent["rwidth"]
   height = parent["rheight"]
