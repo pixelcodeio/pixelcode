@@ -1,7 +1,7 @@
 import components.utils as utils
 from . import *
 
-class BaseComponent(object):
+class ComponentFactory(object):
   """
   Base class for components
   """
@@ -14,7 +14,7 @@ class BaseComponent(object):
     self.tv_methods = ""
     self.swift = self.generate_component(comp, info, bgc=bgc, in_view=in_view)
 
-  def create_object(self, comp, bgc=None):
+  def create_component(self, comp, bgc=None):
     """
     Args:
       comp: (str) the component to be created
@@ -43,7 +43,7 @@ class BaseComponent(object):
 
     Returns: The swift code to generate the component
     """
-    obj = self.create_object(comp, bgc=bgc)
+    obj = self.create_component(comp, bgc=bgc)
     cid = info.get('id')
     height = info.get('height')
     hor = info.get('horizontal')

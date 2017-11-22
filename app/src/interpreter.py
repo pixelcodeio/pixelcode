@@ -1,4 +1,4 @@
-from components.base_component import BaseComponent
+from components.component_factory import ComponentFactory
 import components.utils as utils
 
 class Interpreter(object):
@@ -102,15 +102,15 @@ class Interpreter(object):
     for comp in components:
       typ = comp.get('type')
       if typ == 'UILabel':
-        bc = BaseComponent(typ, comp, bgc=self.globals['bgc'],
-                           in_view=in_view)
-        c += bc.swift
+        cf = ComponentFactory(typ, comp, bgc=self.globals['bgc'],
+                              in_view=in_view)
+        c += cf.swift
       else:
-        bc = BaseComponent(typ, comp, in_view=in_view)
-        c += bc.swift
+        cf = ComponentFactory(typ, comp, in_view=in_view)
+        c += cf.swift
         if typ == 'UITableView':
           tv_elem = comp
-          tv_methods = bc.tv_methods
+          tv_methods = cf.tv_methods
     return (c, tv_elem, tv_methods)
 
   def gen_elements(self, elements, f_name, in_view=False):
