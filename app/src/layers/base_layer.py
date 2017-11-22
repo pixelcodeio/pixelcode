@@ -4,12 +4,13 @@ class BaseLayer(object):
   """
   Base class for layers
   """
-  def __init__(self, elem):
+  def __init__(self, elem, type_):
     """
     Args:
       elem (dict): represents a high-level layer of from sketch to be parsed.
-      json (dict): json to inherit from
+      type_ (str): type of elem to set
     """
+    elem["type"] = type_
     self.elem = self.parse_elem(elem)
 
   def init_optional_params(self, elem, params):

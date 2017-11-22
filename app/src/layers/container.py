@@ -1,8 +1,8 @@
 from . import *
 
-class Cell(BaseLayer):
+class Container(BaseLayer):
   """
-  Class representing a Cell in Sketch
+  Class representing a Container in Sketch (bounding box + children)
   """
   def parse_elem(self, elem):
     """
@@ -17,13 +17,13 @@ class Cell(BaseLayer):
         if rect is None:
           rect = child
         else:
-          raise Exception("Cell: Multiple fields named bound.")
+          raise Exception("Container: Multiple fields named bound.")
       else:
         components.append(child)
 
     if rect is None:
-      raise Exception("Cell: No bound field.")
+      raise Exception("Container: No bound field.")
 
     elem["rect"] = rect
     elem["components"] = components
-    return super(Cell, self).parse_elem(elem)
+    return super().parse_elem(elem)

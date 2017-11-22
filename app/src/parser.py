@@ -4,7 +4,7 @@ from operator import itemgetter
 from bs4 import BeautifulSoup
 # custom imports
 from layers._all import *
-import parser_h
+from parser_h import *
 import utils
 
 class Parser(object):
@@ -103,43 +103,18 @@ class Parser(object):
       elem = convert_coords(elem, parent)
 
       # parse elements into their layers
-      if elem.name == "rect":
-        elem["type"] = "UIView"
-        parsed_elem = Rect(elem)
-
-      elif elem.name == "text":
-        elem["type"] = "UILabel"
-        parsed_elem = Text(elem)
-
-      elif elem.name == "image":
-        elem["type"] = "UIImageView"
-        parsed_elem = Image(elem)
-
-      elif elem.name == "g":
+      if elem.name == "g":
         if "Button" in elem["id"] or "button" in elem["id"]:
-          elem["type"] = "UIButton"
-          parsed_elem = Button(elem)
-
-        elif "TextField" in elem["id"]:
-          elem["type"] = "UITextField"
-          parsed_elem = TextField(elem)
-
-        elif "ListView" in elem["id"]:
-          elem["type"] = "UITableView"
-          elem["children"] = self.parse_elements(elem["children"], elem)
-          parsed_elem = TableView(elem)
-
+          elem.name = "button"
         elif "Cell" in elem["id"] or "cell" in elem["id"]:
-          elem["type"] = "Cell"
-          elem["children"] = self.parse_elements(elem["children"], elem)
-          parsed_elem = Cell(elem)
-
+          elem.name = "cell"
         elif "Header" in elem["id"] or "header" in elem["id"]:
-          elem["type"] = "Header"
-          elem["children"] = self.parse_elements(elem["children"], elem)
-          parsed_elem = Cell(elem)
-
-        else:
+          elem.name = "header"
+        elif "ListView" in elem["id"]:
+          elem.name = "tableview"
+        elif "TextField" in elem["id"]:
+          elem.name = "textfield"
+        else: # group with other elements inside
           for child in elem["children"]:
             child["x"] = elem["x"] + float(child["x"])
             child["y"] = elem["y"] + float(child["y"])
@@ -147,6 +122,28 @@ class Parser(object):
             child["height"] = float(child["height"])
             elements.insert(0, child)
           continue
+
+      elem["children"] = self.parse_elements(elem["children"], elem)
+      if elem.name == "button":
+        parsed_elem = Button(elem, "UIButton")
+      elif elem.name == "cell":
+        parsed_elem = Container(elem, "Cell")
+      elif elem.name == "header":
+        parsed_elem = Container(elem, "Header")
+      elif elem.name == "image":
+        parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "rect":
+        parsed_elem = Rect(elem, "UIView")
+      elif elem.name == "tableview":
+        parsed_elem = TableView(elem, "UITableView")
+      elif elem.name == "text":
+        parsed_elem = Text(elem, "UILabel")
+      elif elem.name == "textfield":
+        parsed_elem = TextField(elem, "UITextField")
+      elif elem.name == "tspan":
+        parsed_elem = TextSpan(elem, "")
+      else:
+        raise Exception("Parser: Unhandled elem type for " + elem.name)
 
       # finished creating new element
       new_elem = parsed_elem.elem

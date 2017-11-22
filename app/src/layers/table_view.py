@@ -38,4 +38,4 @@ class TableView(BaseLayer):
     elem["cells"] = cells
     elem["separator"] = separator
 
-    return super(TableView, self).parse_elem(elem)
+    return super().parse_elem(elem)

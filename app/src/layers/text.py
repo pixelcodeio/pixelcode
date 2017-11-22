@@ -10,11 +10,7 @@ class Text(BaseLayer):
     Args:
       Refer to args in __init__
     """
-    t = []
-
-    for child in elem["children"]:
-      new_tspan = TextSpan(child)
-      t.append(new_tspan.elem)
+    t = elem["children"]
 
     textspan = []
     i = 0
@@ -31,4 +27,4 @@ class Text(BaseLayer):
       elem["line-spacing"] = elem["line-spacing"]
     if "letter-spacing" in elem.attrs:
       elem["char-spacing"] = elem["letter-spacing"]
-    return super(Text, self).parse_elem(elem)
+    return super().parse_elem(elem)

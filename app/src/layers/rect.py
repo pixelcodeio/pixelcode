@@ -18,4 +18,4 @@ class Rect(BaseLayer):
       elem["stroke-color"] = None
       elem["stroke-width"] = None
       elem["stroke-opacity"] = None
-    return super(Rect, self).parse_elem(elem)
+    return super().parse_elem(elem)

@@ -10,15 +10,15 @@ class Button(BaseLayer):
     rect = None
     text = None
     for child in elem["children"]:
-      if child.name == "rect":
+      if child["type"] == "UIView":
         rect = child
-      elif child.name == "text":
+      elif child["type"] == "UILabel":
         text = child
 
     if text is None:
       raise Exception("Button: Text cannot be empty in a button.")
 
-    elem["rect"] = Rect(rect).elem if rect is not None else None
-    elem["text"] = Text(text).elem if text is not None else None
+    elem["rect"] = rect
+    elem["text"] = text
 
     return super(Button, self).parse_elem(elem)
