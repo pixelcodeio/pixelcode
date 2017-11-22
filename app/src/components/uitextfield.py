@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 
 class UITextField(object):
   """
@@ -6,25 +6,28 @@ class UITextField(object):
   """
   def set_placeholder_tc(self, tid, text, color):
     """
-    Returns: The swift code to set placeholder's text and color.
+    Args:
+      tid: (str) id of the UITextField
+      text: (str) placeholder text
+      color: (tuple) color to set the placeholder
+
+    Returns: (str) The swift code to set placeholder's text and color.
     """
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
            ).format(tid, text, utils.create_uicolor(color))
 
   def set_left_inset(self, tid, left):
+    """
+    Args:
+      tid: (str) id of the UITextField
+      left: (int) the number of pixels to set the left-inset
+
+    Returns: (str) The swift code to set the left-inset of a UITextField
+    """
     return ('{}.layer.sublayerTransform = CATransform3DMakeTranslation({}'
             ', 0, 0)\n'
            ).format(tid, left)
-
-  def set_cb(self, elem):
-    """
-    Args:
-      elem: (str) id of element
-
-    Returns: The swift code to set the clipsToBounds property of elem to true.
-    """
-    return "{}.clipsToBounds = true\n".format(elem)
 
   def set_font_family_size(self, e, f, s):
     """
@@ -33,7 +36,8 @@ class UITextField(object):
       f: (str) font name
       s: (int) size of the font
 
-    Returns: The swift code to set the font-family and size of the title in e
+    Returns:
+      (str) The swift code to set the font-family and size of the title in e
     """
     return ("{}.font = {}\n").format(e, utils.create_font(f, s))
 
@@ -45,8 +49,9 @@ class UITextField(object):
                 information.
       left_inset: (int) pixels representing the number of left-inset
 
-    Returns: The swift code to apply all the properties from textspan and
-    left_inset to elem.
+    Returns:
+       (str) The swift code to apply all the properties from textspan and
+       left_inset to elem.
     """
     txt = textspan[0]
     placeholder = txt.get('contents')
@@ -58,5 +63,5 @@ class UITextField(object):
       c += self.set_placeholder_tc(elem, placeholder, p_color)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
-    c += self.set_cb(elem)
+    c += utils.set_clips_to_bounds(elem)
     return c

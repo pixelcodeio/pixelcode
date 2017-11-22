@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 
 class UILabel(object):
   def __init__(self, bgc):
@@ -14,7 +14,7 @@ class UILabel(object):
       elem: (str) id of element
       text: (str) text of the attributed string.
 
-    Returns: The swift code to create an attributed string.
+    Returns: (str) The swift code to create an attributed string.
     """
     return ('var {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
            ).format(elem, text)
@@ -25,7 +25,7 @@ class UILabel(object):
       elem: (str) id of element
       txt: (str) text to set elem's text property to
 
-    Returns: The swift code to set the text of elem to be txt
+    Returns: (str) The swift code to set the text of elem to be txt
     """
     return '{}.text = "{}"\n'.format(elem, txt)
 
@@ -35,7 +35,7 @@ class UILabel(object):
       elem: (str) id of element
       str_id: (str) id of attributed string
 
-    Returns: The swift code to set the attributedText property of elem.
+    Returns: (str) The swift code to set the attributedText property of elem.
     """
     return ("{}.attributedText = {}\n").format(elem, str_id)
 
@@ -45,7 +45,7 @@ class UILabel(object):
       elem: (str) id of element
       color: (tuple) contains r, g, b values representing the text color
 
-    Returns: The swift code to set the text color of elem to be color
+    Returns: (str) The swift code to set the text color of elem to be color
     """
     return ("{}.textColor = {}\n"
            ).format(elem, utils.create_uicolor(color))
@@ -56,7 +56,7 @@ class UILabel(object):
       elem: (str) id of element
       text_align: (str) alignment of text (either left, center, or right)
 
-    Returns: The swift code to center the text and wrap lines
+    Returns: (str) The swift code to center the text and wrap lines
     """
     return ("{}.textAlignment = .{}\n{}.numberOfLines = 0\n"
             "{}.lineBreakMode = .byWordWrapping\n"
@@ -68,7 +68,7 @@ class UILabel(object):
       elem: (str) id of element
       size: (int) size of the font
 
-    Returns: The swift code to set the font size of elem to be size
+    Returns: (str) The swift code to set the font size of elem to be size
     """
     return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
@@ -79,7 +79,9 @@ class UILabel(object):
       font: (str) font name
       size: (int) size of the font
 
-    Returns: The swift code to set the font family and size of the title in elem
+    Returns:
+      (str) The swift code to set the font family and size of the
+      title in elem
     """
     return ("{}.font = {}\n"
            ).format(elem, utils.create_font(font, size))
@@ -89,7 +91,7 @@ class UILabel(object):
     Args:
       elem: (str) id of element
 
-    Returns: The swift code to set numberOfLines to be 0 for elem.
+    Returns: (str) The swift code to set numberOfLines to be 0 for elem.
     """
     return "{}.numberOfLines = 0\n".format(elem)
 
@@ -102,8 +104,9 @@ class UILabel(object):
       length: (int) number of characters from start index whose color is being
               changed.
 
-    Returns: (str) The swift code to set a substring of str to be a color with
-             r,g,b values.
+    Returns:
+      (str) The swift code to set a substring of str to be a color with
+      r,g,b values.
     """
     return ("{}.addAttribute(.foregroundColor, value: {})"
             ", range: NSRange(location: {}, length: {}))\n"
@@ -115,8 +118,9 @@ class UILabel(object):
       str_id: (string) the variable name of string that is to be edited
       color: (tuple) contains r, g, b values representing the color
 
-    Returns: The swift code to set the color of an attributed string to be a
-    color.
+    Returns:
+      (str) The swift code to set the color of an attributed string to be
+      a color.
     """
     return ("{}.addAttribute(.foregroundColor, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
@@ -131,7 +135,7 @@ class UILabel(object):
       length: (int) number of characters from start index whose font is being
               changed.
 
-    Returns: The swift code to set a substring of str to be a font.
+    Returns: (str) The swift code to set a substring of str to be a font.
     """
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
@@ -144,7 +148,7 @@ class UILabel(object):
       font: (string) the font family name
       size: (int) the font size
 
-    Returns: The swift code to set the font of an attributed string.
+    Returns: (str) The swift code to set the font of an attributed string.
     """
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
@@ -152,8 +156,13 @@ class UILabel(object):
 
   def set_line_sp(self, elem, str_id, line_sp):
     """
-    Returns: The swift code to set the line spacing of an
-    attributed string
+    Args:
+      elem: (str) id of the element
+      str_id: (str) the variable name of string that is to be edited
+      line_sp: (str) the number of pixels representing the line spacing
+
+    Returns:
+      (str) The swift code to set the line spacing of an attributed string
     """
     return ('let {}ParaStyle = NSMutableParagraphStyle()\n'
             '{}ParaStyle.lineSpacing = {}\n'
@@ -163,8 +172,14 @@ class UILabel(object):
 
   def set_char_sp(self, elem, str_id, char_sp):
     """
-    Returns: The swift code to set the character spacing of an
-    attributed string
+    Args:
+      elem: (str) id of the element
+      str_id: (str) the variable name of string that is to be edited
+      char_sp: (str) the number of pixels representing the character spacing
+
+    Returns:
+      (str) The swift code to set the character spacing of an
+      attributed string
     """
     return ('{}.addAttribute(.kern, value: {}, range: '
             'NSRange(location: 0, length: {}.length))\n'
@@ -172,8 +187,16 @@ class UILabel(object):
 
   def setup_cell_or_header_attr_text(self, elem, textspan, line_sp, char_sp):
     """
-    Returns: The swift code to set the attributed text of a label when called
-    from a UITableView's cellForRowAt function.
+    Args:
+      elem: (str) id of the element
+      textspan: (dict list) see generate_component docstring for more
+                information.
+      line_sp: (int) the value representing the line spacing
+      char_sp: (int) the value representing the character spacing
+
+    Returns:
+      The swift code to set the attributed text of a label when called
+      from a UITableView's cellForRowAt function.
     """
     if len(textspan) == 1:
       # the contents of the textspan don't vary
@@ -203,7 +226,7 @@ class UILabel(object):
     """
     Args:
       elem: (str) id of the component
-      textspan: (dict array) see generate_component docstring for more
+      textspan: (dict list) see generate_component docstring for more
                 information.
       line_sp: (int) the value representing the line spacing
       char_sp: (int) the value representing the character spacing

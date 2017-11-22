@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 from . import *
 
 class ComponentFactory(object):
@@ -43,7 +43,7 @@ class ComponentFactory(object):
       in_view: (bool) represents whether the components are being generated
                inside a custom view file (or not)
 
-    Returns: The swift code to generate the component
+    Returns: (str) The swift code to generate the component
     """
     obj = self.create_component(comp, bgc=bgc)
     cid = info.get('id')

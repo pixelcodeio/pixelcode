@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 
 class UIImageView(object):
   """
@@ -10,7 +10,7 @@ class UIImageView(object):
       elem: (str) id of the component
       image_fname: (str) name of the image file
 
-    Returns: The swift code to set the image of elem.
+    Returns: (str) The swift code to set the image of elem.
     """
     index = image_fname.index(".")
     image_name = image_fname[0:index]
@@ -22,7 +22,7 @@ class UIImageView(object):
       elem: (str) id of the component
       opacity: (float) between 0 and 1
 
-    Returns: The swift code to set the opacity of elem.
+    Returns: (str) The swift code to set the opacity of elem.
     """
     return "{}.alpha = {}\n".format(elem, opacity)
 
@@ -34,7 +34,7 @@ class UIImageView(object):
       in_view: (bool) represents whether the imageview is being generated
                inside a custom view file (or not)
 
-    Returns: The swift code to apply all the properties from text to elem.
+    Returns: (str) The swift code to apply all the properties from text to elem.
     """
     path = info.get('path')
     opacity = info.get('opacity')

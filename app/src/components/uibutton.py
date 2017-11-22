@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 
 class UIButton(object):
   """
@@ -10,7 +10,7 @@ class UIButton(object):
       elem: (str) id of element
       title: (str) title to set the element
 
-    Returns: The swift code to set title of a elem using title
+    Returns: (str) The swift code to set title of a elem using title
     """
     return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
 
@@ -20,7 +20,9 @@ class UIButton(object):
       elem: (str) id of element
       color: (tuple) contains r, g, b values of the title color
 
-    Returns: The swift code to set title color of elem using the r, g, b values
+    Returns:
+      (str) The swift code to set title color of elem using the r, g,
+      b values
     """
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
@@ -31,7 +33,7 @@ class UIButton(object):
       elem: (str) id of element
       size: (int) size of font
 
-    Returns: The swift code to set the font size of elem using size
+    Returns: (str) The swift code to set the font size of elem using size
     """
     font = 'UIFont.systemFont(ofSize: {})'.format(size)
     return '{}.titleLabel?.font = {}\n'.format(elem, font)
@@ -43,7 +45,8 @@ class UIButton(object):
       font: (str) font family name
       size: (int) size of font
 
-    Returns: The swift code to set the font family and size of the title in elem
+    Returns:
+      (str) The swift code to set the font family and size of the title in elem
     """
     return ("{}.titleLabel?.font = {}\n"
            ).format(elem, utils.create_font(font, size))
@@ -57,7 +60,8 @@ class UIButton(object):
       in_view: (bool) represents whether the button is being generated
                inside a custom view file (or not)
 
-    Returns: The swift code to apply all the properties from textspan to elem.
+    Returns:
+      (str) The swift code to apply all the properties from textspan to elem.
     """
     if len(textspan) == 1:
       # the contents of the textspan don't vary

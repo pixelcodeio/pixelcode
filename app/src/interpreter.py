@@ -1,11 +1,11 @@
 from components.component_factory import ComponentFactory
-import components.utils as utils
+import utils
 
 class Interpreter(object):
   """
   Takes output from Parser one at a time and generates swift file
     globals: (dict) passed in from Parser
-    swift: (str) the swift code to generate all the elements
+    swift: (dict) the swift code to generate all the elements
   """
   def __init__(self, glob):
     glob['bgc'] = glob['background_color'] + ("1.0",) # adding opacity
@@ -27,7 +27,7 @@ class Interpreter(object):
     Args:
       elements: (list) list of elements
 
-    Returns: The swift code of the header
+    Returns: (str) The swift code of the header
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
@@ -62,8 +62,9 @@ class Interpreter(object):
       tv_id: (str) the id of the parent tableview (capitalized)
       header: (dict) the header view being generated
 
-    Returns: (str) The swift code for generating the header of a UITableView
-             Header file.
+    Returns:
+      (str) The swift code for generating the header of a UITableView
+      Header file.
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
             "UITableViewHeaderFooterView {{\n\n{}"
@@ -79,8 +80,9 @@ class Interpreter(object):
     Args:
       components: (dict list) contains information about components
 
-    Returns: (str) The swift code to generate all the global variables of each
-    component in components AND initialize them.
+    Returns:
+      (str) The swift code to generate all the global variables of each
+      component in components AND initialize them.
     """
     c = ""
     for comp in components:
@@ -94,10 +96,11 @@ class Interpreter(object):
       in_view: (bool) represents whether the components are being generated
                inside a custom view file (or not)
 
-    Returns: (tuple) A triple consisting of:
-      - the swift code to generate each component in components.
-      - the dictionary of the tableview if components contains one.
-      - the tableview methods for the tableview.
+    Returns:
+      (tuple) A triple consisting of:
+        - the swift code to generate each component in components.
+        - the dictionary of the tableview if components contains one.
+        - the tableview methods for the tableview.
     """
     c = ""
     tv_elem = None
@@ -122,7 +125,9 @@ class Interpreter(object):
       elements: (dict list) contains information of all the elements
       f_name: The name of the file.
 
-    Returns: (str) The swift code of the to generate the elements.
+    Returns:
+      (None) Fills in the swift instance variable with the swift code
+      to generate all the elements.
     """
     c = self.swift[f_name]
     s, tv_elem, tv_methods = self.gen_comps(elements, in_view)
@@ -194,8 +199,9 @@ class Interpreter(object):
     Args:
       elements: (list) list of elements
 
-    Returns: (None) Fills in the swift instance variable with the swift code
-             to generate all the elements.
+    Returns:
+      (None) Fills in the swift instance variable with the swift code
+      to generate the artboard.
     """
     file_h = self.gen_vc_header(elements)
     file_h += utils.set_bg('view', self.globals['bgc'])

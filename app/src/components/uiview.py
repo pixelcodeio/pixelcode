@@ -1,4 +1,4 @@
-import components.utils as utils
+import utils
 
 class UIView(object):
   """
