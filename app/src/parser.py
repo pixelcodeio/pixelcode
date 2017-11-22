@@ -4,7 +4,7 @@ from operator import itemgetter
 from bs4 import BeautifulSoup
 # custom imports
 from layers._all import *
-import parser_h as ph
+import parser_h
 import utils
 
 class Parser(object):
@@ -48,7 +48,7 @@ class Parser(object):
     self.scale = float(self.globals["width"]) / 375
     page = soup.svg.g
     artboard = soup.svg.g.g
-    artboard = ph.inherit_from(page, artboard, init=True)
+    artboard = inherit_from(page, artboard, init=True)
 
     # init rwidth and rheight for inheritance
     artboard["rwidth"] = self.globals["width"]
@@ -83,11 +83,11 @@ class Parser(object):
     elements = []
     for elem in [c for c in children if c != "\n"]:
       if init:
-        elem = ph.inherit_from(parent, elem)
-        elem = ph.create_children(elem, self.json)
+        elem = inherit_from(parent, elem)
+        elem = create_children(elem, self.json)
 
       if elem.name == "g":
-        elem = ph.parse_fake_group(elem)
+        elem = parse_fake_group(elem)
 
       elem["x"] = float(elem["x"])
       elem["y"] = float(elem["y"])
@@ -99,8 +99,8 @@ class Parser(object):
     parsed_elements = []
     while elements:
       elem = elements.pop(0)
-      elem = ph.calculate_spacing(elem, parsed_elements)
-      elem = ph.convert_coords(elem, parent)
+      elem = calculate_spacing(elem, parsed_elements)
+      elem = convert_coords(elem, parent)
 
       # parse elements into their layers
       if elem.name == "rect":
