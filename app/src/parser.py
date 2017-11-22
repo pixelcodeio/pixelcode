@@ -42,7 +42,7 @@ class Parser(object):
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
-    artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, first=True)
+    artboard = self.inherit_from(soup.svg.g, soup.svg.g.g, init=True)
 
     # init rwidth and rheight for inheritance
     artboard["rwidth"] = self.globals["width"]
@@ -51,7 +51,7 @@ class Parser(object):
     self.elements = self.parse_elements(
         [c for c in artboard.children],
         artboard,
-        True
+        init=True
     )
 
   def parse_globals(self, svg):
@@ -214,13 +214,13 @@ class Parser(object):
     elem["cy"] = elem["y"]/height + elem["height"]/2
     return elem
 
-  def inherit_from(self, parent, child, first=False):
+  def inherit_from(self, parent, child, init=False):
     """
     Returns: child with attributes from parent not defined in child passed down
     """
     for attr in parent.attrs:
       skip = attr == "id"
-      if first:
+      if init:
         skip = (skip
                 or (attr == "fill" and parent["fill"] == "none")
                 or (attr == "stroke" and parent["stroke"] == "none")
