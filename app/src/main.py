@@ -21,8 +21,11 @@ class Main(object):
     p.parse_artboard()
 
     i = Interpreter(p.globals)
-    i.generate_code(p.elements)
-    return i.swift
+    i.gen_code(p.elements)
+    code = ""
+    for (k, v) in i.swift.items():
+      code += "{}:\n{}\n".format(k, v)
+    return code
 
 def update_test_dir(path):
   """
