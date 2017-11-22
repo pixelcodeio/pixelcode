@@ -173,12 +173,12 @@ class Parser(object):
     horizontal = {}
     for check in parsed_elements:
       if not vertical:
-        check_up = utils.check_spacing(check, elem, "up")
+        check_up = self.check_spacing(check, elem, "up")
         if check_up[0]:
           vertical = {"direction": "up", "id": check["id"],
                       "distance": check_up[1]}
       if not horizontal:
-        check_left = utils.check_spacing(check, elem, "left")
+        check_left = self.check_spacing(check, elem, "left")
         if check_left[0]:
           horizontal = {"direction": "left", "id": check["id"],
                         "distance": check_left[1]}
@@ -287,3 +287,42 @@ class Parser(object):
       else:
         raise Exception("Unhandled case in parse_fake_group.")
     return elem
+
+  def check_spacing(self, r1, r2, direction): # pylint: disable=R0911
+    """
+    Args:
+      r1: The rectangle with a smaller bottom-right coordinate sum
+      r2: The rectangle we are currently checking
+      direction: direction to check; one-of [up, left]
+
+    Returns:
+      A tuple (bool, dist) representing whether r2 can have its spacing
+      defined in [direction] with respect to r1, where dist is the
+      distance between the two rectangles in pixels.
+    """
+    if "x" not in r1 or "y" not in r1:
+      raise Exception("check_spacing: x or y not present in " + r1["id"])
+    r1_top = (int(r1["x"]), int(r1["y"])) # top-left
+    r1_bottom = (r1_top[0] + int(r1["rwidth"]), r1_top[1] + int(r1["rheight"]))
+    r2_top = (int(r2["x"]), int(r2["y"])) # top-left
+    r2_bottom = (r2_top[0] + int(r2["width"]), r2_top[1] + int(r2["height"]))
+
+    if r2_top[0] > r1_bottom[0] and r2_top[1] > r1_bottom[1]:
+      return False, 0
+
+    if direction == "up":
+      if r2_top[1] >= r1_bottom[1]:
+        t_btwn = r2_top[0] >= r1_top[0] and r2_top[0] <= r1_bottom[0]
+        b_btwn = r2_bottom[0] >= r1_top[0] and r2_bottom[0] <= r1_bottom[0]
+        contains = r2_top[0] <= r1_top[0] and r2_bottom[0] >= r1_bottom[0]
+        if t_btwn or b_btwn or contains:
+          return True, (r2_top[1] - r1_bottom[1])
+      return False, 0
+    else:
+      if r2_top[0] >= r1_bottom[0]:
+        t_btwn = r2_top[1] >= r1_top[1] and r2_top[1] <= r1_bottom[1]
+        b_btwn = r2_bottom[1] >= r1_top[1] and r2_bottom[1] <= r1_bottom[1]
+        contains = r2_top[1] <= r1_top[1] and r2_bottom[1] >= r1_bottom[1]
+        if t_btwn or b_btwn or contains:
+          return True, (r2_top[0] - r1_bottom[0])
+      return False, 0
