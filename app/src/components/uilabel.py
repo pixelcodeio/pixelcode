@@ -187,7 +187,7 @@ class UILabel(object):
       in_h: (bool) represents whether text is being set in tableview header file
 
     Returns:
-      The swift code to set the attributed text of a label.
+      (str) The swift code to set the attributed text of a label.
       Note: Assumes that the content of the textspans do not vary.
     """
     txt = textspan[0]
@@ -224,7 +224,8 @@ class UILabel(object):
       line_sp: (int) the value representing the line spacing
       char_sp: (int) the value representing the character spacing
 
-    Returns: The swift code to apply all the properties from textspan to elem.
+    Returns:
+      (str) The swift code to apply all the properties from textspan to elem.
     """
     if len(textspan) == 1:
       # the contents of the textspan don't vary
