@@ -35,7 +35,7 @@ class UITextField(object):
 
     Returns: The swift code to set the font-family and size of the title in e
     """
-    return ("{}.font = UIFont(name: \"{}\", size: {})\n").format(e, f, s)
+    return ("{}.font = {}\n").format(e, utils.create_font(f, s))
 
   def setup_uitextfield(self, elem, textspan, left_inset, in_view=False):
     """

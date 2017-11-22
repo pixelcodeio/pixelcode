@@ -244,7 +244,7 @@ def required_init():
   return ("required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}')
 
-def find_and_ins(s, k, ins):
+def ins_after_key(s, k, ins):
   """
   Args:
     s: (str) the whole string phrase.
@@ -252,10 +252,20 @@ def find_and_ins(s, k, ins):
     ins: (str) the string to insert right after key in str.
 
   Returns: Given a str, insert ins right after key, returning the new string.
-  If key is not a substring of str, the empty string is returned.
+           If key is not a substring of str, the empty string is returned.
   """
   i = s.find(k)
   if i == -1:
     return ""
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
+
+def create_font(font, size):
+  """
+  Args:
+    font: (str) font family name
+    size: (int) size of font
+
+  Returns: The UIFont generated using font and size.
+  """
+  return ("UIFont(name: \"{}\", size: {})").format(font, size)

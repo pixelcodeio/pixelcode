@@ -17,7 +17,7 @@ class Interpreter(object):
     Args:
       elements: (list) list of elements
 
-    Returns: The swift code of the global variables for the swift class
+    Returns: (str) The swift code of the global variables for the swift class
     """
     variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
     return "".join(variables)
@@ -44,7 +44,7 @@ class Interpreter(object):
       tv_id: (str) the id of the parent tableview (capitalized)
       cell: (dict) the cell being generated
 
-    Returns: The swift code to generate the header of a UITableViewCell.
+    Returns: (str) The swift code to generate the header of a UITableViewCell.
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
             "{{\n\n{}"
@@ -61,6 +61,9 @@ class Interpreter(object):
     Args:
       tv_id: (str) the id of the parent tableview (capitalized)
       header: (dict) the header view being generated
+
+    Returns: (str) The swift code for generating the header of a UITableView
+             Header file.
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
             "UITableViewHeaderFooterView {{\n\n{}"
@@ -76,7 +79,7 @@ class Interpreter(object):
     Args:
       components: (dict list) contains information about components
 
-    Returns: The swift code to generate all the global variables of each
+    Returns: (str) The swift code to generate all the global variables of each
     component in components AND initialize them.
     """
     c = ""
@@ -91,7 +94,7 @@ class Interpreter(object):
       in_view: (bool) represents whether the components are being generated
                inside a custom view file (or not)
 
-    Returns: A triple consisting of:
+    Returns: (tuple) A triple consisting of:
       - the swift code to generate each component in components.
       - the dictionary of the tableview if components contains one.
       - the tableview methods for the tableview.
@@ -119,7 +122,7 @@ class Interpreter(object):
       elements: (dict list) contains information of all the elements
       f_name: The name of the file.
 
-    Returns: The swift code of the to generate the elements.
+    Returns: (str) The swift code of the to generate the elements.
     """
     c = self.swift[f_name]
     s, tv_elem, tv_methods = self.gen_comps(elements, in_view)
@@ -129,13 +132,13 @@ class Interpreter(object):
       c += "\n}\n}"
       self.swift[f_name] = c
     else:
-      f = utils.find_and_ins(c, ": UIViewController",
-                             ", UITableViewDelegate, UITableViewDataSource ")
+      f = utils.ins_after_key(c, ": UIViewController",
+                              ", UITableViewDelegate, UITableViewDataSource ")
       if f:
         c = f
       else:
-        c = utils.find_and_ins(c, ": UITableViewCell",
-                               ", UITableViewDelegate, UITableViewDataSource ")
+        c = utils.ins_after_key(c, ": UITableViewCell",
+                                ", UITableViewDelegate, UITableViewDataSource ")
 
       c += "\n}}\n{}}}\n".format(tv_methods)
       self.swift[f_name] = c
@@ -161,8 +164,8 @@ class Interpreter(object):
         c += "}"
         self.swift[cap_id + 'Cell'] = c
       else:
-        c = utils.find_and_ins(c, ": UITableViewCell",
-                               ", UITableViewDelegate, UITableViewDataSource ")
+        c = utils.ins_after_key(c, ": UITableViewCell",
+                                ", UITableViewDelegate, UITableViewDataSource ")
         c += "\n{}}}\n".format(ctv_methods)
         self.swift[cap_id + 'Cell'] = c
 
@@ -191,7 +194,8 @@ class Interpreter(object):
     Args:
       elements: (list) list of elements
 
-    Returns: The swift code for the file to generate all the elements
+    Returns: (None) Fills in the swift instance variable with the swift code
+             to generate all the elements.
     """
     file_h = self.gen_vc_header(elements)
     file_h += utils.set_bg('view', self.globals['bgc'])

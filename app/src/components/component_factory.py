@@ -4,6 +4,8 @@ from . import *
 class ComponentFactory(object):
   """
   Base class for components
+    swift: (str) contains the swift code to generate a component
+    tv_methods: (str) contains the tableview methods for generating a tableview
   """
   def __init__(self, comp, info, bgc=None, in_view=False):
     """
@@ -19,7 +21,7 @@ class ComponentFactory(object):
     Args:
       comp: (str) the component to be created
 
-    Returns: An instance of the component to be created
+    Returns: (obj) An instance of the component to be created
     """
     return {
         "UIButton": UIButton(),
@@ -78,19 +80,19 @@ class ComponentFactory(object):
       line_sp = info.get('line-spacing')
       char_sp = info.get('char-spacing')
       c += obj.setup_uilabel(cid, textspan, line_sp, char_sp, in_view=in_view)
-    elif text is not None and comp == 'UITextField':
+    elif text is not None:
       textspan = text['textspan']
-      c += obj.setup_uitextfield(cid, textspan, left_inset, in_view=in_view)
-    elif text is not None and comp == 'UITextView':
-      textspan = text['textspan']
-      c += obj.setup_uitextview(cid, textspan, left_inset, in_view=in_view)
+      if comp == 'UITextField':
+        c += obj.setup_uitextfield(cid, textspan, left_inset, in_view=in_view)
+      elif comp == 'UITextView':
+          c += obj.setup_uitextview(cid, textspan, left_inset, in_view=in_view)
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info, in_view=in_view)
     elif comp == 'UITableView':
       cells = info['cells']
       header = info['header']
       c += obj.setup_uitableview(cid, cells, header)
-      tvm = obj.cell_for_row_at(cid, cells)
+      tvm = obj.cell_for_row_at(cid, cells) # tvm are the tableview methods
       tvm += obj.number_of_rows_in_section(cells)
       tvm += obj.height_for_row_at(cid, cells)
       if header is not None:

@@ -72,19 +72,6 @@ class UILabel(object):
     """
     return '{}.font = UIFont.systemFont(ofSize: {})\n'.format(elem, size)
 
-  def set_font_size_weight(self, elem, size, weight):
-    """
-    Args:
-      elem: (str) id of element
-      size: (int) size of the font
-      weight: (int) weight of the font
-
-    Returns: The swift code to set the font size and weight of elem.
-    """
-    return ("{}.font = UIFont.systemFont(ofSize: {}, weight: "
-            "UIFont.Weight.init(rawValue: {}))\n"
-           ).format(elem, size, weight)
-
   def set_font_family_size(self, elem, font, size):
     """
     Args:
@@ -94,8 +81,8 @@ class UILabel(object):
 
     Returns: The swift code to set the font family and size of the title in elem
     """
-    return ("{}.font = UIFont(name: \"{}\", size: {})\n"
-           ).format(elem, font, size)
+    return ("{}.font = {}\n"
+           ).format(elem, utils.create_font(font, size))
 
   def set_num_of_lines(self, elem):
     """
@@ -115,8 +102,8 @@ class UILabel(object):
       length: (int) number of characters from start index whose color is being
               changed.
 
-    Returns: The swift code to set a substring of str to be a color with r,g,b
-             values.
+    Returns: (str) The swift code to set a substring of str to be a color with
+             r,g,b values.
     """
     return ("{}.addAttribute(.foregroundColor, value: {})"
             ", range: NSRange(location: {}, length: {}))\n"
@@ -146,10 +133,9 @@ class UILabel(object):
 
     Returns: The swift code to set a substring of str to be a font.
     """
-    f = ('UIFont(name: "{}", size: {})').format(font, size)
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
-           ).format(str_id, f, start, length)
+           ).format(str_id, utils.create_font(font, size), start, length)
 
   def set_attributed_font(self, str_id, font, size):
     """
@@ -160,10 +146,9 @@ class UILabel(object):
 
     Returns: The swift code to set the font of an attributed string.
     """
-    f = ('UIFont(name: "{}", size: {})').format(font, size)
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
-           ).format(str_id, f, str_id)
+           ).format(str_id, utils.create_font(font, size), str_id)
 
   def set_line_sp(self, elem, str_id, line_sp):
     """

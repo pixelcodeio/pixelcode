@@ -36,20 +36,17 @@ class UIButton(object):
     font = 'UIFont.systemFont(ofSize: {})'.format(size)
     return '{}.titleLabel?.font = {}\n'.format(elem, font)
 
-  def set_font_size_weight(self, elem, size, weight):
-    """
-    Returns: The swift code to set the font size and weight of elem.
-    """
-    return ("{}.titleLabel?.font = UIFont.systemFont(ofSize: {}, weight: "
-            "UIFont.Weight.init(rawValue: {}))\n"
-           ).format(elem, size, weight)
-
   def set_font_family_size(self, elem, font, size):
     """
+    Args:
+      elem: (str) id of element
+      font: (str) font family name
+      size: (int) size of font
+
     Returns: The swift code to set the font family and size of the title in elem
     """
-    return ("{}.titleLabel?.font = UIFont(name: \"{}\", size: {})\n"
-           ).format(elem, font, size)
+    return ("{}.titleLabel?.font = {}\n"
+           ).format(elem, utils.create_font(font, size))
 
   def setup_uibutton(self, elem, textspan, in_view=False):
     """
@@ -57,6 +54,8 @@ class UIButton(object):
       elem: (str) id of the component
       textspan: (dict array) see generate_component docstring for more
                 information.
+      in_view: (bool) represents whether the button is being generated
+               inside a custom view file (or not)
 
     Returns: The swift code to apply all the properties from textspan to elem.
     """

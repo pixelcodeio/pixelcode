@@ -31,6 +31,8 @@ class UIImageView(object):
     Args:
       elem: (str) id of the component
       info: (dict) see generate_component docstring for more information.
+      in_view: (bool) represents whether the imageview is being generated
+               inside a custom view file (or not)
 
     Returns: The swift code to apply all the properties from text to elem.
     """

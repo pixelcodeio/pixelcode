@@ -32,8 +32,8 @@ class UITextView(object):
 
     Returns: The swift code to set the font family and size of the title in elem
     """
-    return ("{}.font = UIFont(name: \"{}\", size: {})\n"
-           ).format(elem, font, size)
+    return ("{}.font = {}\n"
+           ).format(elem, utils.create_font(font, size))
 
   def setup_uitextview(self, elem, textspan, left_inset, in_view=False):
     """
