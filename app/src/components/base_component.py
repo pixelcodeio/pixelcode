@@ -34,10 +34,12 @@ class BaseComponent(object):
   def generate_component(self, comp, info, bgc=None, in_view=False):
     """
     Args:
-      comp (str): The component to be generated
-      info (dict):
-        A dictionary of keys (values may be None). Further documentation is
-        available online.
+      comp: (str) The component to be generated
+      info: (dict) A dictionary of with values possibly being None. Further
+            documentation is available online.
+      bgc: (tuple) background color of the screen (used for generating labels)
+      in_view: (bool) represents whether the components are being generated
+               inside a custom view file (or not)
 
     Returns: The swift code to generate the component
     """
@@ -85,7 +87,6 @@ class BaseComponent(object):
     elif comp == 'UIImageView':
       c += obj.setup_uiimageview(cid, info, in_view=in_view)
     elif comp == 'UITableView':
-      # Assume no tableviews are within tableviews
       cells = info['cells']
       header = info['header']
       c += obj.setup_uitableview(cid, cells, header)

@@ -22,7 +22,7 @@ class Interpreter(object):
     variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
     return "".join(variables)
 
-  def gen_header(self, elements):
+  def gen_vc_header(self, elements):
     """
     Args:
       elements: (list) list of elements
@@ -47,13 +47,12 @@ class Interpreter(object):
     Returns: The swift code to generate the header of a UITableViewCell.
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
-            "{{\n\n"
-            "{}"
+            "{{\n\n{}"
             "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
-            "String?) {\n"
+            "String?) {{\n"
             "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-            "layoutSubviews()\n}\n\n"
-            "override func layoutSubviews() {\n"
+            "layoutSubviews()\n}}\n\n"
+            "override func layoutSubviews() {{\n"
             "super.layoutSubviews()\n\n"
            ).format(tv_id, self.init_g_vars(cell.get('components')))
 
@@ -64,27 +63,34 @@ class Interpreter(object):
       header: (dict) the header view being generated
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
-            "UITableViewHeaderFooterView {{\n\n"
-            "{}"
-            "\noverride init(reuseIdentifier: String?) {\n"
+            "UITableViewHeaderFooterView {{\n\n{}"
+            "\noverride init(reuseIdentifier: String?) {{\n"
             "super.init(reuseIdentifier: reuseIdentifier)\n"
-            "layoutSubviews()\n}\n\n"
-            "override func layoutSubviews() {\n"
-            "super.layoutSubviews()\n\n"
+            "layoutSubviews()\n}}\n\n"
+            "override func layoutSubviews() {{"
+            "\nsuper.layoutSubviews()\n\n"
            ).format(tv_id, self.init_g_vars(header.get('components')))
 
   def init_g_vars(self, components):
     """
+    Args:
+      components: (dict list) contains information about components
+
     Returns: The swift code to generate all the global variables of each
     component in components AND initialize them.
     """
     c = ""
-    for compon in components:
-      c += 'var {} = {}()\n'.format(compon.get('id'), compon.get('type'))
+    for comp in components:
+      c += 'var {} = {}()\n'.format(comp.get('id'), comp.get('type'))
     return c
 
   def gen_comps(self, components, in_view):
     """
+    Args:
+      components: (dict list) contains information about components
+      in_view: (bool) represents whether the components are being generated
+               inside a custom view file (or not)
+
     Returns: A triple consisting of:
       - the swift code to generate each component in components.
       - the dictionary of the tableview if components contains one.
@@ -93,23 +99,24 @@ class Interpreter(object):
     c = ""
     tv_elem = None
     tv_methods = ""
-    for compon in components:
-      comp = compon.get('type')
-      if comp == 'UILabel':
-        bc = BaseComponent(comp, compon, bgc=self.globals['bgc'],
+    for comp in components:
+      typ = comp.get('type')
+      if typ == 'UILabel':
+        bc = BaseComponent(typ, comp, bgc=self.globals['bgc'],
                            in_view=in_view)
         c += bc.swift
       else:
-        bc = BaseComponent(comp, compon, in_view=in_view)
+        bc = BaseComponent(typ, comp, in_view=in_view)
         c += bc.swift
-        if comp == 'UITableView':
-          tv_elem = compon
+        if typ == 'UITableView':
+          tv_elem = comp
           tv_methods = bc.tv_methods
     return (c, tv_elem, tv_methods)
 
   def gen_elements(self, elements, f_name, in_view=False):
     """
     Args:
+      elements: (dict list) contains information of all the elements
       f_name: The name of the file.
 
     Returns: The swift code of the to generate the elements.
@@ -186,7 +193,7 @@ class Interpreter(object):
 
     Returns: The swift code for the file to generate all the elements
     """
-    file_h = self.gen_header(elements)
+    file_h = self.gen_vc_header(elements)
     file_h += utils.set_bg('view', self.globals['bgc'])
     ab = self.globals['artboard'].capitalize()
     vc = '{}ViewController'.format(ab)

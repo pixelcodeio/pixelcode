@@ -24,7 +24,7 @@ class Main(object):
     i.gen_code(p.elements)
     code = ""
     for (k, v) in i.swift.items():
-      code += "{}\n{}\n".format(k, v)
+      code += "{}:\n{}\n".format(k, v)
     return code
 
 def update_test_dir(path):
