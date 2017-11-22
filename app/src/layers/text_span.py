@@ -13,7 +13,7 @@ class TextSpan(BaseLayer):
     elem["stroke-width"] = None
     elem["stroke-color"] = None
     elem["contents"] = elem.text
-    return super(TextSpan, self).parse_elem(elem)
+    return super().parse_elem(elem)
 
 def params_equal(tspan1, tspan2):
   params = [

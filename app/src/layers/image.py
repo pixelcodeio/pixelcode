@@ -6,4 +6,4 @@ class Image(BaseLayer):
   """
   def parse_elem(self, elem):
     elem["path"] = elem["id"] + ".png" # TODO: change this later
-    return super(Image, self).parse_elem(elem)
+    return super().parse_elem(elem)
