@@ -102,7 +102,7 @@ class Parser(object):
       elem = calculate_spacing(elem, parsed_elements)
       elem = convert_coords(elem, parent)
 
-      # parse elements into their layers
+      # correctly name grouped elements
       if elem.name == "g":
         if "Button" in elem["id"] or "button" in elem["id"]:
           elem.name = "button"
@@ -114,7 +114,7 @@ class Parser(object):
           elem.name = "tableview"
         elif "TextField" in elem["id"]:
           elem.name = "textfield"
-        else: # group with other elements inside
+        else: # ungroup elements inside
           for child in elem["children"]:
             child["x"] = elem["x"] + float(child["x"])
             child["y"] = elem["y"] + float(child["y"])

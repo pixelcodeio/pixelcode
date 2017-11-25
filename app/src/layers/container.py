@@ -17,12 +17,12 @@ class Container(BaseLayer):
         if rect is None:
           rect = child
         else:
-          raise Exception("Container: Multiple fields named bound.")
+          raise Exception("Container: Multiple bound fields in " + elem["id"])
       else:
         components.append(child)
 
     if rect is None:
-      raise Exception("Container: No bound field.")
+      raise Exception("Container: No bound field in " + elem["id"])
 
     elem["rect"] = rect
     elem["components"] = components

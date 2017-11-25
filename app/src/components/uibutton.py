@@ -22,7 +22,7 @@ class UIButton(BaseComponent):
       elem: (str) id of element
       title: (str) title to set the element
 
-    Returns: (str) The swift code to set title of a elem using title
+    Returns: (str) swift code to set title of a elem using title
     """
     title = title.decode('utf-8')
     return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
@@ -34,8 +34,7 @@ class UIButton(BaseComponent):
       color: (tuple) contains r, g, b values of the title color
 
     Returns:
-      (str) The swift code to set title color of elem using the r, g,
-      b values
+      (str) swift code to set title color of elem using [color]
     """
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
@@ -48,7 +47,7 @@ class UIButton(BaseComponent):
       s: (int) size of font
 
     Returns:
-      (str) The swift code to set the font family and size of the title in elem
+      (str) swift code to set the font family and size of the title in elem
     """
     return ("{}.titleLabel?.font = {}\n").format(e, super().create_font(f, s))
 
@@ -56,13 +55,11 @@ class UIButton(BaseComponent):
     """
     Args:
       elem: (str) id of the component
-      textspan: (dict array) see generate_component docstring for more
-                information.
-      in_v: (bool) represents whether the button is being generated
-               inside a custom view file (or not)
+      textspan: (dict list) see generate_component docstring for more info.
+      in_v: (bool) whether the component is generated within a custom view file
 
     Returns:
-      (str) The swift code to apply all the properties from textspan to elem.
+      (str) swift code to apply all the properties from textspan to elem.
     """
     tspan = info.get('text').get('textspan')
     if len(tspan) == 1:

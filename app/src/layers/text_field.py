@@ -14,11 +14,13 @@ class TextField(BaseLayer):
         rect = child
       elif child["type"] == "UILabel":
         text = child
+      else:
+        raise Exception("TextField: Unsupported elem type in " + elem["id"])
 
     if text is None:
-      raise Exception("TextField: Text cannot be empty in a button.")
+      raise Exception("TextField: Text is empty in " + elem["id"])
     elif rect is None:
-      raise Exception("TextField: Rect cannot be empty in a button.")
+      raise Exception("TextField: Rect is empty in " + elem["id"])
 
     elem["rect"] = rect
     elem["text"] = text

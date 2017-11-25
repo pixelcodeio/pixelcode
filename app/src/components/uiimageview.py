@@ -22,7 +22,7 @@ class UIImageView(BaseComponent):
       elem: (str) id of the component
       image_fname: (str) name of the image file
 
-    Returns: (str) The swift code to set the image of elem.
+    Returns: (str) swift code to set the image of elem.
     """
     index = image_fname.index(".")
     image_name = image_fname[0:index]
@@ -36,7 +36,7 @@ class UIImageView(BaseComponent):
       in_v: (bool) represents whether the imageview is being generated
                inside a custom view file (or not)
 
-    Returns: (str) The swift code to apply all the properties from text to elem.
+    Returns: (str) swift code to apply all the properties from text to elem.
     """
     path = info.get('path')
     opacity = info.get('opacity')

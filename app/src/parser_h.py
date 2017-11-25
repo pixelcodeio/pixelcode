@@ -142,7 +142,7 @@ def parse_fake_group(elem):
       raise Exception("Unhandled case in parse_fake_group.")
   return elem
 
-def check_spacing(r1, r2, direction): # pylint: disable=R0911
+def check_spacing(r1, r2, direction):
   """
   Args:
     r1: The rectangle with a smaller bottom-right coordinate sum

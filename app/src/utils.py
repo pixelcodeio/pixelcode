@@ -8,21 +8,20 @@ from components.uiview import UIView
 
 def convert_hex_to_rgb(hex_string):
   """
-  Returns: [hex_string] converted to a rgb tuple.
+  Returns: (tuple) [hex_string] converted to a rgb tuple.
   """
   h = hex_string.lstrip('#')
   return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
 def translates_false(elem):
   """
-  Returns: The line that sets the translatesAutoResizing property
-  of elem to false.
+  Returns: (str) swift code that sets translatesAutoResizing to false for elem
   """
   return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
 
 def create_uicolor(color):
   """
-  Returns: The UIColor of color.
+  Returns: The UIColor of [color].
   """
   r, g, b, o = color
   return ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
@@ -32,10 +31,9 @@ def create_uicolor(color):
 def set_bg(elem, color, in_v=False):
   """
   Args:
-    color: (tuple) contains the r, g, b values of the background color
+    color: (tuple) the r, g, b values of the background color
 
-  Returns: The line that sets the background color of elem to the
-  UIColor with the corresponding r, g, b values.
+  Returns: (str) swift code that sets the background color of elem to [color].
   """
   if in_v:
     return ('backgroundColor = {}\n'
@@ -51,8 +49,7 @@ def add_subview(view, elem):
 def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
                          vertDist, width, height, in_v=False):
   """
-  Returns: The swift code to set width/height and position constraints using
-  the SnapKit library.
+  Returns: (str) swift code to set all constraints using SnapKit.
   """
   if in_v:
     c = ("{}.snp.updateConstraints {{ make in\n"
@@ -101,7 +98,7 @@ def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
 
 def set_border_width(elem, width, in_v=False):
   """
-  Returns: The swift code to set the border width of elem.
+  Returns: (str) swift code to set the border width of elem.
   """
   if in_v:
     return ("layer.borderWidth = {}\n").format(width)
@@ -109,7 +106,7 @@ def set_border_width(elem, width, in_v=False):
 
 def set_border_color(elem, color, in_v=False):
   """
-  Returns: The swift code to set the border color of elem.
+  Returns: (str) swift code to set the border color of elem.
   """
   if in_v:
     return ("layer.borderColor = {}.cgColor\n"
@@ -119,7 +116,7 @@ def set_border_color(elem, color, in_v=False):
 
 def set_corner_radius(elem, radius, in_v=False):
   """
-  Returns: The swift code to set the corner radius of elem.
+  Returns: (str) swift code to set the corner radius of elem.
   """
   if in_v:
     return ("layer.cornerRadius = {}\n").format(radius)
@@ -131,7 +128,7 @@ def setup_rect(cid, rect, in_v=False, tv_header=False):
     cid: (int) id of component
     rect: (dict) see generate_component for more information
 
-  Returns: The swift code to apply all the properties from rect.
+  Returns: (str) swift code to apply all the properties from rect.
   """
   fill = rect.get('fill')
   border_r = rect.get('border-radius')
@@ -155,8 +152,7 @@ def setup_rect(cid, rect, in_v=False, tv_header=False):
 
 def required_init():
   """
-  Returns: The swift code for the required init?(coder:) function for custom
-  views.
+  Returns: (str) swift code for a required function for custom views.
   """
   return ("required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}')
@@ -168,8 +164,9 @@ def ins_after_key(s, k, ins):
     k: (str) the substring to search for inside str.
     ins: (str) the string to insert right after key in str.
 
-  Returns: Given a str, insert ins right after key, returning the new string.
-           If key is not a substring of str, the empty string is returned.
+  Returns:
+    Given a str, insert ins right after key, returning the new string.
+    If key is not a substring of str, the empty string is returned.
   """
   i = s.find(k)
   if i == -1:

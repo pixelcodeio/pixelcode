@@ -23,7 +23,7 @@ class UITextView(object):
     Args:
       tid: (str) the id of the UITextView
       text: (str) placeholder text
-      color: (tuple) color to set the placeholder
+      color: (tuple) placeholder color
 
     Returns:
       (str) The swift code to set the placeholder and color of a UITextView
@@ -36,7 +36,7 @@ class UITextView(object):
     """
     Args:
       tid: (str) id of the UITextField
-      left: (int) the number of pixels to set the left-inset
+      left: (int) left inset, in pixels
 
     Returns: (str) The swift code to set the left-inset of a UITextView
     """

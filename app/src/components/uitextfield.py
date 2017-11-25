@@ -23,9 +23,9 @@ class UITextField(BaseComponent):
     Args:
       tid: (str) id of the UITextField
       text: (str) placeholder text
-      color: (tuple) color to set the placeholder
+      color: (tuple) color of placeholder
 
-    Returns: (str) The swift code to set placeholder's text and color.
+    Returns: (str) swift code to set placeholder's text and color.
     """
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
@@ -35,7 +35,7 @@ class UITextField(BaseComponent):
     """
     Args:
       tid: (str) id of the UITextField
-      left: (int) the number of pixels to set the left-inset
+      left: (int) left-inset, in pixels
 
     Returns: (str) The swift code to set the left-inset of a UITextField
     """
@@ -47,8 +47,8 @@ class UITextField(BaseComponent):
     """
     Args:
       elem: (str) id of element
-      font: (str) font name
-      size: (int) size of the font
+      font: (str) font family
+      size: (int) font size
 
     Returns:
       (str) The swift code to set the font-family and size of the title in e
@@ -59,12 +59,12 @@ class UITextField(BaseComponent):
     """
     Args:
       elem: (str) id of the component
-      textspan: (dict array) see generate_component docstring for more
-                information.
-      left_inset: (int) pixels representing the number of left-inset
+      TODO: these args are wrong???
+      textspan: (dict list) see generate_component docstring for more info
+      left_inset: (int) left-inset, in pixels
 
     Returns:
-       (str) The swift code to apply all the properties from textspan and
+       (str) swift code to apply all the properties from textspan and
        left_inset to elem.
     """
     tspan = info.get('text').get('textspan')

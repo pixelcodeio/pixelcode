@@ -16,7 +16,7 @@ class UIView(BaseComponent):
     """
     Args:
       elem: (str) id of the component
-      info: (dict) see generate_component docstring for more information.
+      info: (dict) see generate_component docstring for more info.
 
     Returns: The swift code to apply all the properties from text to elem.
     """

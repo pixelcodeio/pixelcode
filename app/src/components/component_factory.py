@@ -19,12 +19,10 @@ class ComponentFactory(object):
   def generate_component(self, type_, info, bgc=None, in_v=False):
     """
     Args:
-      type_: (str) The component to be generated
-      info: (dict) A dictionary of with values possibly being None. Further
-            documentation is available online.
+      type_: (str) the component to be generated
+      info: (dict) vals can be None. Further documentation can be found online
       bgc: (tuple) background color of the screen (used for generating labels)
-      in_v: (bool) represents whether the components are being generated
-               inside a custom view file (or not)
+      in_v: (bool) whether components are generated within a custom view
 
     Returns: (str) The swift code to generate the component
     """
@@ -53,10 +51,12 @@ class ComponentFactory(object):
 
     component = utils.create_component(type_, cid, info, in_v=in_v)
     c += component.swift
+
     if type_ == 'UITableView':
       self.tv_methods = component.tv_methods
     elif type_ == 'UILabel':
       c += utils.set_bg(cid, bgc, in_v=in_v)
+
     view = 'view' if not in_v else None
     c += utils.add_subview(view, cid)
     c += utils.make_snp_constraints(cid, hor_id, hor_dir,

@@ -26,7 +26,7 @@ class UITableView(BaseComponent):
     """
     Args:
       ch: (str) should either be "cell" or "header"
-      components: (dict list) contains information of all the components
+      components: (dict list) contains info of all the components
       subview_ids: (str list) contains ids of the components
 
     Returns:
@@ -40,12 +40,16 @@ class UITableView(BaseComponent):
         ch_id = "cell.{}".format(subview_ids[j])
       elif ch == "header":
         ch_id = "header.{}".format(subview_ids[j])
+      else:
+        raise Exception() # TODO: fill appropriately
 
       if type_ == 'UILabel':
         if ch == "cell":
           com = utils.create_component(type_, ch_id, comp, set_p=True, c=True)
         elif ch == "header":
           com = utils.create_component(type_, ch_id, comp, set_p=True, h=True)
+        else:
+          raise Exception() # TODO: fill appropriately
       else:
         com = utils.create_component(type_, ch_id, comp, set_p=True)
       c += com.swift
@@ -88,10 +92,9 @@ class UITableView(BaseComponent):
   def number_of_rows_in_section(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more information
+      cells: (dict list) see generate_component's docstring for more info
 
-    Returns:
-      (str) The swift code for the numberOfRowsInSection func of a UITableView.
+    Returns: (str) swift code for numberOfRowsInSection in a UITableView.
     """
     fst_cell_comps = cells[0].get('components')
     num_rows = 0
@@ -100,6 +103,8 @@ class UITableView(BaseComponent):
       if len(components) == len(fst_cell_comps):
         # all components are present
         num_rows += 1
+      else:
+        pass # TODO: fill appropriately
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
             "return {} \n"
@@ -109,9 +114,8 @@ class UITableView(BaseComponent):
   def height_for_row_at(self, elem, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more information
-      tvHeight: (float) height of the uitableview as percentage of screen's
-                height
+      cells: (dict list) see generate_component's docstring for more info
+      tvHeight: (float) height of the tableview in percent
 
     Returns: (str) The swift code for the heightForRowAt func of a UITableView.
     """
@@ -126,8 +130,7 @@ class UITableView(BaseComponent):
       elem: (str) the id of the element
       header: (dict) contains information about the header of a tableview.
 
-    Returns:
-      (str) The swift code for generating the viewForHeaderInSection function
+    Returns: (str) swift code for the viewForHeaderInSection function
     """
     c = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
          "section: Int) -> UIView? {{\n"
@@ -165,13 +168,13 @@ class UITableView(BaseComponent):
     """
     Args:
       elem: (str) id of the component
-      cells: (dict list) see generate_component's docstring for more information
-      header: (dict) see generate_component's docstring for more information
+      cells: (dict list) see generate_component's docstring for more info
+      header: (dict) see above
 
     Returns: (str) The swift code to setup a UITableView in viewDidLoad.
     """
-    header = info.get('header')
     c = ""
+    header = info.get('header')
     if header is not None:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
