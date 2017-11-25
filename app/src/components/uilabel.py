@@ -7,14 +7,15 @@ class UILabel(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      tspan = self.info.get('textspan')
-      ls = self.info.get('line-spacing')
-      cs = self.info.get('char-spacing')
-      contents = self.info.get('textspan')[0].get('contents')
-      if ls is not None or cs is not None:
+      info = self.info
+      tspan = info.get('textspan')
+      line_sp = info.get('line-spacing')
+      char_sp = info.get('char-spacing')
+      contents = info.get('textspan')[0].get('contents')
+      if line_sp is not None or char_sp is not None:
         ind = self.id.find('.') # id_ is in the form "cell.{}" or "header.{}"
         self.id = self.id[ind+1:] # truncated id_
-        return self.set_attxt_p(tspan, ls, cs, in_c=in_c, in_h=in_h)
+        return self.set_attxt_p(tspan, line_sp, char_sp)
       return self.gen_text(contents)
     return self.setup_component()
 
@@ -166,15 +167,13 @@ class UILabel(BaseComponent):
             'NSRange(location: 0, length: {}.length))\n'
            ).format(str_id, char_sp, str_id)
 
-  def set_attxt_p(self, tspan, ls, cs, in_c=False, in_h=False):
+  def set_attxt_p(self, tspan, line_sp, char_sp):
     """
     Args:
       id_: (str) id of the element in the form "cell.{}" or "header.{}"
       tspan: (dict list) see generate_component docstring for more info
       line_sp: (int) line spacing, in pixels
       char_sp: (int) character spacing, in pixels
-      in_c: (bool) whether text is set in tableview cell file
-      in_h: (bool) whether text is set in tableview header file
 
     Returns:
       (str) swift code to setup and set the attributed text prop of a label.
@@ -186,32 +185,30 @@ class UILabel(BaseComponent):
     font = txt.get('font-family')
     size = txt.get('font-size')
 
-    c = self.create_attributed_str(contents)
+    C = self.create_attributed_str(contents)
     str_id = '{}AttributedStr'.format(self.id)
-    c += self.gen_attributed_color(str_id, fill)
-    c += self.gen_attributed_font(str_id, font, size)
-    if ls is not None:
-      ls = str(float(ls) / float(size))
-      c += self.gen_line_sp(str_id, ls)
-    if cs is not None:
-      c += self.gen_char_sp(str_id, cs)
-    c += self.set_attributed_text(str_id)
-    return c
+    C += self.gen_attributed_color(str_id, fill)
+    C += self.gen_attributed_font(str_id, font, size)
+    if line_sp is not None:
+      line_sp = str(float(line_sp) / float(size))
+      C += self.gen_line_sp(str_id, line_sp)
+    if char_sp is not None:
+      C += self.gen_char_sp(str_id, char_sp)
+    C += self.set_attributed_text(str_id)
+    return C
 
   def setup_component(self):
     """
     Args:
       tspan: (dict list) see generate_component docstring for more info
-      line_sp: (int) line spacing, in pixels
-      char_sp: (int) character spacing, in pixels
 
     Returns:
       (str) The swift code to apply all the properties from textspan
     """
     tspan = self.info.get('textspan')
-    ls = self.info.get('line-spacing')
-    cs = self.info.get('char-spacing')
-    c = ""
+    line_sp = self.info.get('line-spacing')
+    char_sp = self.info.get('char-spacing')
+    C = ""
     if len(tspan) == 1:
       # the contents of the textspan don't vary
       txt = tspan[0]
@@ -222,21 +219,21 @@ class UILabel(BaseComponent):
       size = txt.get('font-size')
       in_v = self.env["in_view"]
 
-      if (ls is not None or cs is not None) and not in_v:
-        c += self.set_attxt_p(tspan, ls, cs)
+      if (line_sp is not None or char_sp is not None) and not in_v:
+        C += self.set_attxt_p(tspan, line_sp, char_sp)
       elif not in_v:
-        c += self.gen_text(contents) if contents != None else ""
-        c += self.gen_text_color(fill) if fill != None else ""
-        c += self.gen_font_family_size(font, size)
-      elif (ls is None and cs is None) and in_v:
-        c += self.gen_text_color(fill) if fill != None else ""
-        c += self.gen_font_family_size(font, size)
+        C += self.gen_text(contents) if contents != None else ""
+        C += self.gen_text_color(fill) if fill != None else ""
+        C += self.gen_font_family_size(font, size)
+      elif (line_sp is None and char_sp is None) and in_v:
+        C += self.gen_text_color(fill) if fill != None else ""
+        C += self.gen_font_family_size(font, size)
 
       if txt_align is None:
-        c += self.center_and_wrap("center")
+        C += self.center_and_wrap("center")
       else:
-        c += self.center_and_wrap(txt_align)
-      return c
+        C += self.center_and_wrap(txt_align)
+      return C
 
     else:
       raise Exception("Textspan in label contains varying text.")

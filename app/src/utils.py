@@ -124,7 +124,8 @@ def create_component(type_, id_, info, env):
     type_ (str): the component to be created
     id_ (str): the name of the component
     info (dict): information on component
-    env (dict): env for component, must have keys [in_view, set_prop]
+    env (dict): env for component. Possible keys are
+                [set_prop, in_view, in_cell, in_header]
 
   Returns: (obj) An instance of the component to be created
   """

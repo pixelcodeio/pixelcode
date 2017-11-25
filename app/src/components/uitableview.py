@@ -22,7 +22,7 @@ class UITableView(BaseComponent):
   def gen_comps_ch(self, ch, components, subview_ids):
     """
     Args:
-      ch: (str) should either be "cell" or "header"
+      ch: (str) should either be "cell" or "header" # TODO: change to bool
       components: (dict list) contains info of all the components
       subview_ids: (str list) contains ids of the components
 
@@ -30,15 +30,13 @@ class UITableView(BaseComponent):
       (str) The swift code to generate components inside a cell or
       header of a tableview.
     """
-    c = ""
+    C = ""
     for j, comp in enumerate(components):
       type_ = comp.get('type')
       if ch == "cell":
         ch_id = "cell.{}".format(subview_ids[j])
       elif ch == "header":
         ch_id = "header.{}".format(subview_ids[j])
-      else:
-        raise Exception("ch is not cell or header")
 
       if type_ == 'UILabel':
         if ch == "cell":
@@ -47,12 +45,10 @@ class UITableView(BaseComponent):
         elif ch == "header":
           env = {"set_prop": True, "in_header": True}
           com = utils.create_component(type_, ch_id, comp, env)
-        else:
-          raise Exception("ch is not cell or header")
       else:
         com = utils.create_component(type_, ch_id, comp, {"set_prop": True})
-      c += com.swift
-    return c
+      C += com.swift
+    return C
 
   def cell_for_row_at(self, cells):
     """
@@ -61,7 +57,7 @@ class UITableView(BaseComponent):
 
     Returns: (str) The swift code for the cellForRowAt function of a UITableView
     """
-    c = ("func tableView(_ tableView: UITableView, cellForRowAt "
+    C = ("func tableView(_ tableView: UITableView, cellForRowAt "
          "indexPath: IndexPath) -> UITableViewCell {{\n"
          'let cell = tableView.dequeueReusableCell(withIdentifier: "{}CellID")'
          ' as! {}Cell\n'
@@ -79,13 +75,13 @@ class UITableView(BaseComponent):
       components = cell.get('components')
       if len(components) != len(fst_cell_comps):
         continue
-      c += '\ncase {}:\n'.format(index)
-      c += self.gen_comps_ch("cell", components, subview_ids)
-      c += '\nreturn cell'
+      C += '\ncase {}:\n'.format(index)
+      C += self.gen_comps_ch("cell", components, subview_ids)
+      C += '\nreturn cell'
       index += 1
 
-    c += '\ndefault: return cell\n}\n}\n\n'
-    return c
+    C += '\ndefault: return cell\n}\n}\n\n'
+    return C
 
   def number_of_rows_in_section(self, cells):
     """
@@ -126,7 +122,7 @@ class UITableView(BaseComponent):
 
     Returns: (str) swift code for the viewForHeaderInSection function
     """
-    c = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
+    C = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
          "section: Int) -> UIView? {{\n"
          'let header = {}.dequeueReusableHeaderFooterView(withIdentifier: '
          '"{}Header") as! {}HeaderView\n'
@@ -136,12 +132,12 @@ class UITableView(BaseComponent):
 
     components = header.get('components')
     subview_ids = [comp.get('id') for comp in components]
-    c += self.gen_comps_ch("header", components, subview_ids)
-    c += ('return header'
+    C += self.gen_comps_ch("header", components, subview_ids)
+    C += ('return header'
           '\ndefault:\nreturn header\n'
           '}\n}\n\n'
          )
-    return c
+    return C
 
   def height_for_header(self, header):
     """
@@ -159,15 +155,15 @@ class UITableView(BaseComponent):
     """
     Returns: (str) The swift code to setup a UITableView in viewDidLoad.
     """
-    c = ""
+    C = ""
     header = self.info.get('header')
     id_ = self.id
     if header is not None:
-      c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
+      C += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
            ).format(id_, id_.capitalize(), id_)
-    c += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
+    C += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
           '{}.delegate = self\n'
           '{}.dataSource = self\n'
          ).format(id_, id_.capitalize(), id_, id_, id_)
-    return c
+    return C
