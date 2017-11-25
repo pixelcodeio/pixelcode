@@ -26,28 +26,28 @@ class ComponentFactory(object):
 
     Returns: (str) The swift code to generate the component
     """
-    cid = info.get('id')
+    id_ = info.get('id')
     rect = info.get('rect')
 
     c = ""
     if not in_v:
-      c += "{} = {}()\n".format(cid, type_)
+      c += "{} = {}()\n".format(id_, type_)
 
-    c += utils.translates_false(cid)
+    c += utils.translates_false(id_)
 
     if rect is not None:
-      c += utils.setup_rect(cid, rect)
+      c += utils.setup_rect(id_, rect)
 
-    component = utils.create_component(type_, cid, info, in_v=in_v)
+    component = utils.create_component(type_, id_, info, in_v=in_v)
     c += component.swift
 
     if type_ == 'UITableView':
       self.tv_methods = component.tv_methods
     elif type_ == 'UILabel':
-      c += utils.set_bg(cid, bgc, in_v=in_v)
+      c += utils.set_bg(id_, bgc, in_v=in_v)
 
     view = 'view' if not in_v else None
-    c += utils.add_subview(view, cid)
+    c += utils.add_subview(view, id_)
     c += self.gen_constraints(info, in_v=in_v)
     return c
 
@@ -59,7 +59,7 @@ class ComponentFactory(object):
 
     Returns: (str) swift code to set all constraints using SnapKit.
     """
-    elem = info.get('id')
+    id_ = info.get('id')
     height = info.get('height')
     hor = info.get('horizontal')
     hor_dir = hor.get('direction')
@@ -74,7 +74,7 @@ class ComponentFactory(object):
       c = ("{}.snp.updateConstraints {{ make in\n"
            "make.size.equalTo(CGSize(width: frame.width*{}, height: "
            "frame.height*{}))\n"
-          ).format(elem, width, height)
+          ).format(id_, width, height)
       if not hor_id:
         c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
              ).format(hor_dist)
@@ -96,7 +96,7 @@ class ComponentFactory(object):
     c = ("{}.snp.makeConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: view.frame.width*{}, height: "
          "view.frame.height*{}))\n"
-        ).format(elem, width, height)
+        ).format(id_, width, height)
     if not hor_id:
       c += ('make.left.equalToSuperview().offset(view.frame.width*{})\n'
            ).format(hor_dist)
