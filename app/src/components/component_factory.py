@@ -54,41 +54,45 @@ class ComponentFactory(object):
   def gen_constraints(self, info, in_v=False):
     """
     Args:
-      info: contains all information on the element
+      info: contains all info on the element
       in_v: whether the element is in a view
 
     Returns: (str) swift code to set all constraints using SnapKit.
     """
     id_ = info.get('id')
     height = info.get('height')
+    width = info.get('width')
+
     hor = info.get('horizontal')
+    vert = info.get('vertical')
+
+    hor_id = hor.get('id')
     hor_dir = hor.get('direction')
     hor_dist = hor.get('distance')
-    hor_id = hor.get('id')
-    vert = info.get('vertical')
+    vert_id = vert.get('id')
     vert_dir = vert.get('direction')
     vert_dist = vert.get('distance')
-    vert_id = vert.get('id')
-    width = info.get('width')
 
     c = ("{}.snp.updateConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: frame.width*{}, height: "
          "frame.height*{}))\n"
         ).format(id_, width, height)
-    if not hor_id:
-      c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
-           ).format(hor_dist)
-    else:
+
+    if hor_id is None:
       opp_dir = self.get_opp_dir(hor_dir)
       c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
            ).format(hor_dir, hor_id, opp_dir, hor_dist)
-    if not vert_id:
-      c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
-           ).format(vert_dist)
     else:
+      c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
+           ).format(hor_dist)
+
+    if vert_id is None:
       opp_dir = self.get_opp_dir(vert_dir)
       c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
            ).format(vert_dir, vert_id, opp_dir, vert_dist)
+    else:
+      c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
+           ).format(vert_dist)
     c += "}\n\n"
 
     if in_v:

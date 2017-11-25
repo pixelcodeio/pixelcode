@@ -6,21 +6,18 @@ class UITableView(BaseComponent):
     swift: (str) the swift code to create/set properties of a UITableView
     tv_methods: (str) the swift code of the necessary tableview methods
   """
-  def __init__(self, id_, info, in_v=False, set_p=False):
-    """
-    Returns: A UITableView with the swift attribute set to the generated code
-    """
-    super(UITableView, self).__init__()
-    cells = info.get('cells')
-    header = info.get('header')
-    tvm = self.cell_for_row_at(id_, cells)
+  def generate_swift(self):
+    cells = self.info.get('cells')
+    header = self.info.get('header')
+    tvm = self.cell_for_row_at(self.id, cells)
     tvm += self.number_of_rows_in_section(cells)
-    tvm += self.height_for_row_at(id_, cells)
+    tvm += self.height_for_row_at(self.id, cells)
     if header is not None:
-      tvm += self.view_for_header(id_, header)
-      tvm += self.height_for_header(id_, header)
+      tvm += self.view_for_header(self.id, header)
+      tvm += self.height_for_header(self.id, header)
     self.tv_methods = tvm
-    self.swift = self.setup_component(id_, info, in_v=in_v)
+    return self.setup_component(id_, info, in_v=self.env["in_view"])
+
 
   def gen_comps_ch(self, ch, components, subview_ids):
     """

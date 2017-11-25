@@ -5,18 +5,13 @@ class UIButton(BaseComponent):
   Class representing a UIButton in swift
     swift: (str) the swift code to create/set properties of a UIButton
   """
-  def __init__(self, id_, info, in_v=False, set_p=False):
-    """
-    Returns: A UIButton with the swift attribute set to the generated code
-    """
-    super(UIButton, self).__init__()
-    if set_p:
-      contents = info.get('text').get('textspan')[0].get('contents')
-      self.swift = self.set_title(id_, contents) if contents is not None else ""
-    else:
-      self.swift = self.setup_component(id_, info, in_v=in_v)
+  def generate_swift(self):
+    if self.env["set_p"]:
+      contents = self.info.get('text').get('textspan')[0].get('contents')
+      return self.set_title(contents) if contents is not None else ""
+    return self.setup_component(in_v=self.env["in_view"])
 
-  def set_title(self, elem, title):
+  def set_title(self, title):
     """
     Args:
       elem: (str) id of element
@@ -25,9 +20,9 @@ class UIButton(BaseComponent):
     Returns: (str) swift code to set title of a elem using title
     """
     title = title.decode('utf-8')
-    return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
+    return '{}.setTitle(\"{}\", for: .normal)\n'.format(self.id, title)
 
-  def set_title_color(self, elem, color):
+  def set_title_color(self, color):
     """
     Args:
       elem: (str) id of element
@@ -37,7 +32,7 @@ class UIButton(BaseComponent):
       (str) swift code to set title color of elem using [color]
     """
     c = utils.create_uicolor(color)
-    return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
+    return '{}.setTitleColor({}, for: .normal)\n'.format(self.id, c)
 
   def set_font_family_size(self, e, f, s):
     """

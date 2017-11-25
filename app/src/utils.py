@@ -118,24 +118,15 @@ def ins_after_key(s, k, ins):
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
 
-def create_component(t, id_, info, in_v=False, set_p=False, c=False, h=False):
+def create_component(type_, id_, info, env):
   """
   Args:
-    t: (str) the component to be created
+    type_ (str): the component to be created
+    id_ (str): the name of the component
+    info (dict): information on component
+    env (dict): env for component, must have keys [in_view, set_properties]
 
   Returns: (obj) An instance of the component to be created
   """
-  if t == 'UIButton':
-    return UIButton(id_, info, in_v=in_v, set_p=set_p)
-  elif t == 'UILabel':
-    return UILabel(id_, info, in_v=in_v, set_p=set_p, in_c=c, in_h=h)
-  elif t == 'UIImageView':
-    return UIImageView(id_, info, in_v=in_v, set_p=set_p)
-  elif t == 'UITableView':
-    return UITableView(id_, info, in_v=in_v, set_p=set_p)
-  elif t == 'UITextField':
-    return UITextField(id_, info, in_v=in_v, set_p=set_p)
-  elif t == 'UITextView':
-    return UITextView(id_, info, in_v=in_v, set_p=set_p)
-  elif t == 'UIView':
-    return UIView(id_, info, in_v=in_v, set_p=set_p)
+  # using eval for clean code
+  return eval(type_ + "(id_, info, env)") # pylint: disable=W0123

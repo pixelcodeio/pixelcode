@@ -23,8 +23,8 @@ class Interpreter(object):
     variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
     return "".join(variables)
 
-  def gen_vc_header(self, elements): # TODO: what is vc?
-    """
+  def gen_vc_header(self, elements):
+    """ Generates header of view controller
     Args:
       elements: (list) list of elements
 
@@ -39,7 +39,7 @@ class Interpreter(object):
     header += "\noverride func viewDidLoad() {\n"
     return header
 
-  def gen_cell_header(self, tv_id, cell): # TODO: does not belong
+  def gen_cell_header(self, tv_id, cell):
     """
     Args:
       tv_id: (str) the id of the parent tableview (capitalized)
@@ -57,7 +57,7 @@ class Interpreter(object):
             "super.layoutSubviews()\n\n"
            ).format(tv_id, self.init_g_vars(cell.get('components')))
 
-  def gen_header_header(self, tv_id, header): # TODO: does not belong
+  def gen_header_header(self, tv_id, header):
     """
     Args:
       tv_id: (str) the id of the parent tableview (capitalized)
