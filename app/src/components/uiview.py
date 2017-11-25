@@ -5,21 +5,14 @@ class UIView(BaseComponent):
   Class representing a UIView in swift
     swift: (str) the swift code to create/set properties of a UIView
   """
-  def __init__(self, id_, info, in_v=False, set_p=False):
-    """
-    Returns: A UITableView with the swift attribute set to the generated code
-    """
-    super(UIView, self).__init__()
-    self.swift = self.setup_component(id_, info)
+  def generate_swift(self):
+    return self.setup_component()
 
-  def setup_component(self, elem, info, in_v=False):
+  def setup_component(self):
     """
-    Args:
-      elem: (str) id of the component
-      info: (dict) see generate_component docstring for more info.
-
     Returns: The swift code to apply all the properties from text to elem.
     """
+    info = self.info
     fill = info.get('fill')
     border_r = info.get('border-radius')
     stroke_c = info.get('stroke-color')
