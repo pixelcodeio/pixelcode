@@ -3,11 +3,11 @@ from . import *
 class UITextView(object):
   """
   Class representing a UITextView in swift
+    swift: (str) the swift code to create/set properties of a UITextView
   """
   def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UITextView
+    Returns: A UITableView with the swift attribute set to the generated code
     """
     super(UITextView, self).__init__()
     if set_p:

@@ -3,12 +3,9 @@ import utils
 class BaseComponent(object):
   """
   Base class for components
+    swift: (str) the swift code used to generate a component
   """
   def __init__(self):
-    """
-    Args:
-      swift: (str) the swift code used to generate a component
-    """
     self.swift = ""
 
   def create_font(self, font, size):

@@ -1,10 +1,13 @@
 from . import *
 
 class UILabel(BaseComponent):
+  """
+  Class representing a UILabel in swift
+    swift: (str) the swift code to create/set properties of a UILabel
+  """
   def __init__(self, id_, inf, in_v=False, set_p=False, in_c=False, in_h=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UILabel
+    Returns: A UILabel with the swift attribute set to the generated code
     """
     super(UILabel, self).__init__()
     if set_p:

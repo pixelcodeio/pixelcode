@@ -3,11 +3,11 @@ from . import *
 class UIView(BaseComponent):
   """
   Class representing a UIView in swift
+    swift: (str) the swift code to create/set properties of a UIView
   """
   def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UIView
+    Returns: A UITableView with the swift attribute set to the generated code
     """
     super(UIView, self).__init__()
     self.swift = self.setup_component(id_, info)

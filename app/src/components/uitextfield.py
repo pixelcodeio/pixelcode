@@ -3,11 +3,11 @@ from . import *
 class UITextField(BaseComponent):
   """
   Class representing a UITextField in swift
+    swift: (str) the swift code to create/set properties of a UITextField
   """
   def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UITextField
+    Returns: A UITableView with the swift attribute set to the generated code
     """
     super(UITextField, self).__init__()
     if set_p:

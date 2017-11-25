@@ -3,11 +3,11 @@ from . import *
 class UIButton(BaseComponent):
   """
   Class representing a UIButton in swift
+    swift: (str) the swift code to create/set properties of a UIButton
   """
   def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UIButton
+    Returns: A UIButton with the swift attribute set to the generated code
     """
     super(UIButton, self).__init__()
     if set_p:

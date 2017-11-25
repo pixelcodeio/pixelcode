@@ -3,11 +3,12 @@ from . import *
 class UITableView(BaseComponent):
   """
   Class representing a UITableView in swift
+    swift: (str) the swift code to create/set properties of a UITableView
+    tv_methods: (str) the swift code of the necessary tableview methods
   """
   def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      swift: (str) the swift code to create/set properties of a UITableView
+    Returns: A UITableView with the swift attribute set to the generated code
     """
     super(UITableView, self).__init__()
     cells = info.get('cells')
