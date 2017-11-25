@@ -27,21 +27,20 @@ class BaseComponent(object):
     """
     return ("UIFont(name: \"{}\", size: {})").format(font, size)
 
-  def set_opacity(self, id_, opacity):
+  def set_opacity(self, opacity):
     """
     Args:
-      id_: (str) id of the component
       opacity: (float) between 0 and 1
 
     Returns: (str) The swift code to set the opacity of elem.
     """
-    return "{}.alpha = {}\n".format(id_, opacity)
+    return "{}.alpha = {}\n".format(self.id, opacity)
 
-  def clips_to_bounds(self, id_):
+  def clips_to_bounds(self):
     """
     Args:
       id_: (str) id of element
 
     Returns: The swift code to set the clipsToBounds property of elem to true.
     """
-    return "{}.clipsToBounds = true\n".format(id_)
+    return "{}.clipsToBounds = true\n".format(self.id)
