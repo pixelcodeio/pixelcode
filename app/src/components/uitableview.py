@@ -38,7 +38,7 @@ class UITableView(BaseComponent):
       elif ch == "header":
         ch_id = "header.{}".format(subview_ids[j])
       else:
-        raise Exception() # TODO: fill appropriately
+        raise Exception("ch is not cell or header")
 
       if type_ == 'UILabel':
         if ch == "cell":
@@ -48,7 +48,7 @@ class UITableView(BaseComponent):
           env = {"set_prop": True, "in_header": True}
           com = utils.create_component(type_, ch_id, comp, env)
         else:
-          raise Exception() # TODO: fill appropriately
+          raise Exception("ch is not cell or header")
       else:
         com = utils.create_component(type_, ch_id, comp, {"set_prop": True})
       c += com.swift
@@ -100,8 +100,6 @@ class UITableView(BaseComponent):
       components = cell.get('components')
       if len(components) == len(fst_cell_comps): # all components are present
         num_rows += 1
-      else:
-        pass # TODO: fill appropriately
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
             "return {} \n"

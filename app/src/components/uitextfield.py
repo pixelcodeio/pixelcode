@@ -49,9 +49,7 @@ class UITextField(BaseComponent):
 
   def setup_component(self):
     """
-    Returns: TODO: fix this
-       (str) swift code to apply all the properties from textspan and
-       left_inset to elem.
+    Returns (str): swift code to setup uitextfield.
     """
     info = self.info
     tspan = info.get('text').get('textspan')
