@@ -89,11 +89,11 @@ class Interpreter(object):
       c += 'var {} = {}()\n'.format(comp.get('id'), comp.get('type'))
     return c
 
-  def gen_comps(self, components, in_view):
+  def gen_comps(self, components, in_v):
     """
     Args:
       components: (dict list) contains information about components
-      in_view: (bool) represents whether the components are being generated
+      in_v: (bool) represents whether the components are being generated
                inside a custom view file (or not)
 
     Returns:
@@ -109,17 +109,17 @@ class Interpreter(object):
       typ = comp.get('type')
       if typ == 'UILabel':
         cf = ComponentFactory(typ, comp, bgc=self.globals['bgc'],
-                              in_view=in_view)
+                              in_v=in_v)
         c += cf.swift
       else:
-        cf = ComponentFactory(typ, comp, in_view=in_view)
+        cf = ComponentFactory(typ, comp, in_v=in_v)
         c += cf.swift
         if typ == 'UITableView':
           tv_elem = comp
           tv_methods = cf.tv_methods
     return (c, tv_elem, tv_methods)
 
-  def gen_elements(self, elements, f_name, in_view=False):
+  def gen_elements(self, elements, f_name, in_v=False):
     """
     Args:
       elements: (dict list) contains information of all the elements
@@ -130,7 +130,7 @@ class Interpreter(object):
       to generate all the elements.
     """
     c = self.swift[f_name]
-    s, tv_elem, tv_methods = self.gen_comps(elements, in_view)
+    s, tv_elem, tv_methods = self.gen_comps(elements, in_v)
     c += s
 
     if tv_elem is None:
@@ -156,11 +156,11 @@ class Interpreter(object):
       c = self.gen_cell_header(cap_id, tv_cell)
 
       rect = tv_cell.get('rect')
-      c += utils.setup_rect(tv_id, rect, in_view=True)
+      c += utils.setup_rect(tv_id, rect, in_v=True)
 
       # ctv_elem represents a tableview inside a cell
       s, ctv_elem, ctv_methods = self.gen_comps(tv_cell.get('components'),
-                                                in_view=True)
+                                                in_v=True)
       c += s
       c += "}}\n\n{}\n\n".format(utils.required_init())
 
@@ -180,14 +180,14 @@ class Interpreter(object):
         cap_ctv_id = ctv_id.capitalize()
         c = self.gen_cell_header(cap_ctv_id, ctv_cell)
         self.swift[cap_ctv_id + 'Cell'] = c
-        self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_view=True)
+        self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_v=True)
 
       tv_header = tv_elem.get('header')
       if tv_header is not None:
         c = self.gen_header_header(cap_id, tv_header)
-        c += utils.setup_rect(tv_id, tv_header.get('rect'), in_view=True,
+        c += utils.setup_rect(tv_id, tv_header.get('rect'), in_v=True,
                               tv_header=True)
-        c += (self.gen_comps(tv_header.get('components'), in_view=True))[0]
+        c += (self.gen_comps(tv_header.get('components'), in_v=True))[0]
         c += "}}\n\n{}\n\n}}".format(utils.required_init())
         self.swift[cap_id + 'HeaderView'] = c
 

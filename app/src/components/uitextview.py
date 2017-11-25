@@ -1,9 +1,23 @@
-import utils
+from . import *
 
 class UITextView(object):
   """
   Class representing a UITextView in swift
   """
+  def __init__(self, id_, info, in_v=False, set_p=False):
+    """
+    Args:
+      swift: (str) the swift code to create/set properties of a UITextView
+    """
+    super(UITextView, self).__init__()
+    if set_p:
+      tspan = info.get('text').get('textspan')
+      pl = tspan[0]['contents']
+      plc = tspan[0]['fill']
+      self.swift = self.set_placeholder_tc(id_, pl, plc)
+    else:
+      self.swift = self.setup_component(id_, info, in_v=in_v)
+
   def set_placeholder_tc(self, tid, text, color):
     """
     Args:
@@ -41,9 +55,9 @@ class UITextView(object):
       (str) The swift code to set the font family and size of the title in elem
     """
     return ("{}.font = {}\n"
-           ).format(elem, utils.create_font(font, size))
+           ).format(elem, super().create_font(font, size))
 
-  def setup_uitextview(self, elem, textspan, left_inset, in_view=False):
+  def setup_component(self, elem, info, in_v=False):
     """
     Args:
       elem: (str) id of the component
@@ -54,16 +68,18 @@ class UITextView(object):
       (str) The swift code to apply all the properties from textspan and
       left_inset to elem.
     """
-    txt = textspan[0]
+    tspan = info.get('text').get('textspan')
+    left_inset = info.get('left-inset')
+    txt = tspan[0]
     placeholder = txt.get('contents')
     placeholder_c = txt.get('fill')
     font = txt.get('font-family')
     size = txt.get('font-size')
     c = ""
-    if not in_view:
+    if not in_v:
       c += self.set_placeholder_text_and_color(elem, placeholder,
                                                placeholder_c)
     c += self.set_font_family_size(elem, font, size)
     c += self.set_left_inset(elem, left_inset)
-    c += utils.set_clips_to_bounds(elem)
+    c += super().clips_to_bounds(elem)
     return c
