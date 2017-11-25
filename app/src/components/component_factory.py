@@ -27,20 +27,9 @@ class ComponentFactory(object):
     Returns: (str) The swift code to generate the component
     """
     cid = info.get('id')
-    height = info.get('height')
-    hor = info.get('horizontal')
-    hor_dir = hor.get('direction')
-    hor_dist = hor.get('distance')
-    hor_id = hor.get('id')
     rect = info.get('rect')
-    vert = info.get('vertical')
-    vert_dir = vert.get('direction')
-    vert_dist = vert.get('distance')
-    vert_id = vert.get('id')
-    width = info.get('width')
 
     c = ""
-
     if not in_v:
       c += "{} = {}()\n".format(cid, type_)
 
@@ -59,7 +48,69 @@ class ComponentFactory(object):
 
     view = 'view' if not in_v else None
     c += utils.add_subview(view, cid)
-    c += utils.make_snp_constraints(cid, hor_id, hor_dir,
-                                    hor_dist, vert_id, vert_dir,
-                                    vert_dist, width, height, in_v)
+    c += self.gen_constraints(info, in_v=in_v)
+    return c
+
+  def gen_constraints(self, info, in_v=False):
+    """
+    Args:
+      info: contains all information on the element
+      in_v: whether the element is in a view
+
+    Returns: (str) swift code to set all constraints using SnapKit.
+    """
+    elem = info.get('id')
+    height = info.get('height')
+    hor = info.get('horizontal')
+    hor_dir = hor.get('direction')
+    hor_dist = hor.get('distance')
+    hor_id = hor.get('id')
+    vert = info.get('vertical')
+    vert_dir = vert.get('direction')
+    vert_dist = vert.get('distance')
+    vert_id = vert.get('id')
+    width = info.get('width')
+    if in_v:
+      c = ("{}.snp.updateConstraints {{ make in\n"
+           "make.size.equalTo(CGSize(width: frame.width*{}, height: "
+           "frame.height*{}))\n"
+          ).format(elem, width, height)
+      if not hor_id:
+        c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
+             ).format(hor_dist)
+      else:
+        opp_dir = 'left' if hor_dir == 'right' else 'right'
+        c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
+             ).format(hor_dir, hor_id, opp_dir, hor_dist)
+      if not vert_id:
+        c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
+             ).format(vert_dist)
+      else:
+        vert_dir = 'top' if vert_dir == 'up' else 'bottom'
+        opp_dir = 'top' if vert_dir == 'bottom' else 'bottom'
+        c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+             ).format(vert_dir, vert_id, opp_dir, vert_dist)
+      c += "}\n\n"
+      return c
+
+    c = ("{}.snp.makeConstraints {{ make in\n"
+         "make.size.equalTo(CGSize(width: view.frame.width*{}, height: "
+         "view.frame.height*{}))\n"
+        ).format(elem, width, height)
+    if not hor_id:
+      c += ('make.left.equalToSuperview().offset(view.frame.width*{})\n'
+           ).format(hor_dist)
+    else:
+      opp_dir = 'left' if hor_dir == 'right' else 'right'
+      c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.width*{})\n'
+           ).format(hor_dir, hor_id, opp_dir, hor_dist)
+    if not vert_id:
+      c += ('make.top.equalToSuperview().offset(view.frame.height*{})\n'
+           ).format(vert_dist)
+    else:
+      vert_dir = 'top' if vert_dir == 'up' else 'bottom'
+      opp_dir = 'top' if vert_dir == 'bottom' else 'bottom'
+      c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.height*{})\n'
+           ).format(vert_dir, vert_id, opp_dir, vert_dist)
+    c += "}\n\n"
     return c

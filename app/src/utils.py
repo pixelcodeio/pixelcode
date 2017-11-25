@@ -46,56 +46,6 @@ def add_subview(view, elem):
     return 'addSubview({})\n\n'.format(elem)
   return '{}.addSubview({})\n\n'.format(view, elem)
 
-def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-                         vertDist, width, height, in_v=False):
-  """
-  Returns: (str) swift code to set all constraints using SnapKit.
-  """
-  if in_v:
-    c = ("{}.snp.updateConstraints {{ make in\n"
-         "make.size.equalTo(CGSize(width: frame.width*{}, height: "
-         "frame.height*{}))\n"
-        ).format(elem, width, height)
-    if not horID:
-      c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
-           ).format(horDist)
-    else:
-      oppDir = 'left' if horDir == 'right' else 'right'
-      c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
-           ).format(horDir, horID, oppDir, horDist)
-    if not vertID:
-      c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
-           ).format(vertDist)
-    else:
-      vertDir = 'top' if vertDir == 'up' else 'bottom'
-      oppDir = 'top' if vertDir == 'bottom' else 'bottom'
-      c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
-           ).format(vertDir, vertID, oppDir, vertDist)
-    c += "}\n\n"
-    return c
-
-  c = ("{}.snp.makeConstraints {{ make in\n"
-       "make.size.equalTo(CGSize(width: view.frame.width*{}, height: "
-       "view.frame.height*{}))\n"
-      ).format(elem, width, height)
-  if not horID:
-    c += ('make.left.equalToSuperview().offset(view.frame.width*{})\n'
-         ).format(horDist)
-  else:
-    oppDir = 'left' if horDir == 'right' else 'right'
-    c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.width*{})\n'
-         ).format(horDir, horID, oppDir, horDist)
-  if not vertID:
-    c += ('make.top.equalToSuperview().offset(view.frame.height*{})\n'
-         ).format(vertDist)
-  else:
-    vertDir = 'top' if vertDir == 'up' else 'bottom'
-    oppDir = 'top' if vertDir == 'bottom' else 'bottom'
-    c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.height*{})\n'
-         ).format(vertDir, vertID, oppDir, vertDist)
-  c += "}\n\n"
-  return c
-
 def set_border_width(elem, width, in_v=False):
   """
   Returns: (str) swift code to set the border width of elem.
