@@ -70,47 +70,39 @@ class ComponentFactory(object):
     vert_dist = vert.get('distance')
     vert_id = vert.get('id')
     width = info.get('width')
-    if in_v:
-      c = ("{}.snp.updateConstraints {{ make in\n"
-           "make.size.equalTo(CGSize(width: frame.width*{}, height: "
-           "frame.height*{}))\n"
-          ).format(id_, width, height)
-      if not hor_id:
-        c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
-             ).format(hor_dist)
-      else:
-        opp_dir = 'left' if hor_dir == 'right' else 'right'
-        c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
-             ).format(hor_dir, hor_id, opp_dir, hor_dist)
-      if not vert_id:
-        c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
-             ).format(vert_dist)
-      else:
-        vert_dir = 'top' if vert_dir == 'up' else 'bottom'
-        opp_dir = 'top' if vert_dir == 'bottom' else 'bottom'
-        c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
-             ).format(vert_dir, vert_id, opp_dir, vert_dist)
-      c += "}\n\n"
-      return c
 
-    c = ("{}.snp.makeConstraints {{ make in\n"
-         "make.size.equalTo(CGSize(width: view.frame.width*{}, height: "
-         "view.frame.height*{}))\n"
+    c = ("{}.snp.updateConstraints {{ make in\n"
+         "make.size.equalTo(CGSize(width: frame.width*{}, height: "
+         "frame.height*{}))\n"
         ).format(id_, width, height)
     if not hor_id:
-      c += ('make.left.equalToSuperview().offset(view.frame.width*{})\n'
+      c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
            ).format(hor_dist)
     else:
-      opp_dir = 'left' if hor_dir == 'right' else 'right'
-      c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.width*{})\n'
+      opp_dir = self.get_opp_dir(hor_dir)
+      c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
            ).format(hor_dir, hor_id, opp_dir, hor_dist)
     if not vert_id:
-      c += ('make.top.equalToSuperview().offset(view.frame.height*{})\n'
+      c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
            ).format(vert_dist)
     else:
       vert_dir = 'top' if vert_dir == 'up' else 'bottom'
-      opp_dir = 'top' if vert_dir == 'bottom' else 'bottom'
-      c += ('make.{}.equalTo({}.snp.{}).offset(view.frame.height*{})\n'
+      opp_dir = self.get_opp_dir(vert_dir)
+      c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
            ).format(vert_dir, vert_id, opp_dir, vert_dist)
     c += "}\n\n"
+
+    if in_v:
+      c = c.replace("frame", "view.frame")
     return c
+
+  def get_opp_dir(self, d):
+    """
+    Returns: direction opposite to [d]
+    """
+    return {
+        "top": "bottom",
+        "bottom": "top",
+        "left": "right",
+        "right": "left"
+    }[d]
