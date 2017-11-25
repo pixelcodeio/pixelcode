@@ -38,15 +38,14 @@ class UILabel(BaseComponent):
     txt = txt.decode('utf-8')
     return '{}.text = "{}"\n'.format(self.id, txt)
 
-  def gen_attributed_text(self, id_, str_id):
+  def gen_attributed_text(self, str_id):
     """
     Args:
-      id_ (str): id of component
       str_id (str): id of attributed string
 
     Returns: (str) swift code to set the attributedText property.
     """
-    return ("{}.attributedText = {}\n").format(id_, str_id)
+    return ("{}.attributedText = {}\n").format(self.id, str_id)
 
   def gen_text_color(self, color):
     """
@@ -196,13 +195,7 @@ class UILabel(BaseComponent):
       c += self.gen_line_sp(str_id, ls)
     if cs is not None:
       c += self.gen_char_sp(str_id, cs)
-    if in_c:
-      e = 'cell.{}'.format(self.id)
-    elif in_h:
-      e = 'header.{}'.format(self.id)
-    else:
-      e = self.id
-    c += self.set_attributed_text(e, str_id)
+    c += self.set_attributed_text(str_id)
     return c
 
   def setup_component(self):
