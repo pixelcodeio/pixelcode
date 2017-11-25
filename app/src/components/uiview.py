@@ -20,12 +20,12 @@ class UIView(BaseComponent):
 
     C = ""
     if fill is not None:
-      C += utils.set_bg(elem, fill)
+      C += utils.set_bg(self.id, fill)
     if border_r is not None:
-      C += utils.set_corner_radius(elem, border_r)
+      C += utils.set_corner_radius(self.id, border_r)
     if stroke_c is not None:
-      C += utils.set_border_color(elem, stroke_c)
+      C += utils.set_border_color(self.id, stroke_c)
     if stroke_w is not None:
-      C += utils.set_border_width(elem, stroke_w)
+      C += utils.set_border_width(self.id, stroke_w)
 
     return C

@@ -194,7 +194,7 @@ class UILabel(BaseComponent):
       C += self.gen_line_sp(str_id, line_sp)
     if char_sp is not None:
       C += self.gen_char_sp(str_id, char_sp)
-    C += self.set_attributed_text(str_id)
+    C += self.gen_attributed_text(str_id)
     return C
 
   def setup_component(self):

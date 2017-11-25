@@ -129,5 +129,9 @@ def create_component(type_, id_, info, env):
 
   Returns: (obj) An instance of the component to be created
   """
+  # init keys
+  for key in ["set_prop", "in_view", "in_cell", "in_header"]:
+    if key not in env:
+      env[key] = False
   # using eval for clean code
   return eval(type_ + "(id_, info, env)") # pylint: disable=W0123

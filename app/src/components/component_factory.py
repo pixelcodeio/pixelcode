@@ -38,7 +38,7 @@ class ComponentFactory(object):
     if rect is not None:
       C += utils.setup_rect(id_, rect)
 
-    component = utils.create_component(type_, id_, info, in_v=in_v)
+    component = utils.create_component(type_, id_, info, {"in_view": in_v})
     C += component.swift
 
     if type_ == 'UITableView':
@@ -49,7 +49,7 @@ class ComponentFactory(object):
     view = 'view' if not in_v else None
     C += utils.add_subview(view, id_)
     C += self.gen_constraints(info, in_v=in_v)
-    return c
+    return C
 
   def gen_constraints(self, info, in_v=False):
     """
