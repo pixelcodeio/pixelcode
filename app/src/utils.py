@@ -1,3 +1,11 @@
+from components.uibutton import UIButton
+from components.uiimageview import UIImageView
+from components.uilabel import UILabel
+from components.uitableview import UITableView
+from components.uitextfield import UITextField
+from components.uitextview import UITextView
+from components.uiview import UIView
+
 def convert_hex_to_rgb(hex_string):
   """
   Returns: [hex_string] converted to a rgb tuple.
@@ -21,7 +29,7 @@ def create_uicolor(color):
           ": {})"
          ).format(r, g, b, o)
 
-def set_bg(elem, color, in_view=False):
+def set_bg(elem, color, in_v=False):
   """
   Args:
     color: (tuple) contains the r, g, b values of the background color
@@ -29,7 +37,7 @@ def set_bg(elem, color, in_view=False):
   Returns: The line that sets the background color of elem to the
   UIColor with the corresponding r, g, b values.
   """
-  if in_view:
+  if in_v:
     return ('backgroundColor = {}\n'
            ).format(create_uicolor(color))
   return ('{}.backgroundColor = {}\n'
@@ -40,92 +48,13 @@ def add_subview(view, elem):
     return 'addSubview({})\n\n'.format(elem)
   return '{}.addSubview({})\n\n'.format(view, elem)
 
-def wh_constraints(elem, width, height, in_view=False):
-  """
-  Returns: The swift code that sets the width and height constraints
-  of the elem.
-  """
-  if in_view:
-    return ('{}.widthAnchor.constraint(equalToConstant: contentView.frame.width'
-            '*{}).isActive = true\n'
-            '{}.heightAnchor.constraint(equalToConstant: contentView.frame.'
-            'height*{}).isActive = true\n'
-           ).format(elem, width, elem, height)
-  return ('{}.widthAnchor.constraint(equalToConstant: view.frame.width*'
-          '{}).isActive = true\n'
-          '{}.heightAnchor.constraint(equalToConstant: view.frame.height*'
-          '{}).isActive = true\n'
-         ).format(elem, width, elem, height)
-
-def position_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-                         vertDist, centerX, centerY, in_view=False):
-  """
-  Returns: The swift code to set the centerX and centerY constraints of
-  the elem.
-  """
-  if in_view:
-    c = ('{}.centerXAnchor.constraint(equalTo: contentView.leftAnchor, '
-         'constant: contentView.frame.width*{}).isActive = true\n'
-         '{}.centerYAnchor.constraint(equalTo: contentView.topAnchor, '
-         'constant: contentView.frame.height*{}).isActive = true\n'
-        ).format(elem, centerX, elem, centerY)
-    if horID == '':
-      c += ('{}.leftAnchor.constraint(equalTo: contentView.leftAnchor, '
-            'constant: contentView.frame.width*{}).isActive = true\n'
-           ).format(elem, horDist)
-    else:
-      oppDir = 'left' if horDir == 'right' else 'right'
-      c += ('{}.{}Anchor.constraint(equalTo: {}.'
-            '{}Anchor, constant: contentView.frame.width*{}'
-            ').isActive = true\n'
-           ).format(elem, horDir, horID, oppDir, horDist)
-    if vertID == '':
-      c += ('{}.topAnchor.constraint(equalTo: contentView.topAnchor, '
-            'constant: contentView.frame.height*{}).isActive = true\n\n'
-           ).format(elem, vertDist)
-    else:
-      vertDir = 'top' if vertDir == 'up' else 'bottom'
-      oppDir = 'top' if vertDir == 'bottom' else 'bottom'
-      c += ('{}.{}Anchor.constraint(equalTo: {}.'
-            '{}Anchor, constant: contentView.frame.height*{}'
-            ').isActive = true\n\n'
-           ).format(elem, vertDir, vertID, oppDir, vertDist)
-    return c
-  c = ('{}.centerXAnchor.constraint(equalTo: view.leftAnchor, '
-       'constant: view.frame.width*{}).isActive = true\n'
-       '{}.centerYAnchor.constraint(equalTo: view.topAnchor, '
-       'constant: view.frame.height*{}).isActive = true\n'
-      ).format(elem, centerX, elem, centerY)
-  if not horID:
-    c += ('{}.leftAnchor.constraint(equalTo: view.leftAnchor, '
-          'constant: view.frame.width*{}).isActive = true\n'
-         ).format(elem, horDist)
-  else:
-    oppDir = 'left' if horDir == 'right' else 'right'
-    c += ('{}.{}Anchor.constraint(equalTo: {}.'
-          '{}Anchor, constant: view.frame.width*{}'
-          ').isActive = true\n'
-         ).format(elem, horDir, horID, oppDir, horDist)
-  if not vertID:
-    c += ('{}.topAnchor.constraint(equalTo: view.topAnchor, '
-          'constant: view.frame.height*{}).isActive = true\n\n'
-         ).format(elem, vertDist)
-  else:
-    vertDir = 'top' if vertDir == 'up' else 'bottom'
-    oppDir = 'top' if vertDir == 'bottom' else 'bottom'
-    c += ('{}.{}Anchor.constraint(equalTo: {}.'
-          '{}Anchor, constant: view.frame.height*{}'
-          ').isActive = true\n\n'
-         ).format(elem, vertDir, vertID, oppDir, vertDist)
-  return c
-
 def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
-                         vertDist, width, height, in_view=False):
+                         vertDist, width, height, in_v=False):
   """
   Returns: The swift code to set width/height and position constraints using
   the SnapKit library.
   """
-  if in_view:
+  if in_v:
     c = ("{}.snp.updateConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: frame.width*{}, height: "
          "frame.height*{}))\n"
@@ -170,50 +99,33 @@ def make_snp_constraints(elem, horID, horDir, horDist, vertID, vertDir,
   c += "}\n\n"
   return c
 
-def set_edges_constraints(elem, superview, top, bottom, left, right):
-  """
-  Returns: The swift code to set constraints on all edges of a subview relative
-  to a superview.
-  """
-  return ("{}.topAnchor.constraint(equalTo: {}.topAnchor, constant: {}.frame."
-          "height*{}).isActive = true\n"
-          "{}.bottomAnchor.constraint(equalTo: {}.bottomAnchor, constant: -{}."
-          "frame.height*{}).isActive = true\n"
-          "{}.leftAnchor.constraint(equalTo: {}.leftAnchor, constant: {}.frame."
-          "width*{}).isActive = true\n"
-          "{}.rightAnchor.constraint(equalTo: {}.rightAnchor, constant: -{}."
-          "frame.width*{}).isActive = true\n\n"
-         ).format(elem, superview, superview, top, elem, superview, superview,
-                  bottom, elem, superview, superview, left, elem, superview,
-                  superview, right)
-
-def set_border_width(elem, width, in_view=False):
+def set_border_width(elem, width, in_v=False):
   """
   Returns: The swift code to set the border width of elem.
   """
-  if in_view:
+  if in_v:
     return ("layer.borderWidth = {}\n").format(width)
   return ("{}.layer.borderWidth = {}\n").format(elem, width)
 
-def set_border_color(elem, color, in_view=False):
+def set_border_color(elem, color, in_v=False):
   """
   Returns: The swift code to set the border color of elem.
   """
-  if in_view:
+  if in_v:
     return ("layer.borderColor = {}.cgColor\n"
            ).format(create_uicolor(color))
   return ("{}.layer.borderColor = {}.cgColor\n"
          ).format(elem, create_uicolor(color))
 
-def set_corner_radius(elem, radius, in_view=False):
+def set_corner_radius(elem, radius, in_v=False):
   """
   Returns: The swift code to set the corner radius of elem.
   """
-  if in_view:
+  if in_v:
     return ("layer.cornerRadius = {}\n").format(radius)
   return ("{}.layer.cornerRadius = {}\n").format(elem, radius)
 
-def setup_rect(cid, rect, in_view=False, tv_header=False):
+def setup_rect(cid, rect, in_v=False, tv_header=False):
   """
   Args:
     cid: (int) id of component
@@ -229,15 +141,15 @@ def setup_rect(cid, rect, in_view=False, tv_header=False):
   c = ""
   if fill is not None:
     if tv_header:
-      c += set_bg('contentView', fill, in_view=False)
+      c += set_bg('contentView', fill, in_v=False)
     else:
-      c += set_bg(cid, fill, in_view)
+      c += set_bg(cid, fill, in_v)
   if str_c is not None:
-    c += set_border_color(cid, str_c, in_view)
+    c += set_border_color(cid, str_c, in_v)
   if str_w is not None:
-    c += set_border_width(cid, str_w, in_view)
+    c += set_border_width(cid, str_w, in_v)
   if border_r is not None:
-    c += set_corner_radius(cid, border_r, in_view)
+    c += set_corner_radius(cid, border_r, in_v)
 
   return c
 
@@ -265,31 +177,24 @@ def ins_after_key(s, k, ins):
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
 
-def create_font(font, size):
+def create_component(t, id_, info, in_v=False, set_p=False, c=False, h=False):
   """
   Args:
-    font: (str) font family name
-    size: (int) size of font
+    t: (str) the component to be created
 
-  Returns: The UIFont generated using font and size.
+  Returns: (obj) An instance of the component to be created
   """
-  return ("UIFont(name: \"{}\", size: {})").format(font, size)
-
-def set_clips_to_bounds(elem):
-  """
-  Args:
-    elem: (str) id of element
-
-  Returns: The swift code to set the clipsToBounds property of elem to true.
-  """
-  return "{}.clipsToBounds = true\n".format(elem)
-
-def set_opacity(elem, opacity):
-  """
-  Args:
-    elem: (str) id of the component
-    opacity: (float) between 0 and 1
-
-  Returns: (str) The swift code to set the opacity of elem.
-  """
-  return "{}.alpha = {}\n".format(elem, opacity)
+  if t == 'UIButton':
+    return UIButton(id_, info, in_v=in_v, set_p=set_p)
+  elif t == 'UILabel':
+    return UILabel(id_, info, in_v=in_v, set_p=set_p, in_c=c, in_h=h)
+  elif t == 'UIImageView':
+    return UIImageView(id_, info, in_v=in_v, set_p=set_p)
+  elif t == 'UITableView':
+    return UITableView(id_, info, in_v=in_v, set_p=set_p)
+  elif t == 'UITextField':
+    return UITextField(id_, info, in_v=in_v, set_p=set_p)
+  elif t == 'UITextView':
+    return UITextView(id_, info, in_v=in_v, set_p=set_p)
+  elif t == 'UIView':
+    return UIView(id_, info, in_v=in_v, set_p=set_p)

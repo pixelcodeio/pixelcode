@@ -1,27 +1,26 @@
-import utils
-from . import UIView, UIButton, UIImageView, UILabel, UITextField, UITextView
+from . import *
 
-class UITableView(object):
+class UITableView(BaseComponent):
   """
   Class representing a UITableView in swift
+    swift: (str) the swift code to create/set properties of a UITableView
+    tv_methods: (str) the swift code of the necessary tableview methods
   """
-
-  def create_component(self, comp, bgc=None):
+  def __init__(self, id_, info, in_v=False, set_p=False):
     """
-    Args:
-      comp: (str) the component to be created
-
-    Returns: (obj) An instance of the component to be created
+    Returns: A UITableView with the swift attribute set to the generated code
     """
-    return {
-        "UIButton": UIButton(),
-        "UILabel": UILabel(bgc),
-        "UIImageView": UIImageView(),
-        "UITableView": UITableView(),
-        "UITextField": UITextField(),
-        "UITextView": UITextView(),
-        "UIView": UIView(),
-    }.get(comp, None)
+    super(UITableView, self).__init__()
+    cells = info.get('cells')
+    header = info.get('header')
+    tvm = self.cell_for_row_at(id_, cells)
+    tvm += self.number_of_rows_in_section(cells)
+    tvm += self.height_for_row_at(id_, cells)
+    if header is not None:
+      tvm += self.view_for_header(id_, header)
+      tvm += self.height_for_header(id_, header)
+    self.tv_methods = tvm
+    self.swift = self.setup_component(id_, info, in_v=in_v)
 
   def gen_comps_ch(self, ch, components, subview_ids):
     """
@@ -35,46 +34,21 @@ class UITableView(object):
       header of a tableview.
     """
     c = ""
-    for j, component in enumerate(components):
-      type_ = component.get('type')
-      obj = self.create_component(type_)
-      ch_comp = ""
+    for j, comp in enumerate(components):
+      type_ = comp.get('type')
       if ch == "cell":
-        ch_comp = "cell.{}".format(subview_ids[j])
+        ch_id = "cell.{}".format(subview_ids[j])
       elif ch == "header":
-        ch_comp = "header.{}".format(subview_ids[j])
+        ch_id = "header.{}".format(subview_ids[j])
 
-      if type_ == 'UIButton':
-        contents = component['text']['textspan'][0]['contents']
-        if contents is not None:
-          # assuming not varying text
-          c += obj.set_title(ch_comp, contents)
-
-      elif type_ == 'UIImageView':
-        path = component.get('path')
-        if path is not None:
-          c += obj.set_image(ch_comp, path)
-
-      elif type_ == 'UILabel':
-        line_sp = component.get('line-spacing')
-        char_sp = component.get('char-spacing')
-        tspan = component.get('textspan')
-        if line_sp is not None or char_sp is not None:
-          id_ = subview_ids[j]
-          if ch == "cell":
-            c += obj.setup_attr_text(id_, tspan, line_sp, char_sp, in_c=True)
-          elif ch == "header":
-            c += obj.setup_attr_text(id_, tspan, line_sp, char_sp, in_h=True)
-        else:
-          contents = component['textspan'][0]['contents']
-          if contents is not None:
-            c += obj.set_text(ch_comp, contents)
-
-      elif type_ == 'UITextField' or type_ == 'UITextView':
-        tspan = component['text']['textspan']
-        placeholder = tspan[0]['contents']
-        placeholder_c = tspan[0]['fill']
-        c += obj.set_placeholder_tc(ch_comp, placeholder, placeholder_c)
+      if type_ == 'UILabel':
+        if ch == "cell":
+          com = utils.create_component(type_, ch_id, comp, set_p=True, c=True)
+        elif ch == "header":
+          com = utils.create_component(type_, ch_id, comp, set_p=True, h=True)
+      else:
+        com = utils.create_component(type_, ch_id, comp, set_p=True)
+      c += com.swift
     return c
 
   def cell_for_row_at(self, elem, cells):
@@ -187,7 +161,7 @@ class UITableView(object):
             "return {}.frame.height * {}\n}}\n\n"
            ).format(elem, header['height'])
 
-  def setup_uitableview(self, elem, cells, header):
+  def setup_component(self, elem, info, in_v=False):
     """
     Args:
       elem: (str) id of the component
@@ -196,6 +170,7 @@ class UITableView(object):
 
     Returns: (str) The swift code to setup a UITableView in viewDidLoad.
     """
+    header = info.get('header')
     c = ""
     if header is not None:
       c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'

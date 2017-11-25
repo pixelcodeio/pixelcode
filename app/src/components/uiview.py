@@ -1,10 +1,18 @@
-import utils
+from . import *
 
-class UIView(object):
+class UIView(BaseComponent):
   """
   Class representing a UIView in swift
+    swift: (str) the swift code to create/set properties of a UIView
   """
-  def setup_uiview(self, elem, info):
+  def __init__(self, id_, info, in_v=False, set_p=False):
+    """
+    Returns: A UITableView with the swift attribute set to the generated code
+    """
+    super(UIView, self).__init__()
+    self.swift = self.setup_component(id_, info)
+
+  def setup_component(self, elem, info, in_v=False):
     """
     Args:
       elem: (str) id of the component
