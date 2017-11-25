@@ -86,7 +86,6 @@ class ComponentFactory(object):
       c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
            ).format(vert_dist)
     else:
-      vert_dir = 'top' if vert_dir == 'up' else 'bottom'
       opp_dir = self.get_opp_dir(vert_dir)
       c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
            ).format(vert_dir, vert_id, opp_dir, vert_dist)
