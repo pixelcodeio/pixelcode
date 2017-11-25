@@ -75,11 +75,11 @@ class UITextView(object):
     placeholder_c = txt.get('fill')
     font = txt.get('font-family')
     size = txt.get('font-size')
-    c = ""
+    C = ""
     if not in_v:
-      c += self.set_placeholder_text_and_color(elem, placeholder,
+      C += self.set_placeholder_text_and_color(elem, placeholder,
                                                placeholder_c)
-    c += self.set_font_family_size(elem, font, size)
-    c += self.set_left_inset(elem, left_inset)
-    c += super().clips_to_bounds(elem)
-    return c
+    C += self.set_font_family_size(elem, font, size)
+    C += self.set_left_inset(elem, left_inset)
+    C += super().clips_to_bounds(elem)
+    return C

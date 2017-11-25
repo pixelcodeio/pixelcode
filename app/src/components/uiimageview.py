@@ -30,13 +30,13 @@ class UIImageView(BaseComponent):
     opacity = self.info.get('opacity')
     stroke_c = self.info.get('stroke-color')
     stroke_w = self.info.get('stroke-width')
-    c = ""
+    C = ""
     if not self.env["in_view"]:
-      c += self.set_image(path)
+      C += self.set_image(path)
     if opacity is not None:
-      c += super().set_opacity(opacity)
+      C += super().set_opacity(opacity)
     if stroke_c is not None:
-      c += utils.set_border_color(self.id, stroke_c)
+      C += utils.set_border_color(self.id, stroke_c)
     if stroke_w is not None:
-      c += utils.set_border_width(self.id, stroke_w)
-    return c
+      C += utils.set_border_width(self.id, stroke_w)
+    return C

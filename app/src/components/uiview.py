@@ -18,14 +18,14 @@ class UIView(BaseComponent):
     stroke_c = info.get('stroke-color')
     stroke_w = info.get('stroke-width')
 
-    c = ""
+    C = ""
     if fill is not None:
-      c += utils.set_bg(elem, fill)
+      C += utils.set_bg(elem, fill)
     if border_r is not None:
-      c += utils.set_corner_radius(elem, border_r)
+      C += utils.set_corner_radius(elem, border_r)
     if stroke_c is not None:
-      c += utils.set_border_color(elem, stroke_c)
+      C += utils.set_border_color(elem, stroke_c)
     if stroke_w is not None:
-      c += utils.set_border_width(elem, stroke_w)
+      C += utils.set_border_width(elem, stroke_w)
 
-    return c
+    return C

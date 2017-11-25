@@ -54,10 +54,10 @@ class UIButton(BaseComponent):
       fill = txt.get('fill')
       font = txt.get('font-family')
       size = txt.get('font-size')
-      c = ""
+      C = ""
       if not self.env["in_view"] and contents is not None:
-        c = self.set_title(contents)
-      c += self.set_title_color(fill) if fill != None else ""
-      c += self.set_font_family_size(font, size)
-      return c
+        C = self.set_title(contents)
+      C += self.set_title_color(fill) if fill != None else ""
+      C += self.set_font_family_size(font, size)
+      return C
     #TODO: Case for varying text.

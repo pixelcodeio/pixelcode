@@ -29,26 +29,26 @@ class ComponentFactory(object):
     id_ = info.get('id')
     rect = info.get('rect')
 
-    c = ""
+    C = ""
     if not in_v:
-      c += "{} = {}()\n".format(id_, type_)
+      C += "{} = {}()\n".format(id_, type_)
 
-    c += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
+    C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
 
     if rect is not None:
-      c += utils.setup_rect(id_, rect)
+      C += utils.setup_rect(id_, rect)
 
     component = utils.create_component(type_, id_, info, in_v=in_v)
-    c += component.swift
+    C += component.swift
 
     if type_ == 'UITableView':
       self.tv_methods = component.tv_methods
     elif type_ == 'UILabel':
-      c += utils.set_bg(id_, bgc, in_v=in_v)
+      C += utils.set_bg(id_, bgc, in_v=in_v)
 
     view = 'view' if not in_v else None
-    c += utils.add_subview(view, id_)
-    c += self.gen_constraints(info, in_v=in_v)
+    C += utils.add_subview(view, id_)
+    C += self.gen_constraints(info, in_v=in_v)
     return c
 
   def gen_constraints(self, info, in_v=False):
@@ -73,31 +73,31 @@ class ComponentFactory(object):
     vert_dir = vert.get('direction')
     vert_dist = vert.get('distance')
 
-    c = ("{}.snp.updateConstraints {{ make in\n"
+    C = ("{}.snp.updateConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: frame.width*{}, height: "
          "frame.height*{}))\n"
         ).format(id_, width, height)
 
     if hor_id is None:
       opp_dir = self.get_opp_dir(hor_dir)
-      c += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
+      C += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
            ).format(hor_dir, hor_id, opp_dir, hor_dist)
     else:
-      c += ('make.left.equalToSuperview().offset(frame.width*{})\n'
+      C += ('make.left.equalToSuperview().offset(frame.width*{})\n'
            ).format(hor_dist)
 
     if vert_id is None:
       opp_dir = self.get_opp_dir(vert_dir)
-      c += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+      C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
            ).format(vert_dir, vert_id, opp_dir, vert_dist)
     else:
-      c += ('make.top.equalToSuperview().offset(frame.height*{})\n'
+      C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
            ).format(vert_dist)
-    c += "}\n\n"
+    C += "}\n\n"
 
     if in_v:
-      c = c.replace("frame", "view.frame")
-    return c
+      C = C.replace("frame", "view.frame")
+    return C
 
   def get_opp_dir(self, d):
     """
