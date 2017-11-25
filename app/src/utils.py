@@ -13,12 +13,6 @@ def convert_hex_to_rgb(hex_string):
   h = hex_string.lstrip('#')
   return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
-def translates_false(elem):
-  """
-  Returns: (str) swift code that sets translatesAutoResizing to false for elem
-  """
-  return '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(elem)
-
 def create_uicolor(color):
   """
   Returns: The UIColor of [color].

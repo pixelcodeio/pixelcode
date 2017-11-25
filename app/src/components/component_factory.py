@@ -33,7 +33,7 @@ class ComponentFactory(object):
     if not in_v:
       c += "{} = {}()\n".format(id_, type_)
 
-    c += utils.translates_false(id_)
+    c += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
 
     if rect is not None:
       c += utils.setup_rect(id_, rect)
