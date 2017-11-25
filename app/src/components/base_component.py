@@ -2,7 +2,7 @@ import utils
 
 class BaseComponent(object):
   """
-  Base class for layers
+  Base class for components
   """
   def __init__(self):
     """
