@@ -16,7 +16,7 @@ class Button(BaseLayer):
         text = child
 
     if text is None:
-      raise Exception("Button: Text cannot be empty in a button.")
+      raise Exception("Button: Text is empty in " + elem["id"])
 
     elem["rect"] = rect
     elem["text"] = text

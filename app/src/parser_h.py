@@ -57,10 +57,10 @@ def calculate_spacing(elem, parsed_elements):
   horizontal = {}
   for check in parsed_elements:
     if not vertical:
-      check_up = check_spacing(check, elem, "up")
-      if check_up[0]:
-        vertical = {"direction": "up", "id": check["id"],
-                    "distance": check_up[1]}
+      check_top = check_spacing(check, elem, "top")
+      if check_top[0]:
+        vertical = {"direction": "top", "id": check["id"],
+                    "distance": check_top[1]}
     if not horizontal:
       check_left = check_spacing(check, elem, "left")
       if check_left[0]:
@@ -70,7 +70,7 @@ def calculate_spacing(elem, parsed_elements):
       break
 
   if not vertical:
-    vertical = {"direction": "up", "id": "", "distance": elem["y"]}
+    vertical = {"direction": "top", "id": "", "distance": elem["y"]}
   if not horizontal:
     horizontal = {"direction": "left", "id": "", "distance": elem["x"]}
 
@@ -142,12 +142,12 @@ def parse_fake_group(elem):
       raise Exception("Unhandled case in parse_fake_group.")
   return elem
 
-def check_spacing(r1, r2, direction): # pylint: disable=R0911
+def check_spacing(r1, r2, direction):
   """
   Args:
     r1: The rectangle with a smaller bottom-right coordinate sum
     r2: The rectangle we are currently checking
-    direction: direction to check; one-of [up, left]
+    direction: direction to check; one-of [top, left]
 
   Returns:
     A tuple (bool, dist) representing whether r2 can have its spacing
@@ -164,7 +164,7 @@ def check_spacing(r1, r2, direction): # pylint: disable=R0911
   if r2_top[0] > r1_bottom[0] and r2_top[1] > r1_bottom[1]:
     return False, 0
 
-  if direction == "up":
+  if direction == "top":
     if r2_top[1] >= r1_bottom[1]:
       t_btwn = r2_top[0] >= r1_top[0] and r2_top[0] <= r1_bottom[0]
       b_btwn = r2_bottom[0] >= r1_top[0] and r2_bottom[0] <= r1_bottom[0]

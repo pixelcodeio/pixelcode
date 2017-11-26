@@ -5,77 +5,55 @@ class UIButton(BaseComponent):
   Class representing a UIButton in swift
     swift: (str) the swift code to create/set properties of a UIButton
   """
-  def __init__(self, id_, info, in_v=False, set_p=False):
-    """
-    Returns: A UIButton with the swift attribute set to the generated code
-    """
-    super(UIButton, self).__init__()
-    if set_p:
-      contents = info.get('text').get('textspan')[0].get('contents')
-      self.swift = self.set_title(id_, contents) if contents is not None else ""
-    else:
-      self.swift = self.setup_component(id_, info, in_v=in_v)
+  def generate_swift(self):
+    if self.env["set_prop"]:
+      contents = self.info.get('text').get('textspan')[0].get('contents')
+      return self.set_title(contents) if contents is not None else ""
+    return self.setup_component()
 
-  def set_title(self, elem, title):
+  def set_title(self, title):
     """
-    Args:
-      elem: (str) id of element
-      title: (str) title to set the element
-
-    Returns: (str) The swift code to set title of a elem using title
+    Returns: (str) swift code to set title
     """
     title = title.decode('utf-8')
-    return '{}.setTitle(\"{}\", for: .normal)\n'.format(elem, title)
+    return '{}.setTitle(\"{}\", for: .normal)\n'.format(self.id, title)
 
-  def set_title_color(self, elem, color):
+  def set_title_color(self, color):
     """
     Args:
-      elem: (str) id of element
       color: (tuple) contains r, g, b values of the title color
 
-    Returns:
-      (str) The swift code to set title color of elem using the r, g,
-      b values
+    Returns: (str) swift code to set title color
     """
     c = utils.create_uicolor(color)
-    return '{}.setTitleColor({}, for: .normal)\n'.format(elem, c)
+    return '{}.setTitleColor({}, for: .normal)\n'.format(self.id, c)
 
-  def set_font_family_size(self, e, f, s):
+  def set_font_family_size(self, font, size):
     """
     Args:
-      e: (str) id of element
-      f: (str) font family name
-      s: (int) size of font
+      font: (str) font family name
+      size: (int) size of font
 
+    Returns: (str) swift code to set the font family and size of title
+    """
+    return ("{}.titleLabel?.font = {}\n"
+           ).format(self.id, super().create_font(font, size))
+
+  def setup_component(self):
+    """
     Returns:
-      (str) The swift code to set the font family and size of the title in elem
+      (str) swift code to setup uibutton
     """
-    return ("{}.titleLabel?.font = {}\n").format(e, super().create_font(f, s))
-
-  def setup_component(self, elem, info, in_v=False):
-    """
-    Args:
-      elem: (str) id of the component
-      textspan: (dict array) see generate_component docstring for more
-                information.
-      in_v: (bool) represents whether the button is being generated
-               inside a custom view file (or not)
-
-    Returns:
-      (str) The swift code to apply all the properties from textspan to elem.
-    """
-    tspan = info.get('text').get('textspan')
+    tspan = self.info.get('text').get('textspan')
     if len(tspan) == 1:
       # the contents of the textspan don't vary
       txt = tspan[0]
-      contents = txt.get('contents')
-      fill = txt.get('fill')
-      font = txt.get('font-family')
-      size = txt.get('font-size')
-      c = ""
-      if not in_v and contents is not None:
-        c = self.set_title(elem, contents)
-      c += self.set_title_color(elem, fill) if fill != None else ""
-      c += self.set_font_family_size(elem, font, size)
-      return c
+      keys = ['contents', 'fill', 'font-family', 'font-size']
+      contents, fill, font, size = utils.get_vals(keys, txt)
+      C = ""
+      if not self.env["in_view"] and contents is not None:
+        C = self.set_title(contents)
+      C += self.set_title_color(fill) if fill != None else ""
+      C += self.set_font_family_size(font, size)
+      return C
     #TODO: Case for varying text.

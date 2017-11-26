@@ -13,21 +13,21 @@ class TableView(BaseLayer):
     for child in elem["children"]:
       if child["type"] == "UIView":
         if rect:
-          raise Exception("TableView: Only one wash allowed per TableView")
+          raise Exception("TableView: Only one wash allowed in " + elem["id"])
         else:
           rect = child
       elif child["type"] == "Cell":
         cells.append(child)
       elif child["type"] == "Header":
         if header:
-          raise Exception("TableView: Only one header allowed.")
+          raise Exception("TableView: Only one header allowed " + elem["id"])
         else:
           header = child
       else:
-        raise Exception("TableView: Unsupported elem type for TableView")
+        raise Exception("TableView: Unsupported elem type in " + elem["id"])
 
     if not cells:
-      raise Exception("TableView: Must have one cell in a TableView")
+      raise Exception("TableView: No cells in " + elem["id"])
 
     separator = 0
     if len(cells) >= 2:

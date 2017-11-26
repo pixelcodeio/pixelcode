@@ -6,66 +6,66 @@ class UITableView(BaseComponent):
     swift: (str) the swift code to create/set properties of a UITableView
     tv_methods: (str) the swift code of the necessary tableview methods
   """
-  def __init__(self, id_, info, in_v=False, set_p=False):
-    """
-    Returns: A UITableView with the swift attribute set to the generated code
-    """
-    super(UITableView, self).__init__()
-    cells = info.get('cells')
-    header = info.get('header')
-    tvm = self.cell_for_row_at(id_, cells)
+  def generate_swift(self):
+    keys = ["cells", "header"]
+    cells, header = utils.get_vals(keys, self.info)
+
+    tvm = self.cell_for_row_at(cells)
     tvm += self.number_of_rows_in_section(cells)
-    tvm += self.height_for_row_at(id_, cells)
+    tvm += self.height_for_row_at(cells)
+
     if header is not None:
-      tvm += self.view_for_header(id_, header)
-      tvm += self.height_for_header(id_, header)
+      tvm += self.view_for_header(header)
+      tvm += self.height_for_header(header)
+
     self.tv_methods = tvm
-    self.swift = self.setup_component(id_, info, in_v=in_v)
+    return self.setup_component()
 
   def gen_comps_ch(self, ch, components, subview_ids):
     """
     Args:
-      ch: (str) should either be "cell" or "header"
-      components: (dict list) contains information of all the components
+      ch: (str) should either be "cell" or "header" # TODO: change to bool
+      components: (dict list) contains info of all the components
       subview_ids: (str list) contains ids of the components
 
     Returns:
       (str) The swift code to generate components inside a cell or
       header of a tableview.
     """
-    c = ""
+    C = ""
     for j, comp in enumerate(components):
       type_ = comp.get('type')
       if ch == "cell":
         ch_id = "cell.{}".format(subview_ids[j])
-      elif ch == "header":
+      else: # ch == "header"
         ch_id = "header.{}".format(subview_ids[j])
 
       if type_ == 'UILabel':
         if ch == "cell":
-          com = utils.create_component(type_, ch_id, comp, set_p=True, c=True)
-        elif ch == "header":
-          com = utils.create_component(type_, ch_id, comp, set_p=True, h=True)
+          env = {"set_prop": True, "in_cell": True}
+          com = utils.create_component(type_, ch_id, comp, env)
+        else: # ch == "header"
+          env = {"set_prop": True, "in_header": True}
+          com = utils.create_component(type_, ch_id, comp, env)
       else:
-        com = utils.create_component(type_, ch_id, comp, set_p=True)
-      c += com.swift
-    return c
+        com = utils.create_component(type_, ch_id, comp, {"set_prop": True})
+      C += com.swift
+    return C
 
-  def cell_for_row_at(self, elem, cells):
+  def cell_for_row_at(self, cells):
     """
     Args:
-      elem: (str) id of the element
       cells: (dict list) see generate_component's docstring for more information
 
     Returns: (str) The swift code for the cellForRowAt function of a UITableView
     """
-    c = ("func tableView(_ tableView: UITableView, cellForRowAt "
+    C = ("func tableView(_ tableView: UITableView, cellForRowAt "
          "indexPath: IndexPath) -> UITableViewCell {{\n"
          'let cell = tableView.dequeueReusableCell(withIdentifier: "{}CellID")'
          ' as! {}Cell\n'
          'cell.selectionStyle = .none\n'
          "switch indexPath.row {{"
-        ).format(elem, elem.capitalize())
+        ).format(self.id, self.id.capitalize())
 
     subview_ids = []
     fst_cell_comps = cells[0].get('components')
@@ -77,28 +77,26 @@ class UITableView(BaseComponent):
       components = cell.get('components')
       if len(components) != len(fst_cell_comps):
         continue
-      c += '\ncase {}:\n'.format(index)
-      c += self.gen_comps_ch("cell", components, subview_ids)
-      c += '\nreturn cell'
+      C += '\ncase {}:\n'.format(index)
+      C += self.gen_comps_ch("cell", components, subview_ids)
+      C += '\nreturn cell'
       index += 1
 
-    c += '\ndefault: return cell\n}\n}\n\n'
-    return c
+    C += '\ndefault: return cell\n}\n}\n\n'
+    return C
 
   def number_of_rows_in_section(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more information
+      cells: (dict list) see generate_component's docstring for more info
 
-    Returns:
-      (str) The swift code for the numberOfRowsInSection func of a UITableView.
+    Returns: (str) swift code for numberOfRowsInSection in a UITableView.
     """
     fst_cell_comps = cells[0].get('components')
     num_rows = 0
     for cell in cells:
       components = cell.get('components')
-      if len(components) == len(fst_cell_comps):
-        # all components are present
+      if len(components) == len(fst_cell_comps): # all components are present
         num_rows += 1
     return ("func tableView(_ tableView: UITableView, "
             "numberOfRowsInSection section: Int) -> Int {{\n"
@@ -106,52 +104,46 @@ class UITableView(BaseComponent):
             "}}\n"
            ).format(num_rows)
 
-  def height_for_row_at(self, elem, cells):
+  def height_for_row_at(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more information
-      tvHeight: (float) height of the uitableview as percentage of screen's
-                height
+      cells: (dict list) see generate_component's docstring for more info
+      tvHeight: (float) height of the tableview in percent
 
     Returns: (str) The swift code for the heightForRowAt func of a UITableView.
     """
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
-           ).format(elem, cells[0]['height'])
+           ).format(self.id, cells[0]['height'])
 
-  def view_for_header(self, elem, header):
+  def view_for_header(self, header):
     """
     Args:
-      elem: (str) the id of the element
       header: (dict) contains information about the header of a tableview.
 
-    Returns:
-      (str) The swift code for generating the viewForHeaderInSection function
+    Returns: (str) swift code for the viewForHeaderInSection function
     """
-    c = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
+    C = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
          "section: Int) -> UIView? {{\n"
          'let header = {}.dequeueReusableHeaderFooterView(withIdentifier: '
          '"{}Header") as! {}HeaderView\n'
          'switch section {{\n'
          'case 0:\n'
-        ).format(elem, elem, elem.capitalize())
+        ).format(self.id, self.id, self.id.capitalize())
 
     components = header.get('components')
-    subview_ids = []
-    for component in components:
-      subview_ids.append(component.get('id'))
-    c += self.gen_comps_ch("header", components, subview_ids)
-    c += ('return header'
+    subview_ids = [comp.get('id') for comp in components]
+    C += self.gen_comps_ch("header", components, subview_ids)
+    C += ('return header'
           '\ndefault:\nreturn header\n'
           '}\n}\n\n'
          )
-    return c
+    return C
 
-  def height_for_header(self, elem, header):
+  def height_for_header(self, header):
     """
     Args:
-      elem: (str) the id of the element
       header: (dict) contains information about the header of a tableview.
 
     Returns: (str) The swift code for heightForHeaderInSection function.
@@ -159,25 +151,21 @@ class UITableView(BaseComponent):
     return ("func tableView(_ tableView: UITableView, heightForHeaderInSection "
             "section: Int) -> CGFloat {{\n"
             "return {}.frame.height * {}\n}}\n\n"
-           ).format(elem, header['height'])
+           ).format(self.id, header['height'])
 
-  def setup_component(self, elem, info, in_v=False):
+  def setup_component(self):
     """
-    Args:
-      elem: (str) id of the component
-      cells: (dict list) see generate_component's docstring for more information
-      header: (dict) see generate_component's docstring for more information
-
     Returns: (str) The swift code to setup a UITableView in viewDidLoad.
     """
-    header = info.get('header')
-    c = ""
+    C = ""
+    header = self.info.get('header')
+    id_ = self.id
     if header is not None:
-      c += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
+      C += ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
             ' "{}Header")\n'
-           ).format(elem, elem.capitalize(), elem)
-    c += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
+           ).format(id_, id_.capitalize(), id_)
+    C += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
           '{}.delegate = self\n'
           '{}.dataSource = self\n'
-         ).format(elem, elem.capitalize(), elem, elem, elem)
-    return c
+         ).format(id_, id_.capitalize(), id_, id_, id_)
+    return C

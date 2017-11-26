@@ -19,47 +19,86 @@ class ComponentFactory(object):
   def generate_component(self, type_, info, bgc=None, in_v=False):
     """
     Args:
-      type_: (str) The component to be generated
-      info: (dict) A dictionary of with values possibly being None. Further
-            documentation is available online.
+      type_: (str) the component to be generated
+      info: (dict) vals can be None. Further documentation can be found online
       bgc: (tuple) background color of the screen (used for generating labels)
-      in_v: (bool) represents whether the components are being generated
-               inside a custom view file (or not)
+      in_v: (bool) whether components are generated within a custom view
 
     Returns: (str) The swift code to generate the component
     """
-    cid = info.get('id')
-    height = info.get('height')
-    hor = info.get('horizontal')
-    hor_dir = hor.get('direction')
-    hor_dist = hor.get('distance')
-    hor_id = hor.get('id')
+    id_ = info.get('id')
     rect = info.get('rect')
-    vert = info.get('vertical')
-    vert_dir = vert.get('direction')
-    vert_dist = vert.get('distance')
-    vert_id = vert.get('id')
-    width = info.get('width')
 
-    c = ""
-
+    C = ""
     if not in_v:
-      c += "{} = {}()\n".format(cid, type_)
+      C += "{} = {}()\n".format(id_, type_)
 
-    c += utils.translates_false(cid)
+    C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
 
     if rect is not None:
-      c += utils.setup_rect(cid, rect)
+      C += utils.setup_rect(id_, rect)
 
-    component = utils.create_component(type_, cid, info, in_v=in_v)
-    c += component.swift
+    component = utils.create_component(type_, id_, info, {"in_view": in_v})
+    C += component.swift
+
     if type_ == 'UITableView':
       self.tv_methods = component.tv_methods
     elif type_ == 'UILabel':
-      c += utils.set_bg(cid, bgc, in_v=in_v)
+      C += utils.set_bg(id_, bgc, in_v=in_v)
+
     view = 'view' if not in_v else None
-    c += utils.add_subview(view, cid)
-    c += utils.make_snp_constraints(cid, hor_id, hor_dir,
-                                    hor_dist, vert_id, vert_dir,
-                                    vert_dist, width, height, in_v)
-    return c
+    C += utils.add_subview(view, id_)
+    C += self.gen_constraints(info, in_v=in_v)
+    return C
+
+  def gen_constraints(self, info, in_v=False):
+    """
+    Args:
+      info: contains all info on the element
+      in_v: whether the element is in a view
+
+    Returns: (str) swift code to set all constraints using SnapKit.
+    """
+    keys = ['id', 'height', 'width', 'horizontal', 'vertical']
+    id_, height, width, hor, vert = utils.get_vals(keys, info)
+
+    keys = ['id', 'direction', 'distance']
+    hor_id, hor_dir, hor_dist = utils.get_vals(keys, hor)
+    vert_id, vert_dir, vert_dist = utils.get_vals(keys, vert)
+
+    C = ("{}.snp.updateConstraints {{ make in\n"
+         "make.size.equalTo(CGSize(width: frame.width*{}, height: "
+         "frame.height*{}))\n"
+        ).format(id_, width, height)
+
+    if hor_id is None:
+      opp_dir = self.get_opp_dir(hor_dir)
+      C += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
+           ).format(hor_dir, hor_id, opp_dir, hor_dist)
+    else:
+      C += ('make.left.equalToSuperview().offset(frame.width*{})\n'
+           ).format(hor_dist)
+
+    if vert_id is None:
+      opp_dir = self.get_opp_dir(vert_dir)
+      C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+           ).format(vert_dir, vert_id, opp_dir, vert_dist)
+    else:
+      C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
+           ).format(vert_dist)
+    C += "}\n\n"
+
+    if in_v:
+      C = C.replace("frame", "view.frame")
+    return C
+
+  def get_opp_dir(self, d):
+    """
+    Returns: direction opposite to [d]
+    """
+    return {
+        "top": "bottom",
+        "bottom": "top",
+        "left": "right",
+        "right": "left"
+    }[d]

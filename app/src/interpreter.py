@@ -7,23 +7,24 @@ class Interpreter(object):
     globals: (dict) passed in from Parser
     swift: (dict) the swift code to generate all the elements
   """
-  def __init__(self, glob):
-    glob['bgc'] = glob['background_color'] + ("1.0",) # adding opacity
-    self.globals = glob
+  def __init__(self, globals_):
+    globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
+    self.globals = globals_
     self.swift = {}
 
   def gen_global_vars(self, elements):
     """
     Args:
-      elements: (list) list of elements
+      elements: (list) list of elements from Parser
 
     Returns: (str) The swift code of the global variables for the swift class
     """
+    # one-liner to concat all variable names
     variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
     return "".join(variables)
 
   def gen_vc_header(self, elements):
-    """
+    """ Generates header of view controller
     Args:
       elements: (list) list of elements
 
@@ -31,12 +32,12 @@ class Interpreter(object):
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
-    h = ("import UIKit\nimport SnapKit\n\n"
-         "class {}: UIViewController {{\n\n"
-        ).format(viewController)
-    h += self.gen_global_vars(elements)
-    h += "\noverride func viewDidLoad() {\n"
-    return h
+    header = ("import UIKit\nimport SnapKit\n\n"
+              "class {}: UIViewController {{\n\n"
+             ).format(viewController)
+    header += self.gen_global_vars(elements)
+    header += "\noverride func viewDidLoad() {\n"
+    return header
 
   def gen_cell_header(self, tv_id, cell):
     """
@@ -86,7 +87,7 @@ class Interpreter(object):
     """
     c = ""
     for comp in components:
-      c += 'var {} = {}()\n'.format(comp.get('id'), comp.get('type'))
+      c += "var {} = {}()\n".format(comp.get('id'), comp.get('type'))
     return c
 
   def gen_comps(self, components, in_v):
@@ -106,15 +107,15 @@ class Interpreter(object):
     tv_elem = None
     tv_methods = ""
     for comp in components:
-      typ = comp.get('type')
-      if typ == 'UILabel':
-        cf = ComponentFactory(typ, comp, bgc=self.globals['bgc'],
+      type_ = comp.get('type')
+      if type_ == 'UILabel':
+        cf = ComponentFactory(type_, comp, bgc=self.globals['bgc'],
                               in_v=in_v)
         c += cf.swift
       else:
-        cf = ComponentFactory(typ, comp, in_v=in_v)
+        cf = ComponentFactory(type_, comp, in_v=in_v)
         c += cf.swift
-        if typ == 'UITableView':
+        if type_ == 'UITableView':
           tv_elem = comp
           tv_methods = cf.tv_methods
     return (c, tv_elem, tv_methods)
