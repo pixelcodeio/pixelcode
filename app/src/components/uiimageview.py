@@ -26,10 +26,8 @@ class UIImageView(BaseComponent):
     """
     Returns: (str) swift code to apply all the properties from text to elem.
     """
-    path = self.info.get('path')
-    opacity = self.info.get('opacity')
-    stroke_c = self.info.get('stroke-color')
-    stroke_w = self.info.get('stroke-width')
+    keys = ['path', 'opacity', 'stroke-color', 'stroke-width']
+    path, opacity, stroke_c, stroke_w = utils.get_vals(keys, self.info)
     C = ""
     if not self.env["in_view"]:
       C += self.set_image(path)
