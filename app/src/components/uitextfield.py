@@ -33,8 +33,7 @@ class UITextField(BaseComponent):
     Returns: (str) The swift code to set the left-inset of a UITextField
     """
     return ('{}.layer.sublayerTransform = CATransform3DMakeTranslation({}'
-            ', 0, 0)\n'
-           ).format(self.id, left)
+            ', 0, 0)\n').format(self.id, left)
 
   def set_font_family_size(self, font, size):
     """
