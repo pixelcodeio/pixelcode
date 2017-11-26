@@ -27,15 +27,12 @@ class UILabel(BaseComponent):
     return ('var {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
            ).format(self.id, text)
 
-  def gen_text(self, txt):
+  def gen_text(self, text):
     """
-    Args:
-      txt: (str) text
-
     Returns: (str) swift code to set the text property
     """
-    txt = txt.decode('utf-8')
-    return '{}.text = "{}"\n'.format(self.id, txt)
+    text = text.decode('utf-8')
+    return '{}.text = "{}"\n'.format(self.id, text)
 
   def gen_attributed_text(self, str_id):
     """
@@ -119,7 +116,7 @@ class UILabel(BaseComponent):
       start: (int) index of first character whose font is being changed
       length: (int) number of characters to change the font of from [start]
 
-    Returns: (str) swift code to set a substring of str to be a font.
+    Returns: (str) swift code to set a substring of str to be a font
     """
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: {}, length: {}))\n"
@@ -132,7 +129,7 @@ class UILabel(BaseComponent):
       font: (string) the font family name
       size: (int) the font size
 
-    Returns: (str) The swift code to set the font of an attributed string.
+    Returns: (str) The swift code to set font of an attributed string
     """
     return ("{}.addAttribute(.font, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"
@@ -144,8 +141,7 @@ class UILabel(BaseComponent):
       str_id: (str) variable name of the string
       line_sp: (str) line spacing, in pixels
 
-    Returns:
-      (str) The swift code to set the line spacing of an attributed string
+    Returns: (str) swift code to set line spacing of an attributed string
     """
     return ('let {}ParaStyle = NSMutableParagraphStyle()\n'
             '{}ParaStyle.lineSpacing = {}\n'
@@ -159,7 +155,7 @@ class UILabel(BaseComponent):
       str_id (str): variable name of the string
       char_sp (str): character spacing, in pixels
 
-    Returns (str): Swift code to set the char-spacing of an attributed string
+    Returns (str): swift code to set the char-spacing of an attributed string
     """
     return ('{}.addAttribute(.kern, value: {}, range: '
             'NSRange(location: 0, length: {}.length))\n'
@@ -168,12 +164,12 @@ class UILabel(BaseComponent):
   def gen_attributed_tprop(self, tspan, line_sp, char_sp):
     """
     Args:
-      tspan: (dict list) see generate_component docstring for more info
-      line_sp: (int) line spacing, in pixels
-      char_sp: (int) character spacing, in pixels
+      tspan (dict list): see generate_component docstring for more info
+      line_sp (int): line spacing, in pixels
+      char_sp (int): character spacing, in pixels
 
-    Returns:
-      (str) swift code to setup and set the attributed text prop of a label.
+    Returns (str):
+      swift code to setup and set the attributed text prop of a label.
       Note: Assumes that the content of the textspans do not vary.
     """
     txt = tspan[0]
@@ -195,7 +191,7 @@ class UILabel(BaseComponent):
 
   def setup_component(self):
     """
-    Returns: (str) The swift code to apply all the properties from textspan
+    Returns (str): The swift code to apply all the properties from textspan
     """
     keys = ['textspan', 'line-spacing', 'char-spacing']
     tspan, line_sp, char_sp = [self.info.get(k) for k in keys]
@@ -226,5 +222,5 @@ class UILabel(BaseComponent):
       return C
 
     else:
-      raise Exception("Textspan in label contains varying text.")
+      raise Exception("UILabel: Textspan label contains varying text.")
       #TODO: Case for varying text.

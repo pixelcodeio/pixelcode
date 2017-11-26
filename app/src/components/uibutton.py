@@ -23,8 +23,7 @@ class UIButton(BaseComponent):
     Args:
       color: (tuple) contains r, g, b values of the title color
 
-    Returns:
-      (str) swift code to set title color
+    Returns: (str) swift code to set title color
     """
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(self.id, c)
@@ -35,8 +34,7 @@ class UIButton(BaseComponent):
       font: (str) font family name
       size: (int) size of font
 
-    Returns:
-      (str) swift code to set the font family and size of title
+    Returns: (str) swift code to set the font family and size of title
     """
     return ("{}.titleLabel?.font = {}\n"
            ).format(self.id, super().create_font(font, size))

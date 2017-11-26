@@ -41,8 +41,7 @@ class UITextField(BaseComponent):
       font: (str) font family
       size: (int) font size
 
-    Returns:
-      (str) The swift code to set font-family and size of the title
+    Returns: (str) The swift code to set font-family and size of the title
     """
     return ("{}.font = {}\n").format(self.id, super().create_font(font, size))
 
