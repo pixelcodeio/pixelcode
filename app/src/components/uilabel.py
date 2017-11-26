@@ -15,7 +15,7 @@ class UILabel(BaseComponent):
       if line_sp is not None or char_sp is not None:
         ind = self.id.find('.') # id_ is in the form "cell.{}" or "header.{}"
         self.id = self.id[ind+1:] # truncated id_
-        return self.set_attxt_p(tspan, line_sp, char_sp)
+        return self.gen_attributed_tprop(tspan, line_sp, char_sp)
       return self.gen_text(contents)
     return self.setup_component()
 
@@ -167,10 +167,9 @@ class UILabel(BaseComponent):
             'NSRange(location: 0, length: {}.length))\n'
            ).format(str_id, char_sp, str_id)
 
-  def set_attxt_p(self, tspan, line_sp, char_sp):
+  def gen_attributed_tprop(self, tspan, line_sp, char_sp):
     """
     Args:
-      id_: (str) id of the element in the form "cell.{}" or "header.{}"
       tspan: (dict list) see generate_component docstring for more info
       line_sp: (int) line spacing, in pixels
       char_sp: (int) character spacing, in pixels
@@ -199,18 +198,12 @@ class UILabel(BaseComponent):
 
   def setup_component(self):
     """
-    Args:
-      tspan: (dict list) see generate_component docstring for more info
-
-    Returns:
-      (str) The swift code to apply all the properties from textspan
+    Returns: (str) The swift code to apply all the properties from textspan
     """
-    tspan = self.info.get('textspan')
-    line_sp = self.info.get('line-spacing')
-    char_sp = self.info.get('char-spacing')
+    keys = ['textspan', 'line-spacing', 'char-spacing']
+    tspan, line_sp, char_sp = [self.info.get(k) for k in keys]
     C = ""
-    if len(tspan) == 1:
-      # the contents of the textspan don't vary
+    if len(tspan) == 1: # the contents of the textspan don't vary
       txt = tspan[0]
       contents = txt.get('contents')
       fill = txt.get('fill')
@@ -220,7 +213,7 @@ class UILabel(BaseComponent):
       in_v = self.env["in_view"]
 
       if (line_sp is not None or char_sp is not None) and not in_v:
-        C += self.set_attxt_p(tspan, line_sp, char_sp)
+        C += self.gen_attributed_tprop(tspan, line_sp, char_sp)
       elif not in_v:
         C += self.gen_text(contents) if contents != None else ""
         C += self.gen_text_color(fill) if fill != None else ""
