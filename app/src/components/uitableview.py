@@ -7,17 +7,19 @@ class UITableView(BaseComponent):
     tv_methods: (str) the swift code of the necessary tableview methods
   """
   def generate_swift(self):
-    cells = self.info.get('cells')
-    header = self.info.get('header')
+    keys = ["cells", "header"]
+    cells, header = utils.get_vals(keys, self.info)
+
     tvm = self.cell_for_row_at(cells)
     tvm += self.number_of_rows_in_section(cells)
     tvm += self.height_for_row_at(cells)
+
     if header is not None:
       tvm += self.view_for_header(header)
       tvm += self.height_for_header(header)
+
     self.tv_methods = tvm
     return self.setup_component()
-
 
   def gen_comps_ch(self, ch, components, subview_ids):
     """
@@ -35,14 +37,14 @@ class UITableView(BaseComponent):
       type_ = comp.get('type')
       if ch == "cell":
         ch_id = "cell.{}".format(subview_ids[j])
-      elif ch == "header":
+      else: # ch == "header"
         ch_id = "header.{}".format(subview_ids[j])
 
       if type_ == 'UILabel':
         if ch == "cell":
           env = {"set_prop": True, "in_cell": True}
           com = utils.create_component(type_, ch_id, comp, env)
-        elif ch == "header":
+        else: # ch == "header"
           env = {"set_prop": True, "in_header": True}
           com = utils.create_component(type_, ch_id, comp, env)
       else:

@@ -12,11 +12,8 @@ class UIView(BaseComponent):
     """
     Returns: The swift code to apply all the properties from text to elem.
     """
-    info = self.info
-    fill = info.get('fill')
-    border_r = info.get('border-radius')
-    stroke_c = info.get('stroke-color')
-    stroke_w = info.get('stroke-width')
+    keys = ["fill", "border-radius", "stroke-color", "stroke-width"]
+    fill, border_r, stroke_c, stroke_w = utils.get_vals(keys, self.info)
 
     C = ""
     if fill is not None:

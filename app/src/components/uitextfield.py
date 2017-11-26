@@ -55,10 +55,10 @@ class UITextField(BaseComponent):
     tspan = info.get('text').get('textspan')
     left_inset = info.get('left-inset')
     txt = tspan[0]
-    placeholder = txt.get('contents')
-    p_color = txt.get('fill')
-    font = txt.get('font-family')
-    size = txt.get('font-size')
+
+    keys = ["contents", "fill", "font-family", "font-size"]
+    placeholder, p_color, font, size = utils.get_vals(keys, txt)
+
     C = ""
     if not in_v:
       C += self.set_placeholder_tc(placeholder, p_color)
