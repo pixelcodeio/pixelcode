@@ -41,6 +41,10 @@ class UILabel(BaseComponent):
 
     Returns: (str) swift code to set the attributedText property.
     """
+    if self.env["in_cell"]:
+      self.id = ("cell.{}").format(self.id)
+    elif self.env["in_header"]:
+      self.id = ("header.{}").format(self.id)
     return ("{}.attributedText = {}\n").format(self.id, str_id)
 
   def gen_text_color(self, color):

@@ -21,6 +21,7 @@ class UITextField(BaseComponent):
 
     Returns: (str) swift code to set placeholder's text and color.
     """
+    text = text.decode('utf-8')
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
            ).format(self.id, text, utils.create_uicolor(color))

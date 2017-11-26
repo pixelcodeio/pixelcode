@@ -28,6 +28,7 @@ class UITextView(object):
     Returns:
       (str) The swift code to set the placeholder and color of a UITextView
     """
+    text = text.decode('utf-8')
     return ('{}.attributedPlaceholder = NSAttributedString(string: "{}", '
             'attributes: [NSAttributedStringKey.foregroundColor: {}])\n'
            ).format(tid, text, utils.create_uicolor(color))

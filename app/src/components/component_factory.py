@@ -71,7 +71,7 @@ class ComponentFactory(object):
          "frame.height*{}))\n"
         ).format(id_, width, height)
 
-    if hor_id is None:
+    if hor_id:
       opp_dir = self.get_opp_dir(hor_dir)
       C += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
            ).format(hor_dir, hor_id, opp_dir, hor_dist)
@@ -79,7 +79,7 @@ class ComponentFactory(object):
       C += ('make.left.equalToSuperview().offset(frame.width*{})\n'
            ).format(hor_dist)
 
-    if vert_id is None:
+    if vert_id:
       opp_dir = self.get_opp_dir(vert_dir)
       C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
            ).format(vert_dir, vert_id, opp_dir, vert_dist)
@@ -88,7 +88,7 @@ class ComponentFactory(object):
            ).format(vert_dist)
     C += "}\n\n"
 
-    if in_v:
+    if not in_v:
       C = C.replace("frame", "view.frame")
     return C
 
