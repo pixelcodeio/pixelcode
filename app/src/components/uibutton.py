@@ -50,10 +50,8 @@ class UIButton(BaseComponent):
     if len(tspan) == 1:
       # the contents of the textspan don't vary
       txt = tspan[0]
-      contents = txt.get('contents')
-      fill = txt.get('fill')
-      font = txt.get('font-family')
-      size = txt.get('font-size')
+      keys = ['contents', 'fill', 'font-family', 'font-size']
+      contents, fill, font, size = utils.get_vals(keys, txt)
       C = ""
       if not self.env["in_view"] and contents is not None:
         C = self.set_title(contents)

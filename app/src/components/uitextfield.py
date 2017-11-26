@@ -60,7 +60,7 @@ class UITextField(BaseComponent):
     placeholder, p_color, font, size = utils.get_vals(keys, txt)
 
     C = ""
-    if not in_v:
+    if not self.env["in_view"]:
       C += self.set_placeholder_tc(placeholder, p_color)
     C += self.set_font_family_size(font, size)
     C += self.set_left_inset(left_inset)

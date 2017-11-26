@@ -7,11 +7,9 @@ class UILabel(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      info = self.info
-      tspan = info.get('textspan')
-      line_sp = info.get('line-spacing')
-      char_sp = info.get('char-spacing')
-      contents = info.get('textspan')[0].get('contents')
+      keys = ['textspan', 'line-spacing', 'char-spacing']
+      tspan, line_sp, char_sp = utils.get_vals(keys, self.info)
+      contents = tspan[0].get('contents')
       if line_sp is not None or char_sp is not None:
         ind = self.id.find('.') # id_ is in the form "cell.{}" or "header.{}"
         self.id = self.id[ind+1:] # truncated id_
@@ -179,10 +177,9 @@ class UILabel(BaseComponent):
       Note: Assumes that the content of the textspans do not vary.
     """
     txt = tspan[0]
-    contents = txt.get('contents').decode('utf-8')
-    fill = txt.get('fill')
-    font = txt.get('font-family')
-    size = txt.get('font-size')
+    keys = ['contents', 'fill', 'font-family', 'font-size']
+    contents, fill, font, size = utils.get_vals(keys, txt)
+    contents = contents.decode('utf-8')
 
     C = self.create_attributed_str(contents)
     str_id = '{}AttributedStr'.format(self.id)

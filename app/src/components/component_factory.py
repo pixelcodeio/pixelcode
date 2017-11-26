@@ -59,19 +59,12 @@ class ComponentFactory(object):
 
     Returns: (str) swift code to set all constraints using SnapKit.
     """
-    id_ = info.get('id')
-    height = info.get('height')
-    width = info.get('width')
+    keys = ['id', 'height', 'width', 'horizontal', 'vertical']
+    id_, height, width, hor, vert = utils.get_vals(keys, info)
 
-    hor = info.get('horizontal')
-    vert = info.get('vertical')
-
-    hor_id = hor.get('id')
-    hor_dir = hor.get('direction')
-    hor_dist = hor.get('distance')
-    vert_id = vert.get('id')
-    vert_dir = vert.get('direction')
-    vert_dist = vert.get('distance')
+    keys = ['id', 'direction', 'distance']
+    hor_id, hor_dir, hor_dist = utils.get_vals(keys, hor)
+    vert_id, vert_dir, vert_dist = utils.get_vals(keys, vert)
 
     C = ("{}.snp.updateConstraints {{ make in\n"
          "make.size.equalTo(CGSize(width: frame.width*{}, height: "
