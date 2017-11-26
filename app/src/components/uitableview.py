@@ -3,8 +3,7 @@ from . import *
 class UITableView(BaseComponent):
   """
   Class representing a UITableView in swift
-    swift: (str) the swift code to create/set properties of a UITableView
-    tv_methods: (str) the swift code of the necessary tableview methods
+    tv_methods: (str) swift code of the necessary tableview methods
   """
   def generate_swift(self):
     keys = ["cells", "header"]
@@ -25,12 +24,10 @@ class UITableView(BaseComponent):
     """
     Args:
       ch: (str) should either be "cell" or "header" # TODO: change to bool
-      components: (dict list) contains info of all the components
-      subview_ids: (str list) contains ids of the components
+      components: (dict list) contains info of components
+      subview_ids: (str list) contains ids of components
 
-    Returns:
-      (str) The swift code to generate components inside a cell or
-      header of a tableview.
+    Returns (str): swift code to generate components inside cell/header
     """
     C = ""
     for j, comp in enumerate(components):
@@ -55,9 +52,9 @@ class UITableView(BaseComponent):
   def cell_for_row_at(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more information
+      cells (dict list): contains info on cells
 
-    Returns: (str) The swift code for the cellForRowAt function of a UITableView
+    Returns (str): The swift code for the cellForRowAt
     """
     C = ("func tableView(_ tableView: UITableView, cellForRowAt "
          "indexPath: IndexPath) -> UITableViewCell {{\n"
@@ -88,9 +85,9 @@ class UITableView(BaseComponent):
   def number_of_rows_in_section(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more info
+      cells (dict list): contains info on cells
 
-    Returns: (str) swift code for numberOfRowsInSection in a UITableView.
+    Returns (str): swift code for numberOfRowsInSection
     """
     fst_cell_comps = cells[0].get('components')
     num_rows = 0
@@ -107,10 +104,9 @@ class UITableView(BaseComponent):
   def height_for_row_at(self, cells):
     """
     Args:
-      cells: (dict list) see generate_component's docstring for more info
-      tvHeight: (float) height of the tableview in percent
+      cells (dict list): contains info on cells
 
-    Returns: (str) The swift code for the heightForRowAt func of a UITableView.
+    Returns (str): swift code for heightForRowAt
     """
     return ("func tableView(_ tableView: UITableView, heightForRowAt "
             "indexPath: IndexPath) -> CGFloat {{\n"
@@ -120,9 +116,9 @@ class UITableView(BaseComponent):
   def view_for_header(self, header):
     """
     Args:
-      header: (dict) contains information about the header of a tableview.
+      header: (dict) contains info about the header
 
-    Returns: (str) swift code for the viewForHeaderInSection function
+    Returns: (str) swift code for the viewForHeaderInSection
     """
     C = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
          "section: Int) -> UIView? {{\n"
@@ -144,9 +140,9 @@ class UITableView(BaseComponent):
   def height_for_header(self, header):
     """
     Args:
-      header: (dict) contains information about the header of a tableview.
+      header (dict): contains info about header
 
-    Returns: (str) The swift code for heightForHeaderInSection function.
+    Returns (str): swift code for heightForHeaderInSection
     """
     return ("func tableView(_ tableView: UITableView, heightForHeaderInSection "
             "section: Int) -> CGFloat {{\n"
@@ -155,7 +151,7 @@ class UITableView(BaseComponent):
 
   def setup_component(self):
     """
-    Returns: (str) The swift code to setup a UITableView in viewDidLoad.
+    Returns: (str) The swift code to setup a UITableView
     """
     C = ""
     header = self.info.get('header')

@@ -1,9 +1,8 @@
 from . import *
 
-class UITextField(BaseComponent):
+class UITextFieldView(BaseComponent):
   """
-  Class representing a UITextField in swift
-    swift: (str) the swift code to create/set properties of a UITextField
+  Class representing a UITextField/UITextView in swift
   """
   def generate_swift(self):
     if self.env["set_prop"]:
@@ -15,10 +14,6 @@ class UITextField(BaseComponent):
 
   def set_placeholder_tc(self, text, color):
     """
-    Args:
-      text: (str) placeholder text
-      color: (tuple) color of placeholder
-
     Returns: (str) swift code to set placeholder's text and color.
     """
     text = text.decode('utf-8')
@@ -28,27 +23,20 @@ class UITextField(BaseComponent):
 
   def set_left_inset(self, left):
     """
-    Args:
-      left: (int) left-inset, in pixels
-
-    Returns: (str) The swift code to set the left-inset of a UITextField
+    Returns: (str) The swift code to set the left-inset
     """
     return ('{}.layer.sublayerTransform = CATransform3DMakeTranslation({}'
             ', 0, 0)\n').format(self.id, left)
 
   def set_font_family_size(self, font, size):
     """
-    Args:
-      font: (str) font family
-      size: (int) font size
-
-    Returns: (str) The swift code to set font-family and size of the title
+    Returns: (str) The swift code to set font-family and size
     """
     return ("{}.font = {}\n").format(self.id, super().create_font(font, size))
 
   def setup_component(self):
     """
-    Returns (str): swift code to setup uitextfield.
+    Returns (str): swift code to setup uitextfield/view.
     """
     info = self.info
     tspan = info.get('text').get('textspan')

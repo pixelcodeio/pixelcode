@@ -4,27 +4,22 @@ from . import *
 class ComponentFactory(object):
   """
   Base class for components
-    swift: (str) contains the swift code to generate a component
-    tv_methods: (str) contains the tableview methods for generating a tableview
+    swift (str): swift code to generate a component
+    tv_methods (str): tableview methods for generating a tableview
   """
   def __init__(self, type_, info, bgc=None, in_v=False):
     """
     Args:
-      bgc: Refers to background color
-      Refer to generate_component for documentation on args
+      bgc (tuple): background color of screen
+      info (dict): info on component
+      in_v (bool): is whether generating from within a custom view
     """
     self.tv_methods = ""
     self.swift = self.generate_component(type_, info, bgc=bgc, in_v=in_v)
 
   def generate_component(self, type_, info, bgc=None, in_v=False):
     """
-    Args:
-      type_: (str) the component to be generated
-      info: (dict) vals can be None. Further documentation can be found online
-      bgc: (tuple) background color of the screen (used for generating labels)
-      in_v: (bool) whether components are generated within a custom view
-
-    Returns: (str) The swift code to generate the component
+    Returns: (str) The swift code to generate component
     """
     id_ = info.get('id')
     rect = info.get('rect')
@@ -53,10 +48,6 @@ class ComponentFactory(object):
 
   def gen_constraints(self, info, in_v=False):
     """
-    Args:
-      info: contains all info on the element
-      in_v: whether the element is in a view
-
     Returns: (str) swift code to set all constraints using SnapKit.
     """
     keys = ['id', 'height', 'width', 'horizontal', 'vertical']

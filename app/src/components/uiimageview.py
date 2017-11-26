@@ -3,7 +3,6 @@ from . import *
 class UIImageView(BaseComponent):
   """
   Class representing an UIImageView in swift
-    swift: (str) the swift code to create/set properties of a UIImageView
   """
   def generate_swift(self):
     if self.env["set_prop"]:
@@ -14,9 +13,9 @@ class UIImageView(BaseComponent):
   def set_image(self, image_fname):
     """
     Args:
-      image_fname: (str) name of the image file
+      image_fname (str): name of the image file
 
-    Returns: (str) swift code to set the image
+    Returns (str): swift code to set the image
     """
     index = image_fname.index(".")
     image_name = image_fname[0:index]
@@ -24,7 +23,7 @@ class UIImageView(BaseComponent):
 
   def setup_component(self):
     """
-    Returns: (str) swift code to apply all the properties from text to elem.
+    Returns (str): swift code to setup uiimageview 
     """
     keys = ['path', 'opacity', 'stroke-color', 'stroke-width']
     path, opacity, stroke_c, stroke_w = utils.get_vals(keys, self.info)

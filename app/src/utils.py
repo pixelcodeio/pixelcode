@@ -2,9 +2,9 @@ from components.uibutton import UIButton
 from components.uiimageview import UIImageView
 from components.uilabel import UILabel
 from components.uitableview import UITableView
-from components.uitextfield import UITextField
-from components.uitextview import UITextView
+from components.uitextfieldview import UITextFieldView
 from components.uiview import UIView
+
 
 def convert_hex_to_rgb(hex_string):
   """
@@ -136,5 +136,7 @@ def create_component(type_, id_, info, env):
   for key in ["set_prop", "in_view", "in_cell", "in_header"]:
     if key not in env:
       env[key] = False
+  if type_ == 'UITextField' or type_ == 'UITextView':
+    type_ = 'UITextFieldView'
   # using eval for clean code
   return eval(type_ + "(id_, info, env)") # pylint: disable=W0123

@@ -5,7 +5,7 @@ class Interpreter(object):
   """
   Takes output from Parser one at a time and generates swift file
     globals: (dict) passed in from Parser
-    swift: (dict) the swift code to generate all the elements
+    swift: (dict) swift code to generate all elements
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
@@ -15,9 +15,9 @@ class Interpreter(object):
   def gen_global_vars(self, elements):
     """
     Args:
-      elements: (list) list of elements from Parser
+      elements (list): list of elements from Parser
 
-    Returns: (str) The swift code of the global variables for the swift class
+    Returns: (str) swift code of the global variables
     """
     # one-liner to concat all variable names
     variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in elements]
@@ -26,9 +26,9 @@ class Interpreter(object):
   def gen_vc_header(self, elements):
     """ Generates header of view controller
     Args:
-      elements: (list) list of elements
+      elements (list): list of elements
 
-    Returns: (str) The swift code of the header
+    Returns (str): swift code of the header
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
@@ -42,10 +42,10 @@ class Interpreter(object):
   def gen_cell_header(self, tv_id, cell):
     """
     Args:
-      tv_id: (str) the id of the parent tableview (capitalized)
-      cell: (dict) the cell being generated
+      tv_id (str): id of the parent tableview
+      cell (dict): info of cell being generated
 
-    Returns: (str) The swift code to generate the header of a UITableViewCell.
+    Returns (str): swift code to generate the header of a cell
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
             "{{\n\n{}"
@@ -60,12 +60,10 @@ class Interpreter(object):
   def gen_header_header(self, tv_id, header):
     """
     Args:
-      tv_id: (str) the id of the parent tableview (capitalized)
-      header: (dict) the header view being generated
+      tv_id (str): id of the parent tableview
+      header: (dict) info of header being generated
 
-    Returns:
-      (str) The swift code for generating the header of a UITableView
-      Header file.
+    Returns (str): swift code for generating the header of a header
     """
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
             "UITableViewHeaderFooterView {{\n\n{}"
@@ -79,11 +77,9 @@ class Interpreter(object):
   def init_g_vars(self, components):
     """
     Args:
-      components: (dict list) contains information about components
+      components: (dict list) contains info about components
 
-    Returns:
-      (str) The swift code to generate all the global variables of each
-      component in components AND initialize them.
+    Returns (str): swift code to generate/init all glob vars of components
     """
     c = ""
     for comp in components:
@@ -94,14 +90,12 @@ class Interpreter(object):
     """
     Args:
       components: (dict list) contains information about components
-      in_v: (bool) represents whether the components are being generated
-               inside a custom view file (or not)
 
     Returns:
       (tuple) A triple consisting of:
-        - the swift code to generate each component in components.
-        - the dictionary of the tableview if components contains one.
-        - the tableview methods for the tableview.
+        - swift code to generate components.
+        - dict of the tableview or None
+        - tableview methods for the tableview.
     """
     c = ""
     tv_elem = None
@@ -126,9 +120,7 @@ class Interpreter(object):
       elements: (dict list) contains information of all the elements
       f_name: The name of the file.
 
-    Returns:
-      (None) Fills in the swift instance variable with the swift code
-      to generate all the elements.
+    Returns: Fills in the swift instance variable with generated code.
     """
     c = self.swift[f_name]
     s, tv_elem, tv_methods = self.gen_comps(elements, in_v)
@@ -197,9 +189,7 @@ class Interpreter(object):
     Args:
       elements: (list) list of elements
 
-    Returns:
-      (None) Fills in the swift instance variable with the swift code
-      to generate the artboard.
+    Returns: Fills in the swift instance var with generated code for artboard.
     """
     file_h = self.gen_vc_header(elements)
     file_h += utils.set_bg('view', self.globals['bgc'])
