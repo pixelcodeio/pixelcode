@@ -25,7 +25,7 @@ class BaseComponent(object):
 
   def set_opacity(self, opacity):
     """
-    Returns (str): swift code to set the opacity 
+    Returns (str): swift code to set the opacity
     """
     return "{}.alpha = {}\n".format(self.id, opacity)
 

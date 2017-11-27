@@ -3,7 +3,7 @@ from . import *
 
 class ComponentFactory(object):
   """
-  Base class for components
+  Class used to generate components.
     swift (str): swift code to generate a component
     tv_methods (str): tableview methods for generating a tableview
   """

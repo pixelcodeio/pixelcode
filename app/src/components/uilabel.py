@@ -83,7 +83,7 @@ class UILabel(BaseComponent):
 
   def gen_attributed_color(self, str_id, color):
     """
-    Returns (str): swift code to set color 
+    Returns (str): swift code to set color
     """
     return ("{}.addAttribute(.foregroundColor, value: {}"
             ", range: NSRange(location: 0, length: {}.length))\n"

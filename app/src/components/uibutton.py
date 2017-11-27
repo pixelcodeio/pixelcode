@@ -26,7 +26,7 @@ class UIButton(BaseComponent):
 
   def set_font_family_size(self, font, size):
     """
-    Returns (str): swift code to set the font family and size 
+    Returns (str): swift code to set the font family and size
     """
     return ("{}.titleLabel?.font = {}\n"
            ).format(self.id, super().create_font(font, size))

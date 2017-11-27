@@ -81,10 +81,10 @@ class Interpreter(object):
 
     Returns (str): swift code to generate/init all glob vars of components
     """
-    c = ""
+    C = ""
     for comp in components:
-      c += "var {} = {}()\n".format(comp.get('id'), comp.get('type'))
-    return c
+      C += "var {} = {}()\n".format(comp.get('id'), comp.get('type'))
+    return C
 
   def gen_comps(self, components, in_v):
     """
@@ -97,7 +97,7 @@ class Interpreter(object):
         - dict of the tableview or None
         - tableview methods for the tableview.
     """
-    c = ""
+    C = ""
     tv_elem = None
     tv_methods = ""
     for comp in components:
@@ -105,14 +105,14 @@ class Interpreter(object):
       if type_ == 'UILabel':
         cf = ComponentFactory(type_, comp, bgc=self.globals['bgc'],
                               in_v=in_v)
-        c += cf.swift
+        C += cf.swift
       else:
         cf = ComponentFactory(type_, comp, in_v=in_v)
-        c += cf.swift
+        C += cf.swift
         if type_ == 'UITableView':
           tv_elem = comp
           tv_methods = cf.tv_methods
-    return (c, tv_elem, tv_methods)
+    return (C, tv_elem, tv_methods)
 
   def gen_elements(self, elements, f_name, in_v=False):
     """
@@ -122,67 +122,67 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance variable with generated code.
     """
-    c = self.swift[f_name]
+    C = self.swift[f_name]
     s, tv_elem, tv_methods = self.gen_comps(elements, in_v)
-    c += s
+    C += s
 
     if tv_elem is None:
-      c += "\n}\n}"
-      self.swift[f_name] = c
+      C += "\n}\n}"
+      self.swift[f_name] = C
     else:
-      f = utils.ins_after_key(c, ": UIViewController",
-                              ", UITableViewDelegate, UITableViewDataSource ")
-      if f:
-        c = f
+      ins = utils.ins_after_key(C, ": UIViewController",
+                                ", UITableViewDelegate, UITableViewDataSource ")
+      if ins:
+        C = ins
       else:
-        c = utils.ins_after_key(c, ": UITableViewCell",
+        C = utils.ins_after_key(C, ": UITableViewCell",
                                 ", UITableViewDelegate, UITableViewDataSource ")
 
-      c += "\n}}\n{}}}\n".format(tv_methods)
-      self.swift[f_name] = c
+      C += "\n}}\n{}}}\n".format(tv_methods)
+      self.swift[f_name] = C
 
       # Generating tableview cell file:
       tv_id = tv_elem.get('id')
       tv_cells = tv_elem.get('cells')
       cap_id = tv_id.capitalize()
       tv_cell = tv_cells[0]
-      c = self.gen_cell_header(cap_id, tv_cell)
+      C = self.gen_cell_header(cap_id, tv_cell)
 
       rect = tv_cell.get('rect')
-      c += utils.setup_rect(tv_id, rect, in_v=True)
+      C += utils.setup_rect(tv_id, rect, in_v=True)
 
       # ctv_elem represents a tableview inside a cell
-      s, ctv_elem, ctv_methods = self.gen_comps(tv_cell.get('components'),
-                                                in_v=True)
-      c += s
-      c += "}}\n\n{}\n\n".format(utils.required_init())
+      swift, ctv_elem, ctv_methods = self.gen_comps(tv_cell.get('components'),
+                                                    in_v=True)
+      C += swift
+      C += "}}\n\n{}\n\n".format(utils.required_init())
 
       if ctv_elem is None:
-        c += "}"
-        self.swift[cap_id + 'Cell'] = c
+        C += "}"
+        self.swift[cap_id + 'Cell'] = C
       else:
-        c = utils.ins_after_key(c, ": UITableViewCell",
+        C = utils.ins_after_key(C, ": UITableViewCell",
                                 ", UITableViewDelegate, UITableViewDataSource ")
-        c += "\n{}}}\n".format(ctv_methods)
-        self.swift[cap_id + 'Cell'] = c
+        C += "\n{}}}\n".format(ctv_methods)
+        self.swift[cap_id + 'Cell'] = C
 
         # Generating cell within a tableview cell
         ctv_id = ctv_elem.get('id')
         ctv_cells = ctv_elem.get('cells')
         ctv_cell = ctv_cells[0]
         cap_ctv_id = ctv_id.capitalize()
-        c = self.gen_cell_header(cap_ctv_id, ctv_cell)
-        self.swift[cap_ctv_id + 'Cell'] = c
+        C = self.gen_cell_header(cap_ctv_id, ctv_cell)
+        self.swift[cap_ctv_id + 'Cell'] = C
         self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_v=True)
 
       tv_header = tv_elem.get('header')
       if tv_header is not None:
-        c = self.gen_header_header(cap_id, tv_header)
-        c += utils.setup_rect(tv_id, tv_header.get('rect'), in_v=True,
+        C = self.gen_header_header(cap_id, tv_header)
+        C += utils.setup_rect(tv_id, tv_header.get('rect'), in_v=True,
                               tv_header=True)
-        c += (self.gen_comps(tv_header.get('components'), in_v=True))[0]
-        c += "}}\n\n{}\n\n}}".format(utils.required_init())
-        self.swift[cap_id + 'HeaderView'] = c
+        C += (self.gen_comps(tv_header.get('components'), in_v=True))[0]
+        C += "}}\n\n{}\n\n}}".format(utils.required_init())
+        self.swift[cap_id + 'HeaderView'] = C
 
   def gen_code(self, elements):
     """

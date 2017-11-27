@@ -23,7 +23,7 @@ class UIImageView(BaseComponent):
 
   def setup_component(self):
     """
-    Returns (str): swift code to setup uiimageview 
+    Returns (str): swift code to setup uiimageview
     """
     keys = ['path', 'opacity', 'stroke-color', 'stroke-width']
     path, opacity, stroke_c, stroke_w = utils.get_vals(keys, self.info)
