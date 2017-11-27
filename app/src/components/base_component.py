@@ -19,28 +19,21 @@ class BaseComponent(object):
 
   def create_font(self, font, size):
     """
-    Args:
-      font: (str) font family name
-      size: (int) size of font
-
-    Returns: The UIFont generated using font and size.
+    Returns: UIFont generated using font and size.
     """
     return ("UIFont(name: \"{}\", size: {})").format(font, size)
 
   def set_opacity(self, opacity):
     """
-    Args:
-      opacity: (float) between 0 and 1
-
-    Returns: (str) The swift code to set the opacity of elem.
+    Returns (str): swift code to set the opacity
     """
     return "{}.alpha = {}\n".format(self.id, opacity)
 
   def clips_to_bounds(self):
     """
     Args:
-      id_: (str) id of element
+      id_ (str): id of element
 
-    Returns: The swift code to set the clipsToBounds property of elem to true.
+    Returns: swift code to set the clipsToBounds property
     """
     return "{}.clipsToBounds = true\n".format(self.id)

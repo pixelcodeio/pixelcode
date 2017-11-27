@@ -3,7 +3,6 @@ from . import *
 class UIButton(BaseComponent):
   """
   Class representing a UIButton in swift
-    swift: (str) the swift code to create/set properties of a UIButton
   """
   def generate_swift(self):
     if self.env["set_prop"]:
@@ -20,33 +19,24 @@ class UIButton(BaseComponent):
 
   def set_title_color(self, color):
     """
-    Args:
-      color: (tuple) contains r, g, b values of the title color
-
-    Returns: (str) swift code to set title color
+    Returns (str): swift code to set title color
     """
     c = utils.create_uicolor(color)
     return '{}.setTitleColor({}, for: .normal)\n'.format(self.id, c)
 
   def set_font_family_size(self, font, size):
     """
-    Args:
-      font: (str) font family name
-      size: (int) size of font
-
-    Returns: (str) swift code to set the font family and size of title
+    Returns (str): swift code to set the font family and size
     """
     return ("{}.titleLabel?.font = {}\n"
            ).format(self.id, super().create_font(font, size))
 
   def setup_component(self):
     """
-    Returns:
-      (str) swift code to setup uibutton
+    Returns: (str) swift code to setup uibutton
     """
     tspan = self.info.get('text').get('textspan')
-    if len(tspan) == 1:
-      # the contents of the textspan don't vary
+    if len(tspan) == 1: # the contents of the textspan don't vary
       txt = tspan[0]
       keys = ['contents', 'fill', 'font-family', 'font-size']
       contents, fill, font, size = utils.get_vals(keys, txt)
@@ -56,4 +46,5 @@ class UIButton(BaseComponent):
       C += self.set_title_color(fill) if fill != None else ""
       C += self.set_font_family_size(font, size)
       return C
+    raise Exception("UIButton: Textspan label contains varying text.")
     #TODO: Case for varying text.
