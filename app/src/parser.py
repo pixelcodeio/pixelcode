@@ -108,6 +108,8 @@ class Parser(object):
           elem.name = "button"
         elif "Cell" in elem["id"] or "cell" in elem["id"]:
           elem.name = "cell"
+        elif "CollectionView" in elem["id"]:
+          elem.name = "collectionview"
         elif "Header" in elem["id"] or "header" in elem["id"]:
           elem.name = "header"
         elif "ListView" in elem["id"]:
@@ -128,6 +130,8 @@ class Parser(object):
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
         parsed_elem = Container(elem, "Cell")
+      elif elem.name == "collectionview":
+        parsed_elem = TableCollectionView(elem, "UICollectionView")
       elif elem.name == "header":
         parsed_elem = Container(elem, "Header")
       elif elem.name == "image":
@@ -135,7 +139,7 @@ class Parser(object):
       elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "tableview":
-        parsed_elem = TableView(elem, "UITableView")
+        parsed_elem = TableCollectionView(elem, "UITableView")
       elif elem.name == "text":
         parsed_elem = Text(elem, "UILabel")
       elif elem.name == "textfield":

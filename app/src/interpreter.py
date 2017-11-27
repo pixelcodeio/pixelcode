@@ -4,12 +4,17 @@ import utils
 class Interpreter(object):
   """
   Takes output from Parser one at a time and generates swift file
-    globals: (dict) passed in from Parser
-    swift: (dict) swift code to generate all elements
+    globals (dict): passed in from Parser
+    swift (dict): swift code to generate all elements
+    file_name (str): name of current file being generated
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
+    self.file_name = ""
+    self.elements = None
+    self.tv_elem = None
+    self.tv_methods = ""
     self.swift = {}
 
   def gen_global_vars(self, elements):
@@ -114,21 +119,22 @@ class Interpreter(object):
           tv_methods = cf.tv_methods
     return (C, tv_elem, tv_methods)
 
-  def gen_elements(self, elements, f_name, in_v=False):
+  #def gen_cell_file(self, )
+
+  def gen_elements(self, elements, in_v=False):
     """
     Args:
       elements: (dict list) contains information of all the elements
-      f_name: The name of the file.
 
     Returns: Fills in the swift instance variable with generated code.
     """
-    C = self.swift[f_name]
+    C = self.swift[self.file_name]
     s, tv_elem, tv_methods = self.gen_comps(elements, in_v)
     C += s
 
     if tv_elem is None:
       C += "\n}\n}"
-      self.swift[f_name] = C
+      self.swift[self.file_name] = C
     else:
       ins = utils.ins_after_key(C, ": UIViewController",
                                 ", UITableViewDelegate, UITableViewDataSource ")
@@ -139,12 +145,13 @@ class Interpreter(object):
                                 ", UITableViewDelegate, UITableViewDataSource ")
 
       C += "\n}}\n{}}}\n".format(tv_methods)
-      self.swift[f_name] = C
+      self.swift[self.file_name] = C
 
       # Generating tableview cell file:
       tv_id = tv_elem.get('id')
       tv_cells = tv_elem.get('cells')
       cap_id = tv_id.capitalize()
+      self.file_name = cap_id + "Cell"
       tv_cell = tv_cells[0]
       C = self.gen_cell_header(cap_id, tv_cell)
 
@@ -159,21 +166,22 @@ class Interpreter(object):
 
       if ctv_elem is None:
         C += "}"
-        self.swift[cap_id + 'Cell'] = C
+        self.swift[self.file_name] = C
       else:
         C = utils.ins_after_key(C, ": UITableViewCell",
                                 ", UITableViewDelegate, UITableViewDataSource ")
         C += "\n{}}}\n".format(ctv_methods)
-        self.swift[cap_id + 'Cell'] = C
+        self.swift[self.file_name] = C
 
-        # Generating cell within a tableview cell
+        # Generating tableview within a tableview cell
         ctv_id = ctv_elem.get('id')
         ctv_cells = ctv_elem.get('cells')
         ctv_cell = ctv_cells[0]
         cap_ctv_id = ctv_id.capitalize()
         C = self.gen_cell_header(cap_ctv_id, ctv_cell)
-        self.swift[cap_ctv_id + 'Cell'] = C
-        self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_v=True)
+        self.file_name = cap_ctv_id + 'Cell'
+        self.swift[self.file_name] = C
+        self.gen_elements(ctv_elem, in_v=True)
 
       tv_header = tv_elem.get('header')
       if tv_header is not None:
@@ -196,4 +204,5 @@ class Interpreter(object):
     ab = self.globals['artboard'].capitalize()
     vc = '{}ViewController'.format(ab)
     self.swift[vc] = file_h
+    self.file_name = vc
     self.gen_elements(elements, vc)

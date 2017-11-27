@@ -23,7 +23,7 @@ class UITableView(BaseComponent):
   def gen_comps_ch(self, ch, components, subview_ids):
     """
     Args:
-      ch: (str) should either be "cell" or "header" 
+      ch: (str) should either be "cell" or "header"
       components: (dict list) contains info of components
       subview_ids: (str list) contains ids of components
 
