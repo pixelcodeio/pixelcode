@@ -71,7 +71,7 @@ def set_corner_radius(elem, radius, in_v=False):
     return ("layer.cornerRadius = {}\n").format(radius)
   return ("{}.layer.cornerRadius = {}\n").format(elem, radius)
 
-def setup_rect(cid, rect, in_v=False, tv_header=False):
+def setup_rect(cid, rect, in_v, tv_header=False):
   """
   Args:
     cid: (int) id of component

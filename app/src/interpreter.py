@@ -17,6 +17,13 @@ class Interpreter(object):
     self.tv_methods = ""
     self.swift = {}
 
+  def clear_tv(self):
+    """
+    Returns (None): Resets tv_elem and tv_methods instance variables
+    """
+    self.tv_elem = None
+    self.tv_methods = ""
+
   def gen_global_vars(self, elements):
     """
     Args:
@@ -52,6 +59,7 @@ class Interpreter(object):
 
     Returns (str): swift code to generate the header of a cell
     """
+    tv_id = tv_id.capitalize()
     return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
             "{{\n\n{}"
             "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
@@ -70,6 +78,7 @@ class Interpreter(object):
 
     Returns (str): swift code for generating the header of a header
     """
+    tv_id = tv_id.capitalize()
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
             "UITableViewHeaderFooterView {{\n\n{}"
             "\noverride init(reuseIdentifier: String?) {{\n"
@@ -119,27 +128,36 @@ class Interpreter(object):
           self.tv_methods = cf.tv_methods
     return C
 
-  def gen_tv_header_f(self, tv_id, tv_header):
+  def setup_tv_header(self, tv_id, tv_header):
     """
     Returns (str): swift code to setup tableview header file
     """
-    cap_id = tv_id.capitalize()
-    C = self.gen_header_header(cap_id, tv_header)
-    C += utils.setup_rect(tv_id, tv_header.get('rect'), in_v=True,
-                          tv_header=True)
-    C += self.gen_comps(tv_header.get('components'), in_v=True)
+    self.clear_tv()
+    self.file_name = tv_id.capitalize() + 'HeaderView'
+    C = self.gen_header_header(tv_id, tv_header)
+    C += utils.setup_rect(tv_id, tv_header.get('rect'), True, tv_header=True)
+    C += self.gen_comps(tv_header.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.required_init())
     return C
 
-  def gen_elements(self, elements, in_v=False):
+  def setup_tv_cell(self, tv_id, tv_cell):
     """
-    Args:
-      elements: (dict list) contains information of all the elements
+    Returns (str): swift code to setup tableview cell file
+    """
+    self.clear_tv()
+    self.file_name = tv_id.capitalize() + "Cell"
+    C = self.gen_cell_header(tv_id, tv_cell)
+    C += utils.setup_rect(tv_id, tv_cell.get('rect'), True)
+    C += self.gen_comps(tv_cell.get('components'), True)
+    C += "}}\n\n{}\n\n".format(utils.required_init())
+    return C
 
+  def gen_elements(self, in_v):
+    """
     Returns: Fills in the swift instance variable with generated code.
     """
     C = self.swift[self.file_name]
-    C += self.gen_comps(elements, in_v)
+    C += self.gen_comps(self.elements, in_v)
 
     if self.tv_elem is None:
       C += "\n}\n}"
@@ -161,49 +179,41 @@ class Interpreter(object):
       tv_header = tv_elem.get('header')
 
       if tv_header is not None:
-        self.file_name = [cap_id + 'HeaderView']
-        self.tv_elem = None
-        self.tv_methods = ""
-        C = self.gen_tv_header_f(tv_id, tv_header)
+        C = self.setup_tv_header(tv_id, tv_header)
         if self.tv_elem is None:
-          self.swift[self.file_name] = C + "}}"
+          self.swift[self.file_name] = C + "}"
         else:
           C = utils.ins_after_key(C, ": UITableViewHeaderFooterView", tv_ext)
-          C += "{}\n}}".format(self.tv_methods)
+          C += "\n{}\n}\n".format(self.tv_methods)
           self.swift[self.file_name] = C
+          tv_id_ = self.tv_elem.get('id')
+          cell = self.tv_elem.get('cells')[0]
+          self.file_name = tv_id_.capitalize() + 'Cell'
+          C = self.gen_cell_header(tv_id_, cell)
+          self.elements = self.tv_elem
+          self.clear_tv()
+          self.gen_elements(True)
 
       # Generating tableview cell file:
-      tv_cells = tv_elem.get('cells')
-      tv_cell = tv_cells[0]
-      self.file_name = cap_id + "Cell"
-      C = self.gen_cell_header(cap_id, tv_cell)
-
-      rect = tv_cell.get('rect')
-      C += utils.setup_rect(tv_id, rect, in_v=True)
-
-      # ctv_elem represents a tableview inside a cell
-      swift, ctv_elem, ctv_methods = self.gen_comps(tv_cell.get('components'),
-                                                    in_v=True)
-      C += swift
-      C += "}}\n\n{}\n\n".format(utils.required_init())
-
-      if ctv_elem is None:
-        C += "}"
-        self.swift[self.file_name] = C
+      tv_cell = tv_elem.get('cells')[0]
+      C = self.setup_tv_cell(tv_id, tv_cell)
+      if self.tv_elem is None:
+        self.swift[self.file_name] = C + "}"
       else:
         C = utils.ins_after_key(C, ": UITableViewCell", tv_ext)
-        C += "\n{}}}\n".format(ctv_methods)
+        C += "\n{}\n}\n".format(ctv_methods)
         self.swift[self.file_name] = C
 
         # Generating tableview within a tableview cell
-        ctv_id = ctv_elem.get('id')
-        ctv_cells = ctv_elem.get('cells')
-        ctv_cell = ctv_cells[0]
-        cap_ctv_id = ctv_id.capitalize()
-        C = self.gen_cell_header(cap_ctv_id, ctv_cell)
-        self.file_name = cap_ctv_id + 'Cell'
+        tv_id_ = self.tv_elem.get('id')
+        cell = self.tv_elem.get('cells')[0]
+        C = self.gen_cell_header(tv_id_, cell)
+        self.file_name = tv_id_.capitalize() + 'Cell'
         self.swift[self.file_name] = C
-        self.gen_elements(ctv_elem, in_v=True)
+        self.elements = self.tv_elem
+        self.clear_tv()
+        self.gen_elements(True)
+
 
   def gen_code(self, elements):
     """
@@ -218,4 +228,5 @@ class Interpreter(object):
     vc = '{}ViewController'.format(ab)
     self.swift[vc] = file_h
     self.file_name = vc
-    self.gen_elements(elements, vc)
+    self.elements = elements
+    self.gen_elements(False)

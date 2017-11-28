@@ -31,7 +31,7 @@ class ComponentFactory(object):
     C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
 
     if rect is not None:
-      C += utils.setup_rect(id_, rect)
+      C += utils.setup_rect(id_, rect, in_v)
 
     component = utils.create_component(type_, id_, info, {"in_view": in_v})
     C += component.swift
