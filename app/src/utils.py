@@ -27,51 +27,55 @@ def create_uicolor(color):
   return ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
           ": {})").format(r, g, b, o)
 
-def set_bg(elem, color, in_v=False):
+def set_bg(id_, color, in_v=False):
   """
   Args:
     color: (tuple) the r, g, b values of the background color
 
-  Returns: (str) swift code that sets the background color of elem to [color].
+  Returns: (str) swift code that sets the background color of id_ to [color].
   """
-  if in_v:
-    return ('backgroundColor = {}\n'
-           ).format(create_uicolor(color))
-  return ('{}.backgroundColor = {}\n'
-         ).format(elem, create_uicolor(color))
+  if id_ is not None:
+    return ('{}.backgroundColor = {}\n').format(id_, create_uicolor(color))
+  elif in_v:
+    return ('backgroundColor = {}\n').format(create_uicolor(color))
+  else:
+    raise Exception("utils: set_bg has invalid args")
 
-def add_subview(view, elem):
+def add_subview(view, id_):
   if view is None:
-    return 'addSubview({})\n\n'.format(elem)
-  return '{}.addSubview({})\n\n'.format(view, elem)
+    return 'addSubview({})\n\n'.format(id_)
+  return '{}.addSubview({})\n\n'.format(view, id_)
 
-def set_border_width(elem, width, in_v=False):
+def set_border_width(id_, width, in_v=False):
   """
-  Returns: (str) swift code to set the border width of elem.
+  Returns: (str) swift code to set the border width of id_.
   """
   if in_v:
     return ("layer.borderWidth = {}\n").format(width)
-  return ("{}.layer.borderWidth = {}\n").format(elem, width)
+  return ("{}.layer.borderWidth = {}\n").format(id_, width)
 
-def set_border_color(elem, color, in_v=False):
+def set_border_color(id_, color, in_v=False):
   """
-  Returns: (str) swift code to set the border color of elem.
+  Returns: (str) swift code to set the border color of id_.
   """
   if in_v:
     return ("layer.borderColor = {}.cgColor\n"
            ).format(create_uicolor(color))
   return ("{}.layer.borderColor = {}.cgColor\n"
-         ).format(elem, create_uicolor(color))
+         ).format(id_, create_uicolor(color))
 
-def set_corner_radius(elem, radius, in_v=False):
+def set_corner_radius(id_, radius, in_v=False):
   """
-  Returns: (str) swift code to set the corner radius of elem.
+  Returns: (str) swift code to set the corner radius of id_.
   """
-  if in_v:
+  if id_ is not None:
+    return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
+  elif in_v:
     return ("layer.cornerRadius = {}\n").format(radius)
-  return ("{}.layer.cornerRadius = {}\n").format(elem, radius)
+  else:
+    raise Exception("utils: set_corner_radius has invalid args")
 
-def setup_rect(cid, rect, in_v=False, tv_header=False):
+def setup_rect(cid, rect, in_v, tv_header=False, tv_cell=False):
   """
   Args:
     cid: (int) id of component
@@ -85,7 +89,9 @@ def setup_rect(cid, rect, in_v=False, tv_header=False):
   c = ""
   if fill is not None:
     if tv_header:
-      c += set_bg('contentView', fill, in_v=False)
+      c += set_bg('contentView', fill)
+    elif tv_cell:
+      c += set_bg(None, fill, in_v=in_v)
     else:
       c += set_bg(cid, fill, in_v)
   if str_c is not None:

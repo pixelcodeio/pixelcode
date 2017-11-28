@@ -7,7 +7,7 @@ class ComponentFactory(object):
     swift (str): swift code to generate a component
     tv_methods (str): tableview methods for generating a tableview
   """
-  def __init__(self, type_, info, bgc=None, in_v=False):
+  def __init__(self, type_, info, in_v, bgc=None):
     """
     Args:
       bgc (tuple): background color of screen
@@ -31,7 +31,7 @@ class ComponentFactory(object):
     C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
 
     if rect is not None:
-      C += utils.setup_rect(id_, rect)
+      C += utils.setup_rect(id_, rect, in_v)
 
     component = utils.create_component(type_, id_, info, {"in_view": in_v})
     C += component.swift

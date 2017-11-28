@@ -4,13 +4,28 @@ import utils
 class Interpreter(object):
   """
   Takes output from Parser one at a time and generates swift file
-    globals: (dict) passed in from Parser
-    swift: (dict) swift code to generate all elements
+    globals (dict): passed in from Parser
+    file_name (str): name of current file being generated
+    elements (dict): info on all components
+    tv_elem (dict): info on current tableview being generated, if any
+    tv_methods (str): necessary tableview methods, if needed
+    swift (dict): swift code to generate all elements
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
+    self.file_name = ""
+    self.elements = None
+    self.tv_elem = None
+    self.tv_methods = ""
     self.swift = {}
+
+  def clear_tv(self):
+    """
+    Returns (None): Resets tv_elem and tv_methods instance variables
+    """
+    self.tv_elem = None
+    self.tv_methods = ""
 
   def gen_global_vars(self, elements):
     """
@@ -47,6 +62,7 @@ class Interpreter(object):
 
     Returns (str): swift code to generate the header of a cell
     """
+    tv_id = tv_id.capitalize()
     return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
             "{{\n\n{}"
             "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
@@ -65,6 +81,7 @@ class Interpreter(object):
 
     Returns (str): swift code for generating the header of a header
     """
+    tv_id = tv_id.capitalize()
     return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
             "UITableViewHeaderFooterView {{\n\n{}"
             "\noverride init(reuseIdentifier: String?) {{\n"
@@ -97,92 +114,94 @@ class Interpreter(object):
         - dict of the tableview or None
         - tableview methods for the tableview.
     """
+    self.clear_tv()
     C = ""
-    tv_elem = None
-    tv_methods = ""
     for comp in components:
       type_ = comp.get('type')
       if type_ == 'UILabel':
-        cf = ComponentFactory(type_, comp, bgc=self.globals['bgc'],
-                              in_v=in_v)
+        cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
         C += cf.swift
       else:
-        cf = ComponentFactory(type_, comp, in_v=in_v)
+        cf = ComponentFactory(type_, comp, in_v)
         C += cf.swift
         if type_ == 'UITableView':
-          tv_elem = comp
-          tv_methods = cf.tv_methods
-    return (C, tv_elem, tv_methods)
+          self.tv_elem = comp
+          self.tv_methods = cf.tv_methods
+    return C
 
-  def gen_elements(self, elements, f_name, in_v=False):
+  def subclass_tv(self):
     """
-    Args:
-      elements: (dict list) contains information of all the elements
-      f_name: The name of the file.
+    Returns (None): adds necessary parent (tableview) classes to current file
+    """
+    C = self.swift[self.file_name]
+    tv_ext = ", UITableViewDelegate, UITableViewDataSource "
 
+    if ": UIViewController" in C:
+      C = utils.ins_after_key(C, ": UIViewController", tv_ext)
+    elif ": UITableViewCell" in C:
+      C = utils.ins_after_key(C, ": UITableViewCell", tv_ext)
+    elif ": UITableViewHeaderFooterView" in C:
+      C = utils.ins_after_key(C, ": UITableViewHeaderFooterView", tv_ext)
+    else:
+      raise Exception("interpreter: can't generate inner tableview")
+
+    self.swift[self.file_name] = C
+
+  def setup_tv_ch(self, type_, id_, info):
+    """
+    Returns (bool):
+      fills in swift var with code to setup tableview header/cell file.
+      True if there is an inner tableview, False otherwise.
+    """
+    if type_ == "cell":
+      self.file_name = id_.capitalize() + "Cell"
+      C = self.gen_cell_header(id_, info)
+      C += utils.setup_rect(id_, info.get('rect'), True, tv_cell=True)
+    else: # must be tableview header
+      self.file_name = id_.capitalize() + "HeaderView"
+      C = self.gen_header_header(id_, info)
+      C += utils.setup_rect(id_, info.get('rect'), True, tv_header=True)
+
+    C += self.gen_comps(info.get('components'), True)
+    C += "}}\n\n{}\n\n".format(utils.required_init())
+
+    if self.tv_elem is None:
+      self.swift[self.file_name] = C + "}"
+      return False
+    else: # inner tableview exists
+      self.subclass_tv()
+      C += "\n{}\n}\n".format(self.tv_methods)
+      self.swift[self.file_name] = C
+      id_ = self.tv_elem.get('id')
+      cell = self.tv_elem.get('cells')[0]
+      self.file_name = id_.capitalize() + 'Cell'
+      self.swift[self.file_name] = self.gen_cell_header(id_, cell)
+      self.elements = self.tv_elem
+      return True
+
+  def gen_elements(self, in_v):
+    """
     Returns: Fills in the swift instance variable with generated code.
     """
-    C = self.swift[f_name]
-    s, tv_elem, tv_methods = self.gen_comps(elements, in_v)
-    C += s
+    self.swift[self.file_name] += self.gen_comps(self.elements, in_v)
 
-    if tv_elem is None:
-      C += "\n}\n}"
-      self.swift[f_name] = C
+    if self.tv_elem is None:
+      self.swift[self.file_name] += "\n}\n}"
     else:
-      ins = utils.ins_after_key(C, ": UIViewController",
-                                ", UITableViewDelegate, UITableViewDataSource ")
-      if ins:
-        C = ins
-      else:
-        C = utils.ins_after_key(C, ": UITableViewCell",
-                                ", UITableViewDelegate, UITableViewDataSource ")
+      self.subclass_tv()
+      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tv_methods)
 
-      C += "\n}}\n{}}}\n".format(tv_methods)
-      self.swift[f_name] = C
-
-      # Generating tableview cell file:
+      tv_elem = self.tv_elem
       tv_id = tv_elem.get('id')
-      tv_cells = tv_elem.get('cells')
-      cap_id = tv_id.capitalize()
-      tv_cell = tv_cells[0]
-      C = self.gen_cell_header(cap_id, tv_cell)
-
-      rect = tv_cell.get('rect')
-      C += utils.setup_rect(tv_id, rect, in_v=True)
-
-      # ctv_elem represents a tableview inside a cell
-      swift, ctv_elem, ctv_methods = self.gen_comps(tv_cell.get('components'),
-                                                    in_v=True)
-      C += swift
-      C += "}}\n\n{}\n\n".format(utils.required_init())
-
-      if ctv_elem is None:
-        C += "}"
-        self.swift[cap_id + 'Cell'] = C
-      else:
-        C = utils.ins_after_key(C, ": UITableViewCell",
-                                ", UITableViewDelegate, UITableViewDataSource ")
-        C += "\n{}}}\n".format(ctv_methods)
-        self.swift[cap_id + 'Cell'] = C
-
-        # Generating cell within a tableview cell
-        ctv_id = ctv_elem.get('id')
-        ctv_cells = ctv_elem.get('cells')
-        ctv_cell = ctv_cells[0]
-        cap_ctv_id = ctv_id.capitalize()
-        C = self.gen_cell_header(cap_ctv_id, ctv_cell)
-        self.swift[cap_ctv_id + 'Cell'] = C
-        self.gen_elements(ctv_elem, cap_ctv_id + 'Cell', in_v=True)
-
       tv_header = tv_elem.get('header')
+
       if tv_header is not None:
-        C = self.gen_header_header(cap_id, tv_header)
-        C += utils.setup_rect(tv_id, tv_header.get('rect'), in_v=True,
-                              tv_header=True)
-        C += (self.gen_comps(tv_header.get('components'), in_v=True))[0]
-        C += "}}\n\n{}\n\n}}".format(utils.required_init())
-        self.swift[cap_id + 'HeaderView'] = C
+        if self.setup_tv_ch('header', tv_id, tv_header): # nested tableview
+          self.gen_elements(True)
+
+      tv_cell = tv_elem.get('cells')[0]
+      if self.setup_tv_ch("cell", tv_id, tv_cell): # nested tableview
+        self.gen_elements(True)
 
   def gen_code(self, elements):
     """
@@ -191,9 +210,9 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    file_h = self.gen_vc_header(elements)
-    file_h += utils.set_bg('view', self.globals['bgc'])
-    ab = self.globals['artboard'].capitalize()
-    vc = '{}ViewController'.format(ab)
-    self.swift[vc] = file_h
-    self.gen_elements(elements, vc)
+    C = self.gen_vc_header(elements) + utils.set_bg('view', self.globals['bgc'])
+    vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
+    self.file_name = vc
+    self.swift[vc] = C
+    self.elements = elements
+    self.gen_elements(False)
