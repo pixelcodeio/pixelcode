@@ -31,7 +31,7 @@ class TableView(BaseLayer):
 
     separator = 0
     if len(cells) >= 2:
-      separator = cells[1]["cy"] - cells[1]["cy"]
+      separator = cells[1]["cy"] - cells[0]["cy"] #TODO: fix this
 
     elem["rect"] = rect
     elem["header"] = header
