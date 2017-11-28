@@ -7,7 +7,7 @@ class ComponentFactory(object):
     swift (str): swift code to generate a component
     tv_methods (str): tableview methods for generating a tableview
   """
-  def __init__(self, type_, info, bgc=None, in_v=False):
+  def __init__(self, type_, info, in_v, bgc=None):
     """
     Args:
       bgc (tuple): background color of screen
