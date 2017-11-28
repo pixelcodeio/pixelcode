@@ -28,8 +28,6 @@ class ComponentFactory(object):
     if not in_v:
       C += "{} = {}()\n".format(id_, type_)
 
-    C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
-
     if rect is not None:
       C += utils.setup_rect(id_, rect, in_v)
 

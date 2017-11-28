@@ -20,7 +20,7 @@ class UILabel(BaseComponent):
     """
     Returns (str): swift code to create an attributed string.
     """
-    return ('var {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
+    return ('let {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
            ).format(self.id, text)
 
   def gen_text(self, text):
