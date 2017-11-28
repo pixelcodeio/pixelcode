@@ -147,7 +147,7 @@ class Interpreter(object):
     self.clear_tv()
     self.file_name = tv_id.capitalize() + "Cell"
     C = self.gen_cell_header(tv_id, tv_cell)
-    C += utils.setup_rect(tv_id, tv_cell.get('rect'), True)
+    C += utils.setup_rect(tv_id, tv_cell.get('rect'), True, tv_cell=True)
     C += self.gen_comps(tv_cell.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.required_init())
     return C
