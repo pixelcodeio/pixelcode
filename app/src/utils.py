@@ -1,7 +1,7 @@
 from components.uibutton import UIButton
 from components.uiimageview import UIImageView
 from components.uilabel import UILabel
-from components.uitableview import UITableView
+from components.uitablecollectionview import UITableCollectionView
 from components.uitextfieldview import UITextFieldView
 from components.uiview import UIView
 
@@ -27,7 +27,7 @@ def create_uicolor(color):
   return ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
           ": {})").format(r, g, b, o)
 
-def set_bg(id_, color, in_v=False):
+def set_bg(id_, color):
   """
   Args:
     color: (tuple) the r, g, b values of the background color
@@ -36,10 +36,8 @@ def set_bg(id_, color, in_v=False):
   """
   if id_ is not None:
     return ('{}.backgroundColor = {}\n').format(id_, create_uicolor(color))
-  elif in_v:
-    return ('backgroundColor = {}\n').format(create_uicolor(color))
   else:
-    raise Exception("utils: set_bg has invalid args")
+    return ('backgroundColor = {}\n').format(create_uicolor(color))
 
 def add_subview(view, id_):
   if view is None:
@@ -75,7 +73,7 @@ def set_corner_radius(id_, radius, in_v=False):
   else:
     raise Exception("utils: set_corner_radius has invalid args")
 
-def setup_rect(cid, rect, in_v, tv_header=False, tv_cell=False):
+def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   """
   Args:
     cid: (int) id of component
@@ -88,12 +86,12 @@ def setup_rect(cid, rect, in_v, tv_header=False, tv_cell=False):
 
   c = ""
   if fill is not None:
-    if tv_header:
+    if tc_header and ("list" in cid or "List" in cid): # tableview header
       c += set_bg('contentView', fill)
-    elif tv_cell:
-      c += set_bg(None, fill, in_v=in_v)
+    elif tc_cell or tc_header: # cell or collectionview header
+      c += set_bg(None, fill)
     else:
-      c += set_bg(cid, fill, in_v)
+      c += set_bg(cid, fill)
   if str_c is not None:
     c += set_border_color(cid, str_c, in_v)
   if str_w is not None:
@@ -144,5 +142,7 @@ def create_component(type_, id_, info, env):
       env[key] = False
   if type_ == 'UITextField' or type_ == 'UITextView':
     type_ = 'UITextFieldView'
+  elif type_ == 'UITableView' or type_ == 'UICollectionView':
+    type_ = 'UITableCollectionView'
   # using eval for clean code
   return eval(type_ + "(id_, info, env)") # pylint: disable=W0123

@@ -79,8 +79,9 @@ class BaseLayer(object):
         "opacity",
         "path",
         "rect",
-        "rwidth",
-        "rheight",
+        "rwidth", # width in pixels
+        "rheight", # height in pixels
+        "separator",
         "stroke-color",
         "stroke-width",
         "stroke-opacity",

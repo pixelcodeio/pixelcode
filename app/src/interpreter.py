@@ -7,8 +7,8 @@ class Interpreter(object):
     globals (dict): passed in from Parser
     file_name (str): name of current file being generated
     elements (dict): info on all components
-    tv_elem (dict): info on current tableview being generated, if any
-    tv_methods (str): necessary tableview methods, if needed
+    tc_elem (dict): info on current (table/collection)view being generated
+    tc_methods (str): necessary (table/collection)view methods
     swift (dict): swift code to generate all elements
   """
   def __init__(self, globals_):
@@ -16,16 +16,16 @@ class Interpreter(object):
     self.globals = globals_
     self.file_name = ""
     self.elements = None
-    self.tv_elem = None
-    self.tv_methods = ""
+    self.tc_elem = None
+    self.tc_methods = ""
     self.swift = {}
 
   def clear_tv(self):
     """
-    Returns (None): Resets tv_elem and tv_methods instance variables
+    Returns (None): Resets tc_elem and tc_methods instance variables
     """
-    self.tv_elem = None
-    self.tv_methods = ""
+    self.tc_elem = None
+    self.tc_methods = ""
 
   def gen_global_vars(self, elements):
     """
@@ -54,42 +54,58 @@ class Interpreter(object):
     header += "\noverride func viewDidLoad() {\n"
     return header
 
-  def gen_cell_header(self, tv_id, cell):
+  def gen_cell_header(self, tc_id, cell):
     """
     Args:
-      tv_id (str): id of the parent tableview
+      tc_id (str): id of the parent (table/collection)view
       cell (dict): info of cell being generated
 
     Returns (str): swift code to generate the header of a cell
     """
-    tv_id = tv_id.capitalize()
-    return ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
-            "{{\n\n{}"
-            "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
-            "String?) {{\n"
-            "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-            "layoutSubviews()\n}}\n\n"
-            "override func layoutSubviews() {{\n"
-            "super.layoutSubviews()\n\n"
-           ).format(tv_id, self.init_g_vars(cell.get('components')))
+    tc_id = tc_id.capitalize()
+    C = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
+         "{{\n\n{}"
+         "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
+         "String?) {{\n"
+         "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
+         "layoutSubviews()\n}}\n\n"
+         "override func layoutSubviews() {{\n"
+         "super.layoutSubviews()\n\n"
+        ).format(tc_id, self.init_g_vars(cell.get('components')))
 
-  def gen_header_header(self, tv_id, header):
+    if "collection" in tc_id or "Collection" in tc_id:
+      C = C.replace('style: UITableViewCellStyle, reuseIdentifier: String?',
+                    'frame: CGRect')
+      C = C.replace('style: style, reuseIdentifier: reuseIdentifier',
+                    'frame: frame')
+      C = C.replace('TableView', 'CollectionView')
+
+    return C
+
+  def gen_header_header(self, tc_id, header):
     """
     Args:
-      tv_id (str): id of the parent tableview
+      tc_id (str): id of the parent (table/collection)view
       header: (dict) info of header being generated
 
     Returns (str): swift code for generating the header of a header
     """
-    tv_id = tv_id.capitalize()
-    return ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
-            "UITableViewHeaderFooterView {{\n\n{}"
-            "\noverride init(reuseIdentifier: String?) {{\n"
-            "super.init(reuseIdentifier: reuseIdentifier)\n"
-            "layoutSubviews()\n}}\n\n"
-            "override func layoutSubviews() {{"
-            "\nsuper.layoutSubviews()\n\n"
-           ).format(tv_id, self.init_g_vars(header.get('components')))
+    tc_id = tc_id.capitalize()
+    C = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
+         "UITableViewHeaderFooterView {{\n\n{}"
+         "\noverride init(reuseIdentifier: String?) {{\n"
+         "super.init(reuseIdentifier: reuseIdentifier)\n"
+         "layoutSubviews()\n}}\n\n"
+         "override func layoutSubviews() {{"
+         "\nsuper.layoutSubviews()\n\n"
+        ).format(tc_id, self.init_g_vars(header.get('components')))
+
+    if "collection" in tc_id or "Collection" in tc_id:
+      C = C.replace('reuseIdentifier: String?', 'frame: CGRect')
+      C = C.replace('reuseIdentifier: reuseIdentifier', 'frame: frame')
+      C = C.replace('UITableViewHeaderFooterView', 'UICollectionReusableView')
+
+    return C
 
   def init_g_vars(self, components):
     """
@@ -124,60 +140,69 @@ class Interpreter(object):
       else:
         cf = ComponentFactory(type_, comp, in_v)
         C += cf.swift
-        if type_ == 'UITableView':
-          self.tv_elem = comp
-          self.tv_methods = cf.tv_methods
+        if type_ == 'UITableView' or type_ == 'UICollectionView':
+          self.tc_elem = comp
+          self.tc_methods = cf.tc_methods
+
     return C
 
-  def subclass_tv(self):
+  def subclass_tc(self):
     """
-    Returns (None): adds necessary parent (tableview) classes to current file
+    Returns (None): adds necessary (table/collection)view parent classes
     """
     C = self.swift[self.file_name]
-    tv_ext = ", UITableViewDelegate, UITableViewDataSource "
+    ext = ", UITableViewDelegate, UITableViewDataSource"
+    if self.tc_elem.get('type') == 'UICollectionView':
+      ext = ext.replace('Table', 'Collection')
+      ext += ", UICollectionViewDelegateFlowLayout"
 
     if ": UIViewController" in C:
-      C = utils.ins_after_key(C, ": UIViewController", tv_ext)
+      C = utils.ins_after_key(C, ": UIViewController", ext)
     elif ": UITableViewCell" in C:
-      C = utils.ins_after_key(C, ": UITableViewCell", tv_ext)
+      C = utils.ins_after_key(C, ": UITableViewCell", ext)
     elif ": UITableViewHeaderFooterView" in C:
-      C = utils.ins_after_key(C, ": UITableViewHeaderFooterView", tv_ext)
+      C = utils.ins_after_key(C, ": UITableViewHeaderFooterView", ext)
+    elif ": UICollectionReusableView" in C:
+      C = utils.ins_after_key(C, ": UICollectionReusableView", ext)
+    elif ": UICollectionViewCell" in C:
+      C = utils.ins_after_key(C, ": UICollectionViewCell", ext)
     else:
-      raise Exception("interpreter: can't generate inner tableview")
+      raise Exception("interpreter: invalid file in subclass_tc()")
 
     self.swift[self.file_name] = C
 
   def setup_tv_ch(self, type_, id_, info):
     """
     Returns (bool):
-      fills in swift var with code to setup tableview header/cell file.
-      True if there is an inner tableview, False otherwise.
+      fills in swift var with code to setup (table/collection)view header/cell
+      file. True if there is an inner tableview, False otherwise.
     """
     if type_ == "cell":
       self.file_name = id_.capitalize() + "Cell"
       C = self.gen_cell_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), True, tv_cell=True)
+      C += utils.setup_rect(id_, info.get('rect'), True, tc_cell=True)
     else: # must be tableview header
       self.file_name = id_.capitalize() + "HeaderView"
       C = self.gen_header_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), True, tv_header=True)
+      C += utils.setup_rect(id_, info.get('rect'), True, tc_header=True)
 
     C += self.gen_comps(info.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.required_init())
 
-    if self.tv_elem is None:
+    if self.tc_elem is None:
       self.swift[self.file_name] = C + "}"
       return False
-    else: # inner tableview exists
-      self.subclass_tv()
-      C += "\n{}\n}\n".format(self.tv_methods)
-      self.swift[self.file_name] = C
-      id_ = self.tv_elem.get('id')
-      cell = self.tv_elem.get('cells')[0]
-      self.file_name = id_.capitalize() + 'Cell'
-      self.swift[self.file_name] = self.gen_cell_header(id_, cell)
-      self.elements = self.tv_elem
-      return True
+
+    # inner tableview exists
+    self.subclass_tc()
+    C += "\n{}\n}\n".format(self.tc_methods)
+    self.swift[self.file_name] = C
+    id_ = self.tc_elem.get('id')
+    cell = self.tc_elem.get('cells')[0]
+    self.file_name = id_.capitalize() + 'Cell'
+    self.swift[self.file_name] = self.gen_cell_header(id_, cell)
+    self.elements = self.tc_elem
+    return True
 
   def gen_elements(self, in_v):
     """
@@ -185,22 +210,22 @@ class Interpreter(object):
     """
     self.swift[self.file_name] += self.gen_comps(self.elements, in_v)
 
-    if self.tv_elem is None:
+    if self.tc_elem is None:
       self.swift[self.file_name] += "\n}\n}"
     else:
-      self.subclass_tv()
-      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tv_methods)
+      self.subclass_tc()
+      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tc_methods)
 
-      tv_elem = self.tv_elem
-      tv_id = tv_elem.get('id')
-      tv_header = tv_elem.get('header')
+      tc_elem = self.tc_elem
+      tc_id = tc_elem.get('id')
+      tc_header = tc_elem.get('header')
 
-      if tv_header is not None:
-        if self.setup_tv_ch('header', tv_id, tv_header): # nested tableview
+      if tc_header is not None:
+        if self.setup_tv_ch('header', tc_id, tc_header): # nested table view
           self.gen_elements(True)
 
-      tv_cell = tv_elem.get('cells')[0]
-      if self.setup_tv_ch("cell", tv_id, tv_cell): # nested tableview
+      tc_cell = tc_elem.get('cells')[0]
+      if self.setup_tv_ch("cell", tc_id, tc_cell): # nested table view
         self.gen_elements(True)
 
   def gen_code(self, elements):
