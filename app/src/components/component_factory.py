@@ -3,7 +3,7 @@ from . import *
 
 class ComponentFactory(object):
   """
-  Class used to generate components.
+  Initializes components (constraints, background-color, etc.)
     swift (str): swift code to generate a component
     tc_methods (str): (table/collection) view methods
   """
