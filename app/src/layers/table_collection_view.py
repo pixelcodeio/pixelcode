@@ -1,3 +1,4 @@
+import math
 from layers.rect import Rect
 from layers.text import Text
 from . import *
@@ -32,9 +33,19 @@ class TableCollectionView(BaseLayer):
     if not cells:
       raise Exception("TableCollectionView: No cells in " + elem["id"])
 
-    separator = 0
+    separator = []
     if len(cells) >= 2:
-      separator = cells[1]["cy"] - cells[0]["cy"] #TODO: fix this
+      cells = sorted(cells, key=lambda c: c.get('y')) # sort by y
+      if elem['type'] == 'UITableView':
+        vert_sep = cells[1]['y'] - cells[0]['y'] - cells[0]['rheight']
+        separator = [vert_sep]
+      else:
+        hor_sep = cells[1]['x'] - cells[0]['x'] - cells[0]['rwidth']
+        separator = [hor_sep]
+        npr = math.floor(375/cells[0]['rwidth']) # number of cells per row
+        if len(cells) > npr: # more than one row exists
+          vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
+          separator.append(vert_sep)
 
     elem["rect"] = rect
     elem["header"] = header

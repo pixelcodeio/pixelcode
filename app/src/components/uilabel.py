@@ -20,7 +20,7 @@ class UILabel(BaseComponent):
     """
     Returns (str): swift code to create an attributed string.
     """
-    return ('var {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
+    return ('let {}AttributedStr = NSMutableAttributedString(string: "{}")\n'
            ).format(self.id, text)
 
   def gen_text(self, text):
@@ -53,9 +53,9 @@ class UILabel(BaseComponent):
 
     Returns (str): swift code to center text and wrap lines
     """
-    return ("{}.textAlignment = .{}\n{}.numberOfLines = 0\n"
-            "{}.lineBreakMode = .byWordWrapping\n"
-           ).format(self.id, text_align, self.id, self.id)
+    return ("{0}.textAlignment = .{1}\n{0}.numberOfLines = 0\n"
+            "{0}.lineBreakMode = .byWordWrapping\n"
+           ).format(self.id, text_align)
 
   def gen_font_family_size(self, font, size):
     """
@@ -105,27 +105,27 @@ class UILabel(BaseComponent):
     """
     Returns: (str) swift code to set font
     """
-    return ("{}.addAttribute(.font, value: {}"
-            ", range: NSRange(location: 0, length: {}.length))\n"
-           ).format(str_id, super().create_font(font, size), str_id)
+    return ("{0}.addAttribute(.font, value: {1}"
+            ", range: NSRange(location: 0, length: {0}.length))\n"
+           ).format(str_id, super().create_font(font, size))
 
   def gen_line_sp(self, str_id, line_sp):
     """
     Returns: (str) swift code to set line spacing
     """
-    return ('let {}ParaStyle = NSMutableParagraphStyle()\n'
-            '{}ParaStyle.lineSpacing = {}\n'
-            '{}.addAttribute(.paragraphStyle, value: {}ParaStyle, range: '
-            'NSRange(location: 0, length: {}.length))\n'
-           ).format(self.id, self.id, line_sp, str_id, self.id, str_id)
+    return ('let {0}ParaStyle = NSMutableParagraphStyle()\n'
+            '{0}ParaStyle.lineSpacing = {1}\n'
+            '{2}.addAttribute(.paragraphStyle, value: {0}ParaStyle, range: '
+            'NSRange(location: 0, length: {2}.length))\n'
+           ).format(self.id, line_sp, str_id)
 
   def gen_char_sp(self, str_id, char_sp):
     """
     Returns (str): swift code to set char-spacing
     """
-    return ('{}.addAttribute(.kern, value: {}, range: '
-            'NSRange(location: 0, length: {}.length))\n'
-           ).format(str_id, char_sp, str_id)
+    return ('{0}.addAttribute(.kern, value: {1}, range: '
+            'NSRange(location: 0, length: {0}.length))\n'
+           ).format(str_id, char_sp)
 
   def gen_attributed_tprop(self, tspan, line_sp, char_sp):
     """

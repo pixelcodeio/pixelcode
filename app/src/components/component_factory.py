@@ -5,7 +5,7 @@ class ComponentFactory(object):
   """
   Class used to generate components.
     swift (str): swift code to generate a component
-    tv_methods (str): tableview methods for generating a tableview
+    tc_methods (str): (table/collection) view methods
   """
   def __init__(self, type_, info, in_v, bgc=None):
     """
@@ -14,7 +14,7 @@ class ComponentFactory(object):
       info (dict): info on component
       in_v (bool): is whether generating from within a custom view
     """
-    self.tv_methods = ""
+    self.tc_methods = ""
     self.swift = self.generate_component(type_, info, bgc=bgc, in_v=in_v)
 
   def generate_component(self, type_, info, bgc=None, in_v=False):
@@ -26,20 +26,18 @@ class ComponentFactory(object):
 
     C = ""
     if not in_v:
-      C += "{} = {}()\n".format(id_, type_)
-
-    C += '{}.translatesAutoresizingMaskIntoConstraints = false\n'.format(id_)
-
-    if rect is not None:
-      C += utils.setup_rect(id_, rect, in_v)
+      C += self.init_comp(type_, id_)
 
     component = utils.create_component(type_, id_, info, {"in_view": in_v})
     C += component.swift
 
-    if type_ == 'UITableView':
-      self.tv_methods = component.tv_methods
+    if rect is not None:
+      C += utils.setup_rect(id_, rect, in_v)
+
+    if type_ == 'UITableView' or type_ == 'UICollectionView':
+      self.tc_methods = component.tc_methods
     elif type_ == 'UILabel':
-      C += utils.set_bg(id_, bgc, in_v=in_v)
+      C += utils.set_bg(id_, bgc)
 
     view = 'view' if not in_v else None
     C += utils.add_subview(view, id_)
@@ -93,3 +91,13 @@ class ComponentFactory(object):
         "left": "right",
         "right": "left"
     }[d]
+
+  def init_comp(self, type_, id_):
+    """
+    Returns (str): swift code to initialize a component
+    """
+    if type_ == 'UICollectionView':
+      return ("let layout = UICollectionViewFlowLayout()\n"
+              "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
+             ).format(id_, type_)
+    return "{} = {}()\n".format(id_, type_)
