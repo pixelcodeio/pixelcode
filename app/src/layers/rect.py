@@ -7,6 +7,7 @@ class Rect(BaseLayer):
   def parse_elem(self, elem):
     if "rx" in elem.attrs:
       elem["border-radius"] = elem["rx"]
+
     if "stroke" in elem.attrs and elem["stroke"] != "none":
       elem["stroke-color"] = utils.convert_hex_to_rgb(elem["stroke"])
 

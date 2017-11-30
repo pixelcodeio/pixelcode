@@ -36,42 +36,37 @@ def set_bg(id_, color):
   """
   if id_ is not None:
     return ('{}.backgroundColor = {}\n').format(id_, create_uicolor(color))
-  else:
-    return ('backgroundColor = {}\n').format(create_uicolor(color))
+  return ('backgroundColor = {}\n').format(create_uicolor(color))
 
 def add_subview(view, id_):
   if view is None:
     return 'addSubview({})\n\n'.format(id_)
   return '{}.addSubview({})\n\n'.format(view, id_)
 
-def set_border_width(id_, width, in_v=False):
+def set_border_width(id_, width):
   """
   Returns: (str) swift code to set the border width of id_.
   """
-  if in_v:
-    return ("layer.borderWidth = {}\n").format(width)
-  return ("{}.layer.borderWidth = {}\n").format(id_, width)
+  if id_ is not None:
+    return ("{}.layer.borderWidth = {}\n").format(id_, width)
+  return ("layer.borderWidth = {}\n").format(width)
 
-def set_border_color(id_, color, in_v=False):
+def set_border_color(id_, color):
   """
   Returns: (str) swift code to set the border color of id_.
   """
-  if in_v:
-    return ("layer.borderColor = {}.cgColor\n"
-           ).format(create_uicolor(color))
-  return ("{}.layer.borderColor = {}.cgColor\n"
-         ).format(id_, create_uicolor(color))
+  if id_ is not None:
+    return ("{}.layer.borderColor = {}.cgColor\n"
+           ).format(id_, create_uicolor(color))
+  return ("layer.borderColor = {}.cgColor\n").format(create_uicolor(color))
 
-def set_corner_radius(id_, radius, in_v=False):
+def set_corner_radius(id_, radius):
   """
   Returns: (str) swift code to set the corner radius of id_.
   """
   if id_ is not None:
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
-  elif in_v:
-    return ("layer.cornerRadius = {}\n").format(radius)
-  else:
-    raise Exception("utils: set_corner_radius has invalid args")
+  return ("layer.cornerRadius = {}\n").format(radius)
 
 def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   """
@@ -85,23 +80,26 @@ def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   fill, border_r, str_c, str_w = get_vals(keys, rect)
 
   c = ""
+  if tc_cell or tc_header:
+    cid = None
+
   if fill is not None:
-    if tc_header and ("list" in cid or "List" in cid): # tableview header
-      c += set_bg('contentView', fill)
-    elif tc_cell or tc_header: # cell or collectionview header
-      c += set_bg(None, fill)
+    if tc_header:
+      c += set_bg('backgroundView?', fill)
     else:
       c += set_bg(cid, fill)
+  else:
+    c += set_bg(cid, [0, 0, 0, 0]) # transparent color
   if str_c is not None:
-    c += set_border_color(cid, str_c, in_v)
+    c += set_border_color(cid, str_c)
   if str_w is not None:
-    c += set_border_width(cid, str_w, in_v)
+    c += set_border_width(cid, str_w)
   if border_r is not None:
-    c += set_corner_radius(cid, border_r, in_v)
+    c += set_corner_radius(cid, border_r)
 
   return c
 
-def required_init():
+def req_init():
   """
   Returns: (str) swift code for a required function for custom views.
   """
@@ -140,6 +138,7 @@ def create_component(type_, id_, info, env):
   for key in ["set_prop", "in_view", "in_cell", "in_header"]:
     if key not in env:
       env[key] = False
+
   if type_ == 'UITextField' or type_ == 'UITextView':
     type_ = 'UITextFieldView'
   elif type_ == 'UITableView' or type_ == 'UICollectionView':

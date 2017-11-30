@@ -1,7 +1,7 @@
+import math
 from layers.rect import Rect
 from layers.text import Text
 from . import *
-import math
 
 class TableCollectionView(BaseLayer):
   """
@@ -35,7 +35,7 @@ class TableCollectionView(BaseLayer):
 
     separator = []
     if len(cells) >= 2:
-      sort_c = sorted(cells, key=lambda c: c.get('y'))
+      sort_c = sorted(cells, key=lambda c: c.get('y')) # sort by y
       if elem['type'] == 'UITableView':
         vert_sep = sort_c[1]['y'] - sort_c[0]['y'] - sort_c[0]['rheight']
         separator = [vert_sep]
@@ -43,7 +43,7 @@ class TableCollectionView(BaseLayer):
         hor_sep = sort_c[1]['x'] - sort_c[0]['x'] - sort_c[0]['rwidth']
         separator = [hor_sep]
         npr = math.floor(375/sort_c[0]['rwidth']) # number of cells per row
-        if len(cells) > npr:
+        if len(cells) > npr: # more than one row exists
           vert_sep = sort_c[npr]['y'] - sort_c[0]['y'] - sort_c[0]['rheight']
           separator.append(vert_sep)
 

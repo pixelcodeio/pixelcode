@@ -37,7 +37,9 @@ class UITableCollectionView(BaseComponent):
       else: # ch == "header"
         ch_id = "header.{}".format(subview_ids[j])
 
-      if type_ == 'UILabel':
+      if type_ == 'UICollectionView':
+        continue
+      elif type_ == 'UILabel':
         if ch == "cell":
           env = {"set_prop": True, "in_cell": True}
           com = utils.create_component(type_, ch_id, comp, env)
@@ -134,8 +136,9 @@ class UITableCollectionView(BaseComponent):
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
             "indexPath: IndexPath) -> CGSize {{\nreturn "
-            "CGSize(width: {}.frame.width*{}, height: {}.frame.height*{})\n}}\n"
-           ).format(self.id, width, self.id, height)
+            "CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height*{2}"
+            ")\n}}\n"
+           ).format(self.id, width, height)
 
   def view_for_header(self, header):
     """
@@ -158,10 +161,10 @@ class UITableCollectionView(BaseComponent):
       path = ", for: indexPath"
       sec = "indexPath.section"
 
-    C = ('{} {{\nlet header = {}.{}: "{}Header"{}) as! {}HeaderView\n'
-         'switch {} {{\n'
+    C = ('{0} {{\nlet header = {1}.{2}: "{1}Header"{3}) as! {4}HeaderView\n'
+         'switch {5} {{\n'
          'case 0:\n'
-        ).format(func, self.id, deq, self.id, path, self.id.capitalize(), sec)
+        ).format(func, self.id, deq, path, self.id.capitalize(), sec)
 
     components = header.get('components')
     subview_ids = [comp.get('id') for comp in components]
@@ -190,9 +193,9 @@ class UITableCollectionView(BaseComponent):
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
             "HeaderInSection section: Int) -> CGSize {{\n"
-            "return CGSize(width: {}.frame.width*{}, height: {}.frame.height*{}"
-            ")\n}}\n"
-           ).format(self.id, width, self.id, height)
+            "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
+            "height*{2})\n}}\n"
+           ).format(self.id, width, height)
 
   def reg_header(self):
     """
@@ -200,8 +203,8 @@ class UITableCollectionView(BaseComponent):
     """
     id_ = self.id
     type_ = self.info.get('type')
-    C = ('{}.register({}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
-         ' "{}Header")\n').format(id_, id_.capitalize(), id_)
+    C = ('{0}.register({1}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
+         ' "{0}Header")\n').format(id_, id_.capitalize())
 
     if type_ == 'UICollectionView':
       ins = ("forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,"
@@ -221,11 +224,13 @@ class UITableCollectionView(BaseComponent):
     sep = self.info.get('separator')
     if len(sep) > 0:
       C = "layout.minimumInteritemSpacing = {}\n".format(sep[0])
-      bounce = "{}.alwaysBounceHorizontal = true\n".format(self.id)
+      scroll = ("layout.scrollDirection = .horizontal\n"
+                "{}.alwaysBounceHorizontal = true\n").format(self.id)
       if len(sep) == 2:
-        bounce = bounce.replace('Horizontal', 'Vertical')
+        scroll = scroll.replace('Horizontal', 'Vertical')
+        scroll = scroll.replace('horizontal', 'vertical')
         C += "layout.minimumLineSpacing = {}\n".format(sep[1])
-      C += bounce
+      C += scroll
     return C
 
   def setup_component(self):
@@ -239,10 +244,10 @@ class UITableCollectionView(BaseComponent):
     if header is not None:
       C += self.reg_header()
 
-    C += ('{}.register({}Cell.self, forCellReuseIdentifier: "{}CellID")\n'
-          '{}.delegate = self\n'
-          '{}.dataSource = self\n'
-         ).format(id_, id_.capitalize(), id_, id_, id_)
+    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
+          '{0}.delegate = self\n'
+          '{0}.dataSource = self\n'
+         ).format(id_, id_.capitalize())
 
     if self.info.get('type') == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
