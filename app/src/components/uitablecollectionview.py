@@ -9,15 +9,15 @@ class UITableCollectionView(BaseComponent):
     keys = ["cells", "header"]
     cells, header = utils.get_vals(keys, self.info)
 
-    m = self.cell_for_row_item(cells)
-    m += self.number_in_section(cells)
-    m += self.size_for_row_item(cells)
+    methods = self.cell_for_row_item(cells)
+    methods += self.number_in_section(cells)
+    methods += self.size_for_row_item(cells)
 
     if header is not None:
-      m += self.view_for_header(header)
-      m += self.size_for_header(header)
+      methods += self.view_for_header(header)
+      methods += self.size_for_header(header)
 
-    self.tc_methods = m
+    self.tc_methods = methods
     return self.setup_component()
 
   def gen_comps_ch(self, ch, components, subview_ids):
@@ -42,10 +42,9 @@ class UITableCollectionView(BaseComponent):
       elif type_ == 'UILabel':
         if ch == "cell":
           env = {"set_prop": True, "in_cell": True}
-          com = utils.create_component(type_, ch_id, comp, env)
         else: # ch == "header"
           env = {"set_prop": True, "in_header": True}
-          com = utils.create_component(type_, ch_id, comp, env)
+        com = utils.create_component(type_, ch_id, comp, env)
       else:
         com = utils.create_component(type_, ch_id, comp, {"set_prop": True})
       C += com.swift
@@ -152,19 +151,19 @@ class UITableCollectionView(BaseComponent):
               "section: Int) -> UIView?")
       deq = "dequeueReusableHeaderFooterView(withIdentifier"
       path = ""
-      sec = "section"
+      section = "section"
     else:
       func = ("func collectionView(_ collectionView: UICollectionView,"
               " viewForSupplementaryElementOfKind kind: String, at indexPath: "
               "IndexPath) -> UICollectionReusableView")
       deq = "dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier"
       path = ", for: indexPath"
-      sec = "indexPath.section"
+      section = "indexPath.section"
 
     C = ('{0} {{\nlet header = {1}.{2}: "{1}Header"{3}) as! {4}HeaderView\n'
          'switch {5} {{\n'
          'case 0:\n'
-        ).format(func, self.id, deq, path, self.id.capitalize(), sec)
+        ).format(func, self.id, deq, path, self.id.capitalize(), section)
 
     components = header.get('components')
     subview_ids = [comp.get('id') for comp in components]

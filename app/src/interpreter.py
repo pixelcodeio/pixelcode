@@ -209,7 +209,9 @@ class Interpreter(object):
 
   def move_cv(self):
     """
-    Returns (None): moves collection view setup from layoutSubviews to init func
+    Returns (None):
+      Moves swift code that sets up UICollectionView to inside current file's
+      init function.
     """
     C = self.swift[self.file_name]
     beg = C.find('layout.')

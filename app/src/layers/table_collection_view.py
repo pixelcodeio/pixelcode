@@ -35,16 +35,16 @@ class TableCollectionView(BaseLayer):
 
     separator = []
     if len(cells) >= 2:
-      sort_c = sorted(cells, key=lambda c: c.get('y')) # sort by y
+      cells = sorted(cells, key=lambda c: c.get('y')) # sort by y
       if elem['type'] == 'UITableView':
-        vert_sep = sort_c[1]['y'] - sort_c[0]['y'] - sort_c[0]['rheight']
+        vert_sep = cells[1]['y'] - cells[0]['y'] - cells[0]['rheight']
         separator = [vert_sep]
       else:
-        hor_sep = sort_c[1]['x'] - sort_c[0]['x'] - sort_c[0]['rwidth']
+        hor_sep = cells[1]['x'] - cells[0]['x'] - cells[0]['rwidth']
         separator = [hor_sep]
-        npr = math.floor(375/sort_c[0]['rwidth']) # number of cells per row
+        npr = math.floor(375/cells[0]['rwidth']) # number of cells per row
         if len(cells) > npr: # more than one row exists
-          vert_sep = sort_c[npr]['y'] - sort_c[0]['y'] - sort_c[0]['rheight']
+          vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
           separator.append(vert_sep)
 
     elem["rect"] = rect
