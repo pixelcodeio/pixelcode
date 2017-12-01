@@ -21,4 +21,4 @@ class Button(BaseLayer):
     elem["rect"] = rect
     elem["text"] = text
 
-    return super(Button, self).parse_elem(elem)
+    return super().parse_elem(elem)

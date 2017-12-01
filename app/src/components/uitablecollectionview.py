@@ -242,7 +242,7 @@ class UITableCollectionView(BaseComponent):
 
     C = ""
     sep = self.info.get('separator')
-    if len(sep) > 0:
+    if sep:
       C = "layout.minimumInteritemSpacing = {}\n".format(sep[0])
       scroll = ("layout.scrollDirection = .horizontal\n"
                 "{}.alwaysBounceHorizontal = true\n").format(self.id)
