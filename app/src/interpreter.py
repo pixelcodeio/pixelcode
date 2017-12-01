@@ -16,7 +16,7 @@ class Interpreter(object):
     self.globals = globals_
     self.file_name = ""
     self.components = None
-    self.tc_elem = None
+    self.tc_elem = None # TODO: change this to a queue
     self.tc_methods = ""
     self.swift = {}
 

@@ -7,32 +7,35 @@ class NavBar(BaseLayer):
   Class representing a Navigation Bar in Sketch
   """
   def parse_elem(self, elem):
-    left_button = None
-    right_button = None
+    left_bar_button = None
+    right_bar_button = None
     title = None
     for child in elem["children"]:
-      if child["type"] == "UIBarButtonItem":
-        if child["x"] < 375.0/2:
-          if left_button:
-            raise Exception("Navbar: Only one left button allowed.")
+      if child["type"] == "UIView":
+        if "barButton" in child["id"] or "BarButton" in child["id"]:
+          if child["x"] < 375.0/2:
+            if left_bar_button:
+              raise Exception("Navbar: Only one left button allowed.")
+            else:
+              left_bar_button = child
           else:
-            left_button = child
+            if right_bar_button:
+              raise Exception("Navbar: Only one right button allowed.")
+            else:
+              right_bar_button = child
         else:
-          if right_button:
-            raise Exception("Navbar: Only one right button allowed.")
+          if title:
+            raise Exception("Navbar: Only one title view allowed.")
           else:
-            right_button = child
-      elif child["type"] == "UIView":
-        if title:
-          raise Exception("Navbar: Only one title view allowed.")
-        else:
-          title = child
+            title = child
+      else:
+        raise Exception("Navbar: Navbar has unsupported elements.")
 
-    if title is None and left_button is None and right_button is None:
+    if title is None and left_bar_button is None and right_bar_button is None:
       raise Exception("Navbar: Navbar is empty.")
 
-    elem["left-button"] = left_button
-    elem["right-button"] = right_button
+    elem["left-bar-button"] = left_bar_button
+    elem["right-bar-button"] = right_bar_button
     elem["title"] = title
 
     return super().parse_elem(elem)
