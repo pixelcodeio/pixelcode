@@ -108,12 +108,14 @@ class Parser(object):
           elem.name = "button"
         elif "Cell" in elem["id"] or "cell" in elem["id"]:
           elem.name = "cell"
-        elif "CollectionView" in elem["id"]:
+        elif "CollectionView" or "collectionView" in elem["id"]:
           elem.name = "collectionview"
         elif "Header" in elem["id"] or "header" in elem["id"]:
           elem.name = "header"
-        elif "ListView" in elem["id"]:
+        elif "ListView" in elem["id"] or "listView" in elem["id"]:
           elem.name = "tableview"
+        elif "NavBar" in elem["id"] or "navBar" in elem["id"]:
+          elem.name = "navbar"
         elif "TextField" in elem["id"]:
           elem.name = "textfield"
         else: # ungroup elements inside
@@ -136,6 +138,8 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name == "image":
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "navbar":
+        parsed_elem = NavBar(elem, "UINavigationBar")
       elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "tableview":

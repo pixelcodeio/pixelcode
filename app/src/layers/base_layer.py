@@ -74,11 +74,13 @@ class BaseLayer(object):
         "height",
         "horizontal",
         "id",
+        "left-button",
         "left-inset",
         "line-spacing",
         "opacity",
         "path",
         "rect",
+        "right-button",
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "separator",
@@ -88,6 +90,7 @@ class BaseLayer(object):
         "text",
         "textspan",
         "text-align",
+        "title",
         "type",
         "vertical",
         "width",
