@@ -16,6 +16,64 @@ class UILabel(BaseComponent):
       return self.gen_text(contents)
     return self.setup_component()
 
+  def setup_component(self):
+    """
+    Returns (str): The swift code to setup uilabel
+    """
+    keys = ['textspan', 'line-spacing', 'char-spacing']
+    tspan, line_sp, char_sp = [self.info.get(k) for k in keys]
+    C = ""
+    if len(tspan) == 1: # the contents of the textspan don't vary
+      txt = tspan[0]
+      contents = txt.get('contents')
+      fill = txt.get('fill')
+      txt_align = txt.get('text-align')
+      font = txt.get('font-family')
+      size = txt.get('font-size')
+      in_v = self.env["in_view"]
+
+      if (line_sp is not None or char_sp is not None) and not in_v:
+        C += self.gen_attributed_tprop(tspan, line_sp, char_sp)
+      elif not in_v:
+        C += self.gen_text(contents) if contents != None else ""
+        C += self.gen_text_color(fill) if fill != None else ""
+        C += self.gen_font_family_size(font, size)
+      elif (line_sp is None and char_sp is None) and in_v:
+        C += self.gen_text_color(fill) if fill != None else ""
+        C += self.gen_font_family_size(font, size)
+
+      if txt_align is None:
+        C += self.center_and_wrap("center")
+      else:
+        C += self.center_and_wrap(txt_align)
+      return C
+
+    else:
+      raise Exception("UILabel: Textspan label contains varying text.")
+      #TODO: Case for varying text.
+
+  def gen_attributed_tprop(self, tspan, line_sp, char_sp):
+    """
+    Returns (str): swift code to setup/set the attributed text property
+    """
+    txt = tspan[0]
+    keys = ['contents', 'fill', 'font-family', 'font-size']
+    contents, fill, font, size = utils.get_vals(keys, txt)
+    contents = contents.decode('utf-8')
+
+    C = self.create_attributed_str(contents)
+    str_id = '{}AttributedStr'.format(self.id)
+
+    C += self.gen_attributed_color(str_id, fill)
+    C += self.gen_attributed_font(str_id, font, size)
+    if line_sp is not None:
+      line_sp = str(float(line_sp) / float(size))
+      C += self.gen_line_sp(str_id, line_sp)
+    if char_sp is not None:
+      C += self.gen_char_sp(str_id, char_sp)
+    C += self.gen_attributed_text(str_id)
+    return C
+
   def create_attributed_str(self, text):
     """
     Returns (str): swift code to create an attributed string.
@@ -108,61 +166,3 @@ class UILabel(BaseComponent):
     """
     return self.gen_add_attribute(str_id, '.kern', char_sp,
                                   [0, str_id + '.length'])
-
-  def gen_attributed_tprop(self, tspan, line_sp, char_sp):
-    """
-    Returns (str): swift code to setup/set the attributed text property
-    """
-    txt = tspan[0]
-    keys = ['contents', 'fill', 'font-family', 'font-size']
-    contents, fill, font, size = utils.get_vals(keys, txt)
-    contents = contents.decode('utf-8')
-
-    C = self.create_attributed_str(contents)
-    str_id = '{}AttributedStr'.format(self.id)
-
-    C += self.gen_attributed_color(str_id, fill)
-    C += self.gen_attributed_font(str_id, font, size)
-    if line_sp is not None:
-      line_sp = str(float(line_sp) / float(size))
-      C += self.gen_line_sp(str_id, line_sp)
-    if char_sp is not None:
-      C += self.gen_char_sp(str_id, char_sp)
-    C += self.gen_attributed_text(str_id)
-    return C
-
-  def setup_component(self):
-    """
-    Returns (str): The swift code to setup uilabel
-    """
-    keys = ['textspan', 'line-spacing', 'char-spacing']
-    tspan, line_sp, char_sp = [self.info.get(k) for k in keys]
-    C = ""
-    if len(tspan) == 1: # the contents of the textspan don't vary
-      txt = tspan[0]
-      contents = txt.get('contents')
-      fill = txt.get('fill')
-      txt_align = txt.get('text-align')
-      font = txt.get('font-family')
-      size = txt.get('font-size')
-      in_v = self.env["in_view"]
-
-      if (line_sp is not None or char_sp is not None) and not in_v:
-        C += self.gen_attributed_tprop(tspan, line_sp, char_sp)
-      elif not in_v:
-        C += self.gen_text(contents) if contents != None else ""
-        C += self.gen_text_color(fill) if fill != None else ""
-        C += self.gen_font_family_size(font, size)
-      elif (line_sp is None and char_sp is None) and in_v:
-        C += self.gen_text_color(fill) if fill != None else ""
-        C += self.gen_font_family_size(font, size)
-
-      if txt_align is None:
-        C += self.center_and_wrap("center")
-      else:
-        C += self.center_and_wrap(txt_align)
-      return C
-
-    else:
-      raise Exception("UILabel: Textspan label contains varying text.")
-      #TODO: Case for varying text.
