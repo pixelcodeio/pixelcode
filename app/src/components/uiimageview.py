@@ -10,17 +10,6 @@ class UIImageView(BaseComponent):
       return self.set_image(path) if path is not None else ""
     return self.setup_component()
 
-  def set_image(self, image_fname):
-    """
-    Args:
-      image_fname (str): name of the image file
-
-    Returns (str): swift code to set the image
-    """
-    index = image_fname.index(".")
-    image_name = image_fname[0:index]
-    return ("{}.image = UIImage(named: \"{}\")\n").format(self.id, image_name)
-
   def setup_component(self):
     """
     Returns (str): swift code to setup uiimageview
@@ -37,3 +26,14 @@ class UIImageView(BaseComponent):
     if stroke_w is not None:
       C += utils.set_border_width(self.id, stroke_w)
     return C
+
+  def set_image(self, image_fname):
+    """
+    Args:
+      image_fname (str): name of the image file
+
+    Returns (str): swift code to set the image
+    """
+    index = image_fname.index(".")
+    image_name = image_fname[0:index]
+    return ("{}.image = UIImage(named: \"{}\")\n").format(self.id, image_name)

@@ -12,6 +12,26 @@ class UITextFieldView(BaseComponent):
       return self.set_placeholder_tc(placeholder, pl_color)
     return self.setup_component()
 
+  def setup_component(self):
+    """
+    Returns (str): swift code to setup uitextfield/view.
+    """
+    info = self.info
+    tspan = info.get('text').get('textspan')
+    left_inset = info.get('left-inset')
+    txt = tspan[0]
+
+    keys = ["contents", "fill", "font-family", "font-size"]
+    placeholder, p_color, font, size = utils.get_vals(keys, txt)
+
+    C = ""
+    if not self.env["in_view"]:
+      C += self.set_placeholder_tc(placeholder, p_color)
+    C += self.set_font_family_size(font, size)
+    C += self.set_left_inset(left_inset)
+    C += super().clips_to_bounds()
+    return C
+
   def set_placeholder_tc(self, text, color):
     """
     Returns: (str) swift code to set placeholder's text and color.
@@ -33,23 +53,3 @@ class UITextFieldView(BaseComponent):
     Returns: (str) The swift code to set font-family and size
     """
     return ("{}.font = {}\n").format(self.id, super().create_font(font, size))
-
-  def setup_component(self):
-    """
-    Returns (str): swift code to setup uitextfield/view.
-    """
-    info = self.info
-    tspan = info.get('text').get('textspan')
-    left_inset = info.get('left-inset')
-    txt = tspan[0]
-
-    keys = ["contents", "fill", "font-family", "font-size"]
-    placeholder, p_color, font, size = utils.get_vals(keys, txt)
-
-    C = ""
-    if not self.env["in_view"]:
-      C += self.set_placeholder_tc(placeholder, p_color)
-    C += self.set_font_family_size(font, size)
-    C += self.set_left_inset(left_inset)
-    C += super().clips_to_bounds()
-    return C

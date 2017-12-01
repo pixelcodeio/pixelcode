@@ -20,6 +20,27 @@ class UITableCollectionView(BaseComponent):
     self.tc_methods = methods
     return self.setup_component()
 
+  def setup_component(self):
+    """
+    Returns: (str) The swift code to setup a UITableView
+    """
+    C = self.gen_spacing()
+    header = self.info.get('header')
+    id_ = self.id
+
+    if header is not None:
+      C += self.reg_header()
+
+    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
+          '{0}.delegate = self\n'
+          '{0}.dataSource = self\n'
+         ).format(id_, id_.capitalize())
+
+    if self.info.get('type') == 'UICollectionView':
+      C = C.replace('CellReuse', 'CellWithReuse')
+
+    return C
+
   def gen_comps_ch(self, ch, components, subview_ids):
     """
     Args:
@@ -230,25 +251,4 @@ class UITableCollectionView(BaseComponent):
         scroll = scroll.replace('horizontal', 'vertical')
         C += "layout.minimumLineSpacing = {}\n".format(sep[1])
       C += scroll
-    return C
-
-  def setup_component(self):
-    """
-    Returns: (str) The swift code to setup a UITableView
-    """
-    C = self.gen_spacing()
-    header = self.info.get('header')
-    id_ = self.id
-
-    if header is not None:
-      C += self.reg_header()
-
-    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
-          '{0}.delegate = self\n'
-          '{0}.dataSource = self\n'
-         ).format(id_, id_.capitalize())
-
-    if self.info.get('type') == 'UICollectionView':
-      C = C.replace('CellReuse', 'CellWithReuse')
-
     return C

@@ -20,26 +20,23 @@ class Interpreter(object):
     self.tc_methods = ""
     self.swift = {}
 
-  def clear_tv(self):
-    """
-    Returns (None): Resets tc_elem and tc_methods instance variables
-    """
-    self.tc_elem = None
-    self.tc_methods = ""
-
-  def gen_global_vars(self, components):
+  def gen_code(self, components):
     """
     Args:
-      components (list): list of components from Parser
+      components: (list) list of components
 
-    Returns: (str) swift code of the global variables
+    Returns: Fills in the swift instance var with generated code for artboard.
     """
-    # one-liner to concat all variable names
-    variables = ["var {}: {}!\n".format(e['id'], e['type']) for e in components]
-    return "".join(variables)
+    C = self.gen_viewcontroller_header(components) \
+        + utils.set_bg('view', self.globals['bgc'])
+    vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
+    self.file_name = vc
+    self.swift[vc] = C
+    self.components = components
+    self.gen_components(False)
 
-  def gen_vc_header(self, components):
-    """ Generates header of view controller
+  def gen_viewcontroller_header(self, components):
+    """
     Args:
       components (list): list of components
 
@@ -50,9 +47,49 @@ class Interpreter(object):
     header = ("import UIKit\nimport SnapKit\n\n"
               "class {}: UIViewController {{\n\n"
              ).format(viewController)
-    header += self.gen_global_vars(components)
+
+    # one-liner to concat all variable names
+    gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in components]
+    header += "".join(gvars)
+
     header += "\noverride func viewDidLoad() {\n"
     return header
+
+  def gen_components(self, in_v):
+    """
+    Returns: Fills in the swift instance variable with generated code.
+    """
+    self.swift[self.file_name] += self.gen_comps(self.components, in_v)
+
+    if self.tc_elem is None:
+      if in_v:
+        self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
+      else:
+        self.swift[self.file_name] += "\n}\n}"
+    else:
+      self.subclass_tc()
+      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tc_methods)
+
+      tc_elem = self.tc_elem
+      tc_id = tc_elem.get('id')
+      tc_header = tc_elem.get('header')
+
+      if tc_header is not None:
+        # nested table/collection view
+        if self.setup_cell_header('header', tc_id, tc_header):
+          self.gen_components(True)
+
+      tc_cell = tc_elem.get('cells')[0]
+      # nested table/collection view
+      if self.setup_cell_header("cell", tc_id, tc_cell):
+        self.gen_components(True)
+
+  def clear_tv(self):
+    """
+    Returns (None): Resets tc_elem and tc_methods instance variables
+    """
+    self.tc_elem = None
+    self.tc_methods = ""
 
   def gen_cell_header(self, tc_id, cell):
     """
@@ -143,7 +180,6 @@ class Interpreter(object):
         if type_ == 'UITableView' or type_ == 'UICollectionView':
           self.tc_elem = comp
           self.tc_methods = cf.tc_methods
-
     return C
 
   def subclass_tc(self):
@@ -171,7 +207,7 @@ class Interpreter(object):
 
     self.swift[self.file_name] = C
 
-  def setup_tv_ch(self, type_, id_, info):
+  def setup_cell_header(self, type_, id_, info):
     """
     Returns (bool):
       True if there is an nested (table/collection) view, False otherwise.
@@ -229,44 +265,3 @@ class Interpreter(object):
       C = utils.ins_after_key(C, 'frame)\n', cv)
 
     self.swift[self.file_name] = C
-
-  def gen_components(self, in_v):
-    """
-    Returns: Fills in the swift instance variable with generated code.
-    """
-    self.swift[self.file_name] += self.gen_comps(self.components, in_v)
-
-    if self.tc_elem is None:
-      if in_v:
-        self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
-      else:
-        self.swift[self.file_name] += "\n}\n}"
-    else:
-      self.subclass_tc()
-      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tc_methods)
-
-      tc_elem = self.tc_elem
-      tc_id = tc_elem.get('id')
-      tc_header = tc_elem.get('header')
-
-      if tc_header is not None:
-        if self.setup_tv_ch('header', tc_id, tc_header): # nested tab/coll view
-          self.gen_components(True)
-
-      tc_cell = tc_elem.get('cells')[0]
-      if self.setup_tv_ch("cell", tc_id, tc_cell): # nested tab/coll view
-        self.gen_components(True)
-
-  def gen_code(self, components):
-    """
-    Args:
-      components: (list) list of components
-
-    Returns: Fills in the swift instance var with generated code for artboard.
-    """
-    C = self.gen_vc_header(components)+utils.set_bg('view', self.globals['bgc'])
-    vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
-    self.file_name = vc
-    self.swift[vc] = C
-    self.components = components
-    self.gen_components(False)
