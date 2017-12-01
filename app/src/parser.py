@@ -108,7 +108,7 @@ class Parser(object):
           elem.name = "button"
         elif "Cell" in elem["id"] or "cell" in elem["id"]:
           elem.name = "cell"
-        elif "CollectionView" or "collectionView" in elem["id"]:
+        elif "CollectionView" in elem["id"] or "collectionView" in elem["id"]:
           elem.name = "collectionview"
         elif "Header" in elem["id"] or "header" in elem["id"]:
           elem.name = "header"

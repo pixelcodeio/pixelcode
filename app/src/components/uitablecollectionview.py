@@ -41,36 +41,6 @@ class UITableCollectionView(BaseComponent):
 
     return C
 
-  def gen_comps_ch(self, ch, components, subview_ids):
-    """
-    Args:
-      ch: (str) should either be "cell" or "header"
-      components: (dict list) contains info of components
-      subview_ids: (str list) contains ids of components
-
-    Returns (str): swift code to generate components inside cell/header
-    """
-    C = ""
-    for j, comp in enumerate(components):
-      type_ = comp.get('type')
-      if ch == "cell":
-        ch_id = "cell.{}".format(subview_ids[j])
-      else: # ch == "header"
-        ch_id = "header.{}".format(subview_ids[j])
-
-      if type_ == 'UICollectionView':
-        continue
-      elif type_ == 'UILabel':
-        if ch == "cell":
-          env = {"set_prop": True, "in_cell": True}
-        else: # ch == "header"
-          env = {"set_prop": True, "in_header": True}
-        com = utils.create_component(type_, ch_id, comp, env)
-      else:
-        com = utils.create_component(type_, ch_id, comp, {"set_prop": True})
-      C += com.swift
-    return C
-
   def cell_for_row_item(self, cells):
     """
     Args:
@@ -94,21 +64,7 @@ class UITableCollectionView(BaseComponent):
       C = C.replace("cell.selectionStyle = .none\n", '')
       C = utils.ins_after_key(C, 'CellID"', ', for: indexPath')
 
-    subview_ids = []
-    fst_cell_comps = cells[0].get('components')
-    for component in fst_cell_comps:
-      subview_ids.append(component.get('id'))
-
-    index = 0
-    for cell in cells:
-      components = cell.get('components')
-      if len(components) != len(fst_cell_comps):
-        continue
-      C += '\ncase {}:\n'.format(index)
-      C += self.gen_comps_ch("cell", components, subview_ids)
-      C += 'return cell'
-      index += 1
-
+    C += self.info.get('cell_set_prop')
     C += '\ndefault: return cell\n}\n}\n\n'
     return C
 
@@ -183,12 +139,9 @@ class UITableCollectionView(BaseComponent):
 
     C = ('{0} {{\nlet header = {1}.{2}: "{1}Header"{3}) as! {4}HeaderView\n'
          'switch {5} {{\n'
-         'case 0:\n'
         ).format(func, self.id, deq, path, self.id.capitalize(), section)
 
-    components = header.get('components')
-    subview_ids = [comp.get('id') for comp in components]
-    C += self.gen_comps_ch("header", components, subview_ids)
+    C += self.info.get('header_set_prop')
     C += ('return header'
           '\ndefault:\nreturn header\n'
           '}\n}\n\n')
