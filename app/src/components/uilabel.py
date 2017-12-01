@@ -95,12 +95,12 @@ class UILabel(BaseComponent):
     """
     Returns: (str) swift code to set line spacing
     """
-    attr = self.gen_add_attribute(str_id, '.paragraphStyle',
-                                  self.id + 'ParaStyle', [0, 'str_id.length'])
+    a = self.gen_add_attribute(str_id, '.paragraphStyle', self.id + 'ParaStyle',
+                               [0, str_id + '.length'])
     return ('let {0}ParaStyle = NSMutableParagraphStyle()\n'
             '{0}ParaStyle.lineSpacing = {1}\n'
             '{2}'
-           ).format(self.id, line_sp, attr)
+           ).format(self.id, line_sp, a)
 
   def gen_char_sp(self, str_id, char_sp):
     """
