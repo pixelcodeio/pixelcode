@@ -69,63 +69,45 @@ class UILabel(BaseComponent):
     """
     return "{}.numberOfLines = 0\n".format(self.id)
 
-  def gen_substring_color(self, str_id, color, start, length):
+  def gen_add_attribute(self, str_id, attr, value, range_):
     """
-    Args:
-      start (int): index of first char
-      length (int): number of chars to change
-
-    Returns (str): swift code to set color of substring
+    Returns (str): swift code to add attribute to a string
     """
-    return ("{}.addAttribute(.foregroundColor, value: {})"
-            ", range: NSRange(location: {}, length: {}))\n"
-           ).format(str_id, utils.create_uicolor(color), start, length)
+    return ("{}.addAttribute({}, value: {}, range: NSRange(location: {}, "
+            "length: {}))\n").format(str_id, attr, value, range_[0], range_[1])
 
   def gen_attributed_color(self, str_id, color):
     """
     Returns (str): swift code to set color
     """
-    return ("{}.addAttribute(.foregroundColor, value: {}"
-            ", range: NSRange(location: 0, length: {}.length))\n"
-           ).format(str_id, utils.create_uicolor(color), str_id)
-
-  def gen_substring_font(self, str_id, font, size, start, length):
-    """
-    Args:
-      start (int): index of first char
-      length (int): number of chars to change
-
-    Returns: (str) swift code to set font of substring
-    """
-    return ("{}.addAttribute(.font, value: {}"
-            ", range: NSRange(location: {}, length: {}))\n"
-           ).format(str_id, super().create_font(font, size), start, length)
+    color = utils.create_uicolor(color)
+    return self.gen_add_attribute(str_id, '.foregroundColor', color,
+                                  [0, str_id + '.length'])
 
   def gen_attributed_font(self, str_id, font, size):
     """
     Returns: (str) swift code to set font
     """
-    return ("{0}.addAttribute(.font, value: {1}"
-            ", range: NSRange(location: 0, length: {0}.length))\n"
-           ).format(str_id, super().create_font(font, size))
+    f = super().create_font(font, size)
+    return self.gen_add_attribute(str_id, '.font', f, [0, str_id + '.length'])
 
   def gen_line_sp(self, str_id, line_sp):
     """
     Returns: (str) swift code to set line spacing
     """
+    attr = self.gen_add_attribute(str_id, '.paragraphStyle',
+                                  self.id + 'ParaStyle', [0, 'str_id.length'])
     return ('let {0}ParaStyle = NSMutableParagraphStyle()\n'
             '{0}ParaStyle.lineSpacing = {1}\n'
-            '{2}.addAttribute(.paragraphStyle, value: {0}ParaStyle, range: '
-            'NSRange(location: 0, length: {2}.length))\n'
-           ).format(self.id, line_sp, str_id)
+            '{2}'
+           ).format(self.id, line_sp, attr)
 
   def gen_char_sp(self, str_id, char_sp):
     """
     Returns (str): swift code to set char-spacing
     """
-    return ('{0}.addAttribute(.kern, value: {1}, range: '
-            'NSRange(location: 0, length: {0}.length))\n'
-           ).format(str_id, char_sp)
+    return self.gen_add_attribute(str_id, '.kern', char_sp,
+                                  [0, str_id + '.length'])
 
   def gen_attributed_tprop(self, tspan, line_sp, char_sp):
     """
@@ -138,6 +120,7 @@ class UILabel(BaseComponent):
 
     C = self.create_attributed_str(contents)
     str_id = '{}AttributedStr'.format(self.id)
+
     C += self.gen_attributed_color(str_id, fill)
     C += self.gen_attributed_font(str_id, font, size)
     if line_sp is not None:
