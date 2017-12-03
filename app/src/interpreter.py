@@ -6,18 +6,20 @@ class Interpreter(object):
   Takes output from Parser one at a time and generates swift file
     globals (dict): passed in from Parser
     file_name (str): name of current file being generated
-    components (list): info on all components
-    tc_elem (dict): info on current (table/collection)view being generated
-    tc_methods (str): necessary (table/collection)view methods
+    info (dict): has keys:
+      - components (list): info on all components
+      - tc_elem (dict): info on current (table/collection)view being generated
+      - tc_methods (str): necessary (table/collection)view methods
     swift (dict): swift code to generate all components
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
     self.file_name = ""
-    self.components = None
-    self.tc_elem = None # TODO: change this to a queue
-    self.tc_methods = ""
+    self.info = {}
+    self.info["components"] = None
+    self.info["tc_elem"] = None
+    self.info["tc_methods"] = ""
     self.swift = {}
 
   def gen_code(self, components):
@@ -32,7 +34,7 @@ class Interpreter(object):
     vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
     self.file_name = vc
     self.swift[vc] = C
-    self.components = components
+    self.info["components"] = components
     self.gen_components(False)
 
   def gen_viewcontroller_header(self, components):
@@ -59,18 +61,18 @@ class Interpreter(object):
     """
     Returns: Fills in the swift instance variable with generated code.
     """
-    self.swift[self.file_name] += self.gen_comps(self.components, in_v)
+    self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
 
-    if self.tc_elem is None:
+    if self.info["tc_elem"] is None:
       if in_v:
         self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
       else:
         self.swift[self.file_name] += "\n}\n}"
     else:
-      self.subclass_tc()
-      self.swift[self.file_name] += "\n}}\n{}}}\n".format(self.tc_methods)
+      self.subclass_tc() # add parent classes for table/collection view
+      self.swift[self.file_name] += "\n}}\n{}}}".format(self.info["tc_methods"])
 
-      tc_elem = self.tc_elem
+      tc_elem = self.info["tc_elem"]
       tc_id = tc_elem.get('id')
       tc_header = tc_elem.get('header')
 
@@ -81,15 +83,15 @@ class Interpreter(object):
 
       tc_cell = tc_elem.get('cells')[0]
       # nested table/collection view
-      if self.setup_cell_header("cell", tc_id, tc_cell):
+      if self.setup_cell_header('cell', tc_id, tc_cell):
         self.gen_components(True)
 
   def clear_tv(self):
     """
     Returns (None): Resets tc_elem and tc_methods instance variables
     """
-    self.tc_elem = None
-    self.tc_methods = ""
+    self.info["tc_elem"] = None
+    self.info["tc_methods"] = ""
 
   def gen_cell_header(self, tc_id, cell):
     """
@@ -178,8 +180,8 @@ class Interpreter(object):
         cf = ComponentFactory(type_, comp, in_v)
         C += cf.swift
         if type_ == 'UITableView' or type_ == 'UICollectionView':
-          self.tc_elem = comp
-          self.tc_methods = cf.tc_methods
+          self.info["tc_elem"] = comp
+          self.info["tc_methods"] = cf.tc_methods
     return C
 
   def subclass_tc(self):
@@ -188,7 +190,7 @@ class Interpreter(object):
     """
     C = self.swift[self.file_name]
     ext = ", UITableViewDelegate, UITableViewDataSource"
-    if self.tc_elem.get('type') == 'UICollectionView':
+    if self.info["tc_elem"].get('type') == 'UICollectionView':
       ext = ext.replace('Table', 'Collection')
       ext += ", UICollectionViewDelegateFlowLayout"
 
@@ -226,24 +228,25 @@ class Interpreter(object):
     C += "}}\n\n{}\n\n".format(utils.req_init())
     self.swift[self.file_name] = C
 
-    if self.tc_elem is None:
+    tc_elem = self.info["tc_elem"]
+    if tc_elem is None:
       self.swift[self.file_name] += "}"
       return False
 
     # inner table/collection view exists
-    if self.tc_elem.get('type') == 'UICollectionView':
-      self.move_cv()
-    self.subclass_tc()
-    self.swift[self.file_name] += "\n{}\n}}\n".format(self.tc_methods)
-    id_ = self.tc_elem.get('id')
-    cell = self.tc_elem.get('cells')[0]
+    if tc_elem.get('type') == 'UICollectionView':
+      self.move_collection_view()
+    self.subclass_tc() # add parent classes for table/collection view
+    self.swift[self.file_name] += "\n{}\n}}\n".format(self.info["tc_methods"])
+    id_ = tc_elem.get('id')
+    cell = tc_elem.get('cells')[0]
     self.file_name = id_.capitalize() + 'Cell'
     self.swift[self.file_name] = self.gen_cell_header(id_, cell)
     # get components of first cell
-    self.components = self.tc_elem.get('cells')[0].get('components')
+    self.info["components"] = tc_elem.get('cells')[0].get('components')
     return True
 
-  def move_cv(self):
+  def move_collection_view(self):
     """
     Returns (None):
       Moves swift code that sets up UICollectionView to inside current file's
@@ -256,7 +259,7 @@ class Interpreter(object):
     cv = ("let layout = UICollectionViewFlowLayout()\n"
           "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
           "{}\n"
-         ).format(self.tc_elem.get('id'), 'UICollectionView', C[beg:end])
+         ).format(self.info["tc_elem"]['id'], 'UICollectionView', C[beg:end])
     C = C[:beg] + C[end:]
 
     if 'reuseIdentifier)\n' in C:
