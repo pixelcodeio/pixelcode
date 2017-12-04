@@ -60,6 +60,7 @@ class BaseLayer(object):
     Returns: object to be sent to the interpreter class
     """
     params = [
+        "bg_img",
         "border-radius",
         "cells",
         "char-spacing",
@@ -74,13 +75,12 @@ class BaseLayer(object):
         "height",
         "horizontal",
         "id",
-        "left-bar-buttons",
         "left-inset",
         "line-spacing",
+        "navbar-items",
         "opacity",
         "path",
         "rect",
-        "right-bar-buttons",
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "separator",
@@ -90,7 +90,6 @@ class BaseLayer(object):
         "text",
         "textspan",
         "text-align",
-        "title-view",
         "type",
         "vertical",
         "width",

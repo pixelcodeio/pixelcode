@@ -7,6 +7,7 @@ class NavBar(BaseLayer):
   Class representing a Navigation Bar in Sketch
   """
   def parse_elem(self, elem):
+    navbar_items = {}
     left_bar_buttons = []
     right_bar_buttons = []
     title_view = None
@@ -16,7 +17,7 @@ class NavBar(BaseLayer):
           raise Exception("Navbar: Only one title view allowed.")
         else:
           title_view = child
-      elif child["type"] == "UIButton":
+      elif "barButton" in child["id"] or "BarButton" in child["id"]:
         if child["x"] < 375.0/2: # on left side of screen
           left_bar_buttons.append(child)
         else:
@@ -31,8 +32,10 @@ class NavBar(BaseLayer):
     left_bar_buttons = sorted(left_bar_buttons, key=lambda c: c.get('x'))
     right_bar_buttons = sorted(right_bar_buttons, key=lambda c: c.get('x'))
 
-    elem["left-bar-buttons"] = left_bar_buttons
-    elem["right-bar-buttons"] = right_bar_buttons
-    elem["title-view"] = title_view
+    navbar_items["left-bar-buttons"] = left_bar_buttons
+    navbar_items["right-bar-buttons"] = right_bar_buttons
+    navbar_items["title-view"] = title_view
+
+    elem["navbar-items"] = navbar_items
 
     return super().parse_elem(elem)
