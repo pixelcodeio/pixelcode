@@ -118,6 +118,8 @@ class Parser(object):
           elem.name = "navbar"
         elif "TextField" in elem["id"]:
           elem.name = "textfield"
+        elif "View" in elem["id"] or "view" in elem["id"]:
+          elem.name = "view"
         else: # ungroup elements inside
           for child in elem["children"]:
             child["x"] = elem["x"] + float(child["x"])
@@ -136,11 +138,11 @@ class Parser(object):
         parsed_elem = TableCollectionView(elem, "UICollectionView")
       elif elem.name == "header":
         parsed_elem = Container(elem, "Header")
-      elif elem.name == "image":
+      elif elem.name == "image" or elem.name == "polygon":
         parsed_elem = Image(elem, "UIImageView")
       elif elem.name == "navbar":
-        parsed_elem = NavBar(elem, "UINavigationBar")
-      elif elem.name == "rect":
+        parsed_elem = NavBar(elem, "UINavBar")
+      elif elem.name == "rect" or elem.name == "view":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "tableview":
         parsed_elem = TableCollectionView(elem, "UITableView")

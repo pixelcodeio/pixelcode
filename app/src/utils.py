@@ -26,9 +26,13 @@ def set_bg(id_, color):
 
   Returns: (str) swift code that sets the background color of id_ to [color].
   """
+  color = create_uicolor(color)
   if id_ is not None:
-    return ('{}.backgroundColor = {}\n').format(id_, create_uicolor(color))
-  return ('backgroundColor = {}\n').format(create_uicolor(color))
+    if 'navBar' in id_ or 'NavBar' in id_:
+      return ('self.navigationController?.navigationBar.tintColor = {}'
+             ).format(color)
+    return ('{}.backgroundColor = {}\n').format(id_, color)
+  return ('backgroundColor = {}\n').format(color)
 
 def add_subview(view, id_):
   if view is None:

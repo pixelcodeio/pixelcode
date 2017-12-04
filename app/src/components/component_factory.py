@@ -1,6 +1,7 @@
 from components.uibutton import UIButton
 from components.uiimageview import UIImageView
 from components.uilabel import UILabel
+from components.uinavbar import UINavBar
 from components.uitablecollectionview import UITableCollectionView
 from components.uitextfieldview import UITextFieldView
 from components.uiview import UIView
@@ -11,6 +12,7 @@ class ComponentFactory(object):
   Initializes components (constraints, background-color, etc.)
     swift (str): swift code to generate a component
     tc_methods (str): (table/collection) view methods
+    in_view (bool): whether component is generated inside a custom view file
   """
   def __init__(self, type_, info, in_v, bgc=None):
     """
@@ -21,9 +23,10 @@ class ComponentFactory(object):
     """
     self.tc_methods = ""
     self.info = info
-    self.swift = self.generate_component(type_, bgc=bgc, in_v=in_v)
+    self.in_view = in_v
+    self.swift = self.generate_component(type_, bgc=bgc)
 
-  def generate_component(self, type_, bgc=None, in_v=False):
+  def generate_component(self, type_, bgc=None):
     """
     Returns: (str) The swift code to generate component
     """
@@ -31,29 +34,39 @@ class ComponentFactory(object):
     rect = self.info.get('rect')
 
     C = ""
-    if not in_v:
+
+    if type_ == 'UINavBar':
+      self.setup_navbar_items()
+
+    if not self.in_view:
       C += self.init_comp(type_, id_)
 
     if type_ == 'UITableView' or type_ == 'UICollectionView':
       self.setup_set_properties()
 
-    component = self.create_component(type_, id_, self.info, {"in_view": in_v})
+    env = {"in_view": self.in_view}
+    component = self.create_component(type_, id_, self.info, env)
     C += component.swift
 
     if rect is not None:
-      C += utils.setup_rect(id_, rect, in_v)
+      C += utils.setup_rect(id_, rect, self.in_view)
 
     if type_ == 'UIView' and self.info.get('components') is not None:
-      C += self.gen_subcomponents()
+      id_ = self.info['id']
+      components = self.info['components']
+      C += self.gen_subcomponents(id_, components, True)
 
     if type_ == 'UITableView' or type_ == 'UICollectionView':
       self.tc_methods = component.tc_methods
     elif type_ == 'UILabel':
       C += utils.set_bg(id_, bgc)
 
-    view = 'view' if not in_v else None
+    if type_ == 'UINavBar':
+      return C
+
+    view = 'view' if not self.in_view else None
     C += utils.add_subview(view, id_)
-    C += self.gen_constraints(in_v=in_v)
+    C += self.gen_constraints(self.info)
     return C
 
   def create_component(self, type_, id_, info, env):
@@ -76,12 +89,12 @@ class ComponentFactory(object):
     # using eval for clean code
     return eval(type_ + "(id_, info, env)") # pylint: disable=W0123
 
-  def gen_constraints(self, in_v=False):
+  def gen_constraints(self, component):
     """
     Returns: (str) swift code to set all constraints using SnapKit.
     """
     keys = ['id', 'height', 'width', 'horizontal', 'vertical']
-    id_, height, width, hor, vert = utils.get_vals(keys, self.info)
+    id_, height, width, hor, vert = utils.get_vals(keys, component)
 
     keys = ['id', 'direction', 'distance']
     hor_id, hor_dir, hor_dist = utils.get_vals(keys, hor)
@@ -109,7 +122,7 @@ class ComponentFactory(object):
            ).format(vert_dist)
     C += "}\n\n"
 
-    if not in_v:
+    if not self.in_view:
       C = C.replace("frame", "view.frame")
     return C
 
@@ -132,6 +145,10 @@ class ComponentFactory(object):
       return ("let layout = UICollectionViewFlowLayout()\n"
               "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
              ).format(id_, type_)
+    elif "barButton" in id_ or "BarButton" in id_:
+      return "{} = UIButton(type: .system)\n".format(id_)
+    elif type_ == 'UINavBar':
+      return "" # cannot initialize a navigation bar
     return "{} = {}()\n".format(id_, type_)
 
   def setup_set_properties(self):
@@ -165,19 +182,22 @@ class ComponentFactory(object):
 
     self.info["cell_set_prop"] = C
 
-  def gen_subcomponents(self):
+  def gen_subcomponents(self, parent_id, components, add_constraints):
     """
-    Returns (str): swift code to generate UIView's subcomponents
+    Returns (str): swift code to generate subcomponents
     """
     C = ""
 
-    for comp in self.info.get('components'):
+    for comp in components:
       type_ = comp.get('type')
       id_ = comp.get('id')
       C += self.init_comp(type_, id_)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
-      C += utils.add_subview(self.id, id_)
+      if parent_id is not None:
+        C += utils.add_subview(parent_id, id_)
+      if add_constraints:
+        C += self.gen_constraints(comp)
 
     return C
 
@@ -203,3 +223,15 @@ class ComponentFactory(object):
       com = self.create_component(type_, id_, comp, env)
       C += com.swift
     return C
+
+  def setup_navbar_items(self):
+    """
+    Returns (None): setups up code for navbar items inside self.info
+    """
+    keys = ['left-buttons', 'right-buttons', 'title']
+    left, right, title = utils.get_vals(keys, self.info['navbar-items'])
+    self.info['left-buttons-code'] = self.gen_subcomponents(None, left, False)
+    self.info['right-buttons-code'] = self.gen_subcomponents(None, right, False)
+    C = self.init_comp(title.get('type'), title.get('id'))
+    C += self.gen_subcomponents(title.get('id'), title.get('components'), True)
+    self.info['title-code'] = C

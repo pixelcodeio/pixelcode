@@ -10,16 +10,15 @@ class Interpreter(object):
       - components (list): info on all components
       - tc_elem (dict): info on current (table/collection)view being generated
       - tc_methods (str): necessary (table/collection)view methods
+      - navbar_code (str): code to generate navbar items
     swift (dict): swift code to generate all components
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
     self.file_name = ""
-    self.info = {}
-    self.info["components"] = None
-    self.info["tc_elem"] = None
-    self.info["tc_methods"] = ""
+    self.info = {"components": [], "tc_elem": {}, "tc_methods": "",
+                 "navbar_code": ""}
     self.swift = {}
 
   def gen_code(self, components):
@@ -29,32 +28,25 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    C = self.gen_viewcontroller_header(components) \
+    self.info["components"] = components
+    C = self.gen_viewcontroller_header() \
         + utils.set_bg('view', self.globals['bgc'])
     vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
     self.file_name = vc
     self.swift[vc] = C
-    self.info["components"] = components
     self.gen_components(False)
 
-  def gen_viewcontroller_header(self, components):
+  def gen_viewcontroller_header(self):
     """
-    Args:
-      components (list): list of components
-
-    Returns (str): swift code of the header
+    Returns (str): swift code of the view controller header
     """
     artboard = self.globals['artboard'].capitalize()
     viewController = '{}ViewController'.format(artboard)
     header = ("import UIKit\nimport SnapKit\n\n"
               "class {}: UIViewController {{\n\n"
              ).format(viewController)
-
-    # one-liner to concat all variable names
-    gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in components]
-    header += "".join(gvars)
-
-    header += "\noverride func viewDidLoad() {\n"
+    header += self.declare_g_vars()
+    header += "\noverride func viewDidLoad() {\nsuper.viewDidLoad()\n"
     return header
 
   def gen_components(self, in_v):
@@ -63,7 +55,11 @@ class Interpreter(object):
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
 
-    if self.info["tc_elem"] is None:
+    if self.info["navbar_code"]:
+      self.swift[self.file_name] += self.info["navbar_code"]
+      self.info["navbar_code"] = "" # clear navbar_code key
+
+    if not self.info["tc_elem"]:
       if in_v:
         self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
       else:
@@ -90,7 +86,7 @@ class Interpreter(object):
     """
     Returns (None): Resets tc_elem and tc_methods instance variables
     """
-    self.info["tc_elem"] = None
+    self.info["tc_elem"] = {}
     self.info["tc_methods"] = ""
 
   def gen_cell_header(self, tc_id, cell):
@@ -146,6 +142,29 @@ class Interpreter(object):
 
     return C
 
+  def declare_g_vars(self):
+    """
+    Returns (str): swift code to declare global variables
+    """
+    components = list(self.info["components"]) # get copy of components
+    navbar_items = [c.get("navbar-items") for c in components]
+    navbar_items = [n for n in navbar_items if n is not None]
+    if navbar_items:
+      navbar_items = navbar_items[0] # only one nav bar per cscreen
+      components.extend(navbar_items['left-buttons'])
+      components.extend(navbar_items['right-buttons'])
+      if navbar_items['title'] is not None:
+        components.append(navbar_items['title'])
+        if navbar_items['title']['components'] is not None:
+          components.extend(navbar_items['title']['components'])
+
+    # filter components to not include navigation bar
+    filter_comps = [c for c in components if c['type'] != 'UINavBar']
+
+    # one-liner to concat all variable names
+    gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in filter_comps]
+    return "".join(gvars)
+
   def init_g_vars(self, components):
     """
     Args:
@@ -157,6 +176,8 @@ class Interpreter(object):
     for comp in components:
       if comp.get('type') == 'UICollectionView': # do not init collection views
         C += "var {}: UICollectionView!\n".format(comp.get('id'))
+      elif comp.get('type') == 'UINavBar': # cannot init navigation bars
+        continue
       else:
         C += "var {} = {}()\n".format(comp.get('id'), comp.get('type'))
     return C
@@ -178,7 +199,10 @@ class Interpreter(object):
         C += cf.swift
       else:
         cf = ComponentFactory(type_, comp, in_v)
-        C += cf.swift
+        if type_ == 'UINavBar':
+          self.info["navbar_code"] = cf.swift
+        else:
+          C += cf.swift
         if type_ == 'UITableView' or type_ == 'UICollectionView':
           self.info["tc_elem"] = comp
           self.info["tc_methods"] = cf.tc_methods
@@ -259,7 +283,7 @@ class Interpreter(object):
     cv = ("let layout = UICollectionViewFlowLayout()\n"
           "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
           "{}\n"
-         ).format(self.info["tc_elem"]['id'], 'UICollectionView', C[beg:end])
+         ).format(self.info['tc_elem']['id'], 'UICollectionView', C[beg:end])
     C = C[:beg] + C[end:]
 
     if 'reuseIdentifier)\n' in C:

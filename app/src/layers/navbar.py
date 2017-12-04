@@ -11,6 +11,7 @@ class NavBar(BaseLayer):
     left_bar_buttons = []
     right_bar_buttons = []
     title_view = None
+    rect = None
     for child in elem["children"]:
       if "titleView" in child["id"] or "TitleView" in child["id"]:
         if title_view:
@@ -22,8 +23,13 @@ class NavBar(BaseLayer):
           left_bar_buttons.append(child)
         else:
           right_bar_buttons.append(child)
+      elif "wash" in child["id"]:
+        if rect:
+          raise Exception("Navbar: Only one wash allowed in " + elem["id"])
+        else:
+          rect = child
       else:
-        raise Exception("Navbar: Navbar has unsupported elements.")
+        raise Exception("Navbar: Navbar does not support: " + child["id"])
 
     if title_view is None and not left_bar_buttons and not right_bar_buttons:
       raise Exception("Navbar: Navbar is empty.")
@@ -32,10 +38,11 @@ class NavBar(BaseLayer):
     left_bar_buttons = sorted(left_bar_buttons, key=lambda c: c.get('x'))
     right_bar_buttons = sorted(right_bar_buttons, key=lambda c: c.get('x'))
 
-    navbar_items["left-bar-buttons"] = left_bar_buttons
-    navbar_items["right-bar-buttons"] = right_bar_buttons
-    navbar_items["title-view"] = title_view
+    navbar_items["left-buttons"] = left_bar_buttons
+    navbar_items["right-buttons"] = right_bar_buttons
+    navbar_items["title"] = title_view
 
     elem["navbar-items"] = navbar_items
+    elem["rect"] = rect
 
     return super().parse_elem(elem)
