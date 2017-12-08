@@ -29,7 +29,7 @@ def set_bg(id_, color):
   color = create_uicolor(color)
   if id_ is not None:
     if 'navBar' in id_ or 'NavBar' in id_:
-      return ('self.navigationController?.navigationBar.barTintColor = {}'
+      return ('self.navigationController?.navigationBar.barTintColor = {}\n\n'
              ).format(color)
     return ('{}.backgroundColor = {}\n').format(id_, color)
   return ('backgroundColor = {}\n').format(color)

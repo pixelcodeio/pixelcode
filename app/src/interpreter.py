@@ -9,16 +9,14 @@ class Interpreter(object):
     info (dict): has keys:
       - components (list): info on all components
       - tc_elem (dict): info on current (table/collection)view being generated
-      - tc_methods (str): necessary (table/collection)view methods
-      - navbar_code (str): code to generate navbar items
+      - tc_methods (str): any necessary (table/collection)view methods
     swift (dict): swift code to generate all components
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
     self.file_name = ""
-    self.info = {"components": [], "tc_elem": {}, "tc_methods": "",
-                 "navbar_code": ""}
+    self.info = {"components": [], "tc_elem": {}, "tc_methods": ""}
     self.swift = {}
 
   def gen_code(self, components):
@@ -54,10 +52,6 @@ class Interpreter(object):
     Returns: Fills in the swift instance variable with generated code.
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
-
-    if self.info["navbar_code"]:
-      self.swift[self.file_name] += self.info["navbar_code"]
-      self.info["navbar_code"] = "" # clear navbar_code key
 
     if not self.info["tc_elem"]:
       if in_v:
@@ -153,9 +147,9 @@ class Interpreter(object):
       navbar_items = navbar_items[0] # only one nav bar per screen
       components.extend(navbar_items['left-buttons'])
       components.extend(navbar_items['right-buttons'])
-      if navbar_items['title'] is not None:
+      if navbar_items.get('title') is not None:
         components.append(navbar_items['title'])
-        if navbar_items['title']['components'] is not None:
+        if navbar_items['title'].get('components') is not None:
           components.extend(navbar_items['title']['components'])
 
     # filter components to not include navigation bar
@@ -199,10 +193,7 @@ class Interpreter(object):
         C += cf.swift
       else:
         cf = ComponentFactory(type_, comp, in_v)
-        if type_ == 'UINavBar':
-          self.info["navbar_code"] = cf.swift
-        else:
-          C += cf.swift
+        C += cf.swift
         if type_ == 'UITableView' or type_ == 'UICollectionView':
           self.info["tc_elem"] = comp
           self.info["tc_methods"] = cf.tc_methods
