@@ -12,20 +12,23 @@ class UINavBar(BaseComponent):
     Returns: (str) swift code to setup uinavbar items
     """
     C = self.info['left-buttons-code']
-    C += self.add_barbuttons(True)
+    C += self.add_barbuttons('left')
 
     C += self.info['right-buttons-code']
-    C += self.add_barbuttons(False)
+    C += self.add_barbuttons('right')
 
     C += self.info['title-code']
     C += ('self.navigationItem.titleView = {}\n'
          ).format(self.info['navbar-items']['title']['id'])
     return C
 
-  def add_barbuttons(self, left_or_right):
+  def add_barbuttons(self, dir_):
     """
+    Args:
+      dir_ (str): is either 'left' or 'right'
+
+    Returns (str): swift code to setup left/right barbuttons.
     """
-    dir_ = 'left' if left_or_right else 'right'
     ids = [b['id'] for b in self.info['navbar-items'][dir_ + '-buttons']]
     C = self.gen_barbuttons(ids)
     ids = [id_ + 'BarButton' for id_ in ids] # convert ids to its barbutton id
@@ -34,6 +37,9 @@ class UINavBar(BaseComponent):
     return C
 
   def gen_barbuttons(self, ids):
+    """
+    Returns (str): swift code to create a barbutton.
+    """
     C = ""
     for id_ in ids:
       C += "let {0}BarButton = UIBarButtonItem(customView: {0})\n".format(id_)
