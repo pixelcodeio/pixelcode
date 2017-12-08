@@ -218,16 +218,18 @@ class ComponentFactory(object):
     """
     C = ""
     components = [c for c in components if c['type'] != "UICollectionView"]
+
     for j, comp in enumerate(components):
       type_ = comp.get('type')
       id_ = "{}.{}".format(c_or_h, ids[j])
-
       env = {"set_prop": True}
+
       if type_ == 'UILabel':
         env["in_" + c_or_h] = True
 
       com = self.create_component(type_, id_, comp, env)
       C += com.swift
+
     return C
 
   def setup_navbar_items(self):
