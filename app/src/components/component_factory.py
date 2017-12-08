@@ -53,16 +53,16 @@ class ComponentFactory(object):
       C += utils.setup_rect(id_, rect, self.in_view)
 
     if type_ == 'UIView' and self.info.get('components') is not None:
+      # generate subcomponents
       id_ = self.info['id']
       components = self.info['components']
       C += self.gen_subcomponents(id_, components, True)
-
-    if type_ == 'UITableView' or type_ == 'UICollectionView':
+    elif type_ == 'UITableView' or type_ == 'UICollectionView':
+      # extract (table/collection) view methods
       self.tc_methods = component.tc_methods
     elif type_ == 'UILabel':
       C += utils.set_bg(id_, bgc)
-
-    if type_ == 'UINavBar':
+    elif type_ == 'UINavBar':
       return C
 
     view = 'view' if not self.in_view else None
@@ -165,6 +165,7 @@ class ComponentFactory(object):
       the info instance variable.
     """
     if self.info.get('header') is not None:
+      # set properties for components in header
       ids = []
       C = "case 0:\n"
       components = self.info.get('header').get('components')
@@ -172,6 +173,7 @@ class ComponentFactory(object):
       C += self.gen_subcomponents_properties("header", components, ids)
       self.info["header_set_prop"] = C
 
+    # set properties for components in cells
     cells = self.info.get('cells')
     fst_cell_comps = cells[0].get('components')
     ids = [comp.get('id') for comp in fst_cell_comps]
@@ -191,7 +193,7 @@ class ComponentFactory(object):
 
   def gen_subcomponents(self, parent_id, components, add_constraints):
     """
-    Returns (str): swift code to generate subcomponents
+    Returns (str): swift code to generate subcomponents of parent_id
     """
     C = ""
 
@@ -217,6 +219,7 @@ class ComponentFactory(object):
       view cell/header.
     """
     C = ""
+    # cannot set properties of nested collection view
     components = [c for c in components if c['type'] != "UICollectionView"]
 
     for j, comp in enumerate(components):
