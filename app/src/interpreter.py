@@ -150,7 +150,7 @@ class Interpreter(object):
     navbar_items = [c.get("navbar-items") for c in components]
     navbar_items = [n for n in navbar_items if n is not None]
     if navbar_items:
-      navbar_items = navbar_items[0] # only one nav bar per cscreen
+      navbar_items = navbar_items[0] # only one nav bar per screen
       components.extend(navbar_items['left-buttons'])
       components.extend(navbar_items['right-buttons'])
       if navbar_items['title'] is not None:
@@ -253,7 +253,7 @@ class Interpreter(object):
     self.swift[self.file_name] = C
 
     tc_elem = self.info["tc_elem"]
-    if tc_elem is None:
+    if not tc_elem:
       self.swift[self.file_name] += "}"
       return False
 

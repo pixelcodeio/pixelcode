@@ -115,8 +115,14 @@ class ComponentFactory(object):
 
     if vert_id:
       opp_dir = self.get_opp_dir(vert_dir)
-      C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
-           ).format(vert_dir, vert_id, opp_dir, vert_dist)
+      if vert_id == 'navBar': # cannot position relative to navbar
+        navbar_height = ("(self.navigationController?.navigationBar.intrinsicCo"
+                         "ntentSize.height)!")
+        C += ('make.{}.equalToSuperview().offset(frame.height*{} + {})\n'
+             ).format(vert_dir, vert_dist, navbar_height)
+      else:
+        C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+             ).format(vert_dir, vert_id, opp_dir, vert_dist)
     else:
       C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
            ).format(vert_dist)
@@ -194,10 +200,9 @@ class ComponentFactory(object):
       C += self.init_comp(type_, id_)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
-      if parent_id is not None:
-        C += utils.add_subview(parent_id, id_)
-      if add_constraints:
-        C += self.gen_constraints(comp)
+      C += self.set_frame(comp) if not add_constraints else ""
+      C += utils.add_subview(parent_id, id_) if parent_id is not None else ""
+      C += self.gen_constraints(comp) if add_constraints else ""
 
     return C
 
@@ -233,5 +238,15 @@ class ComponentFactory(object):
     self.info['left-buttons-code'] = self.gen_subcomponents(None, left, False)
     self.info['right-buttons-code'] = self.gen_subcomponents(None, right, False)
     C = self.init_comp(title.get('type'), title.get('id'))
-    C += self.gen_subcomponents(title.get('id'), title.get('components'), True)
+    C += self.set_frame(title)
+    C += self.gen_subcomponents(title.get('id'), title.get('components'), False)
     self.info['title-code'] = C
+
+  def set_frame(self, component):
+    """
+    Returns (str): swift code to set frame of the component
+    """
+    keys = ['id', 'x', 'y', 'rwidth', 'rheight']
+    id_, x, y, w, h = utils.get_vals(keys, component)
+    return ("{}.frame = CGRect(x: {}, y: {}, width: {}, height: {})\n"
+           ).format(id_, x, y, w, h)
