@@ -243,9 +243,11 @@ class ComponentFactory(object):
     left, right, title = utils.get_vals(keys, self.info['navbar-items'])
     self.info['left-buttons-code'] = self.gen_subcomponents(None, left, False)
     self.info['right-buttons-code'] = self.gen_subcomponents(None, right, False)
-    C = self.init_comp(title.get('type'), title.get('id'))
-    C += self.set_frame(title)
-    C += self.gen_subcomponents(title.get('id'), title.get('components'), False)
+    C = ""
+    if title is not None:
+      C += self.init_comp(title['type'], title['id'])
+      C += self.set_frame(title)
+      C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C
 
   def set_frame(self, component):

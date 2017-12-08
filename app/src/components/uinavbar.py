@@ -11,15 +11,21 @@ class UINavBar(BaseComponent):
     """
     Returns: (str) swift code to setup uinavbar items
     """
-    C = self.info['left-buttons-code']
-    C += self.add_barbuttons('left')
+    C = ""
 
-    C += self.info['right-buttons-code']
-    C += self.add_barbuttons('right')
+    if self.info['left-buttons-code']:
+      C += self.info['left-buttons-code']
+      C += self.add_barbuttons('left')
 
-    C += self.info['title-code']
-    C += ('self.navigationItem.titleView = {}\n'
-         ).format(self.info['navbar-items']['title']['id'])
+    if self.info['right-buttons-code']:
+      C += self.info['right-buttons-code']
+      C += self.add_barbuttons('right')
+
+    if self.info['title-code']:
+      C += self.info['title-code']
+      C += ('self.navigationItem.titleView = {}\n'
+           ).format(self.info['navbar-items']['title']['id'])
+
     return C
 
   def add_barbuttons(self, dir_):
