@@ -11,6 +11,7 @@ class ComponentFactory(object):
   """
   Initializes components (constraints, background-color, etc.)
     swift (str): swift code to generate a component
+    info (dict): contains information about component
     tc_methods (str): (table/collection) view methods
     in_view (bool): whether component is generated inside a custom view file
   """
@@ -24,9 +25,9 @@ class ComponentFactory(object):
     self.tc_methods = ""
     self.info = info
     self.in_view = in_v
-    self.swift = self.generate_component(type_, bgc=bgc)
+    self.swift = self.generate_component(type_, bgc)
 
-  def generate_component(self, type_, bgc=None):
+  def generate_component(self, type_, bgc):
     """
     Returns: (str) The swift code to generate component
     """
