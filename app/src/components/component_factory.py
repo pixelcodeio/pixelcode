@@ -36,14 +36,14 @@ class ComponentFactory(object):
 
     C = ""
 
-    if type_ == 'UINavBar':
-      self.setup_navbar_items()
-
     if not self.in_view:
       C += self.init_comp(type_, id_)
 
+    # prepare for create_component
     if type_ == 'UITableView' or type_ == 'UICollectionView':
       self.setup_set_properties()
+    elif type_ == 'UINavBar':
+      self.setup_navbar_items()
 
     env = {"in_view": self.in_view}
     component = self.create_component(type_, id_, self.info, env)
