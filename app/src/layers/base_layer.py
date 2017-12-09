@@ -85,6 +85,7 @@ class BaseLayer(object):
         "stroke-color",
         "stroke-width",
         "stroke-opacity",
+        "tabbar-buttons",
         "text",
         "textspan",
         "text-align",
