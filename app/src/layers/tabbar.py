@@ -15,11 +15,11 @@ class TabBar(BaseLayer):
         tabbar_buttons.append(child)
       elif "wash" in child["id"]:
         if rect:
-          raise Exception("Navbar: Only one wash allowed in " + elem["id"])
+          raise Exception("Tabbar: Only one wash allowed in " + elem["id"])
         else:
           rect = child
       else:
-        raise Exception("Navbar: Navbar does not support: " + child["id"])
+        raise Exception("Tabbar: Tavbar does not support: " + child["id"])
 
     if not tabbar_buttons:
       raise Exception("Tabbar: Tabbar is empty.")

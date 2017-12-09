@@ -30,6 +30,10 @@ class Interpreter(object):
     C = self.gen_viewcontroller_header(components) \
         + utils.set_bg('view', self.globals['bgc'])
     vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
+    types = [c.get('type') for c in components]
+    if 'UITabBar' in types:
+        print("tabbar")
+    print(types)
     self.file_name = vc
     self.swift[vc] = C
     self.components = components

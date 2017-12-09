@@ -114,6 +114,8 @@ class Parser(object):
           elem.name = "header"
         elif "ListView" in elem["id"]:
           elem.name = "tableview"
+        elif "tabBar" in elem["id"] or "TabBar" in elem["id"]:
+          elem.name = "tabbar"
         elif "TextField" in elem["id"]:
           elem.name = "textfield"
         else: # ungroup elements inside
@@ -138,6 +140,8 @@ class Parser(object):
         parsed_elem = Image(elem, "UIImageView")
       elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
+      elif elem.name == "tabbar":
+        parsed_elem = TabBar(elem, "UITabBar")
       elif elem.name == "tableview":
         parsed_elem = TableCollectionView(elem, "UITableView")
       elif elem.name == "text":
