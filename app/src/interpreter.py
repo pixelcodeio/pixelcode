@@ -192,7 +192,7 @@ class Interpreter(object):
     for comp in components:
       type_ = comp['type']
       if type_ == 'UITabBar':
-        comp['active-vc'] = self.file_name
+        comp['active-vc'] = self.file_name # name of active view controller
         cf = ComponentFactory(type_, comp, in_v)
         self.gen_tabbar_viewcontroller(comp['id'], cf.swift)
       else:
