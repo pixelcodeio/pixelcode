@@ -30,11 +30,10 @@ class Interpreter(object):
     view_controller = self.globals['artboard'].capitalize() + 'ViewController'
     C = self.gen_viewcontroller_header(view_controller, True) \
         + utils.set_bg('view', self.globals['bgc'])
-    vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
 
     self.info["components"] = components
-    self.file_name = vc
-    self.swift[vc] = C
+    self.file_name = view_controller
+    self.swift[view_controller] = C
     self.gen_components(False)
 
   def gen_viewcontroller_header(self, view_controller, declare_vars):
@@ -67,7 +66,7 @@ class Interpreter(object):
       self.swift[self.file_name] += "\n}}\n{}}}".format(self.info["tc_methods"])
 
       tc_elem = self.info["tc_elem"]
-      tc_id = tc_elem.get('id')
+      tc_id = tc_elem['id']
       tc_header = tc_elem.get('header')
 
       if tc_header is not None:
@@ -172,12 +171,12 @@ class Interpreter(object):
     """
     C = ""
     for comp in components:
-      if comp.get('type') == 'UICollectionView': # do not init collection views
-        C += "var {}: UICollectionView!\n".format(comp.get('id'))
-      elif comp.get('type') == 'UINavBar': # cannot init navigation bars
+      if comp['type'] == 'UICollectionView': # do not init collection views
+        C += "var {}: UICollectionView!\n".format(comp['id'])
+      elif comp['type'] == 'UINavBar': # cannot init navigation bars
         continue
       else:
-        C += "var {} = {}()\n".format(comp.get('id'), comp.get('type'))
+        C += "var {} = {}()\n".format(comp['id'], comp['type'])
     return C
 
   def gen_comps(self, components, in_v):
@@ -191,7 +190,7 @@ class Interpreter(object):
     C = ""
 
     for comp in components:
-      type_ = comp.get('type')
+      type_ = comp['type']
       if type_ == 'UILabel':
         cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
         C += cf.swift
@@ -209,9 +208,7 @@ class Interpreter(object):
     view_controller = component['id'].capitalize() + 'ViewController'
     C = self.gen_viewcontroller_header(view_controller, False)
     C = C.replace(': UIViewController', ': UITabBarController')
-      
-
-
+    # in progress
 
   def subclass_tc(self):
     """
@@ -219,7 +216,7 @@ class Interpreter(object):
     """
     C = self.swift[self.file_name]
     ext = ", UITableViewDelegate, UITableViewDataSource"
-    if self.info["tc_elem"].get('type') == 'UICollectionView':
+    if self.info["tc_elem"]['type'] == 'UICollectionView':
       ext = ext.replace('Table', 'Collection')
       ext += ", UICollectionViewDelegateFlowLayout"
 
@@ -263,11 +260,11 @@ class Interpreter(object):
       return False
 
     # inner table/collection view exists
-    if tc_elem.get('type') == 'UICollectionView':
+    if tc_elem['type'] == 'UICollectionView':
       self.move_collection_view()
     self.subclass_tc() # add parent classes for table/collection view
     self.swift[self.file_name] += "\n{}\n}}\n".format(self.info["tc_methods"])
-    id_ = tc_elem.get('id')
+    id_ = tc_elem['id']
     cell = tc_elem.get('cells')[0]
     self.file_name = id_.capitalize() + 'Cell'
     self.swift[self.file_name] = self.gen_cell_header(id_, cell)

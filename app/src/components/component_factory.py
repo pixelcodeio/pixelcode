@@ -163,7 +163,7 @@ class ComponentFactory(object):
       # set properties for components in header
       ids = []
       C = "case 0:\n"
-      components = self.info['header'].get('components')
+      components = self.info['header']['components']
       ids = [comp.get('id') for comp in components]
       C += self.gen_subcomponents_properties("header", components, ids)
       self.info["header_set_prop"] = C
@@ -179,7 +179,7 @@ class ComponentFactory(object):
       components = cell.get('components')
       if len(components) != len(fst_cell_comps):
         continue
-      C += '\ncase {}:\n'.format(index)
+      C += '\ncase {}:\n'.format(case)
       C += self.gen_subcomponents_properties("cell", components, ids)
       C += 'return cell'
       case += 1
