@@ -67,7 +67,7 @@ def set_corner_radius(id_, radius):
 def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   """
   Args:
-    cid: (int) id of component
+    cid: (str) id of component
     rect: (dict) see generate_component for more information
 
   Returns: (str) swift code to apply all the properties from rect.
@@ -82,6 +82,8 @@ def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   if fill is not None:
     if tc_header:
       c += set_bg('backgroundView?', fill)
+    elif cid is not None and ("tabBar" in cid or "TabBar" in cid):
+      c += set_bg('tabBar', fill)
     else:
       c += set_bg(cid, fill)
   else:

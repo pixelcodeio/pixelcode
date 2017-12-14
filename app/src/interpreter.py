@@ -191,24 +191,33 @@ class Interpreter(object):
 
     for comp in components:
       type_ = comp['type']
-      if type_ == 'UILabel':
-        cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
-        C += cf.swift
-      elif type_ == 'UITabBar':
-        self.gen_tabbar(comp)
-      else:
+      if type_ == 'UITabBar':
+        comp['active-vc'] = self.file_name
         cf = ComponentFactory(type_, comp, in_v)
+        self.gen_tabbar_viewcontroller(comp['id'], cf.swift)
+      else:
+        if type_ == 'UILabel':
+          cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
+        else:
+          cf = ComponentFactory(type_, comp, in_v)
+          if type_ == 'UITableView' or type_ == 'UICollectionView':
+            self.info["tc_elem"] = comp
+            self.info["tc_methods"] = cf.tc_methods
         C += cf.swift
-        if type_ == 'UITableView' or type_ == 'UICollectionView':
-          self.info["tc_elem"] = comp
-          self.info["tc_methods"] = cf.tc_methods
     return C
 
-  def gen_tabbar(self, component):
-    view_controller = component['id'].capitalize() + 'ViewController'
+  def gen_tabbar_viewcontroller(self, id_, swift):
+    """
+    Args:
+      swift (str): code generated for the tabbar
+
+    Returns (None): generates file for tabbar view controller in self.swift
+    """
+    view_controller = id_.capitalize() + 'ViewController'
     C = self.gen_viewcontroller_header(view_controller, False)
     C = C.replace(': UIViewController', ': UITabBarController')
-    # in progress
+    C += ("{}}}\n}}\n").format(swift)
+    self.swift[view_controller] = C
 
   def subclass_tc(self):
     """

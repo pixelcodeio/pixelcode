@@ -13,6 +13,10 @@ class Parser(object):
     artboard: name of artboard
     elements: list of elements in svg
     filepath: path to file
+    info: dictionary with keys (used for style-guide)
+      - fill (list)
+      - font-family (list)
+      - font-size(list)
     globals: dictionary with keys
       - width (int)
       - height (int)
@@ -27,6 +31,7 @@ class Parser(object):
     self.artboard = artboard
     self.elements = []
     self.json = {}
+    self.info = {'fill': [], 'font-family': [], 'font-size': []}
     self.globals = {}
     self.scale = 1.0
     self.path = path
@@ -162,4 +167,26 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       parsed_elements.insert(0, new_elem)
+      self.extract_to_info(new_elem)
     return parsed_elements[::-1]
+
+  def extract_to_info(self, elem):
+    """
+    Returns: extracts style-guide information from elem and adds it to info
+    """
+    keys = ['fill', 'font-family', 'font-size']
+    fill, font_family, font_size = utils.get_vals(keys, elem)
+    self.add_to_info('fill', fill)
+    self.add_to_info('font-family', font_family)
+    self.add_to_info('font-size', font_size)
+
+  def add_to_info(self, key, new_value):
+    """
+    Args:
+      key (str): either 'font', 'font-family', or 'font-size'
+
+    Returns (None):
+      adds new_value to info[key] if new_value is not None and not in info[key]
+    """
+    if new_value is not None and new_value not in self.info[key]:
+      self.info[key].append(new_value)
