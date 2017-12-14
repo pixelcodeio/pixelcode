@@ -1,11 +1,6 @@
-from components.uibutton import UIButton
-from components.uiimageview import UIImageView
-from components.uilabel import UILabel
-from components.uinavbar import UINavBar
-from components.uitablecollectionview import UITableCollectionView
-from components.uitextfieldview import UITextFieldView
-from components.uiview import UIView
+from components._all import *
 from . import *
+
 
 class ComponentFactory(object):
   """
@@ -168,18 +163,18 @@ class ComponentFactory(object):
       # set properties for components in header
       ids = []
       C = "case 0:\n"
-      components = self.info.get('header').get('components')
+      components = self.info['header'].get('components')
       ids = [comp.get('id') for comp in components]
       C += self.gen_subcomponents_properties("header", components, ids)
       self.info["header_set_prop"] = C
 
     # set properties for components in cells
-    cells = self.info.get('cells')
+    cells = self.info['cells']
     fst_cell_comps = cells[0].get('components')
     ids = [comp.get('id') for comp in fst_cell_comps]
 
     C = ""
-    index = 0
+    case = 0
     for cell in cells:
       components = cell.get('components')
       if len(components) != len(fst_cell_comps):
@@ -187,7 +182,7 @@ class ComponentFactory(object):
       C += '\ncase {}:\n'.format(index)
       C += self.gen_subcomponents_properties("cell", components, ids)
       C += 'return cell'
-      index += 1
+      case += 1
 
     self.info["cell_set_prop"] = C
 

@@ -26,28 +26,28 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    self.info["components"] = components
-    C = self.gen_viewcontroller_header() \
+    # Generate header of view controller file
+    view_controller = self.globals['artboard'].capitalize() + 'ViewController'
+    C = self.gen_viewcontroller_header(view_controller, True) \
         + utils.set_bg('view', self.globals['bgc'])
     vc = '{}ViewController'.format(self.globals['artboard'].capitalize())
-    types = [c.get('type') for c in components]
-    if 'UITabBar' in types:
-        print("tabbar")
-    print(types)
+
+    self.info["components"] = components
     self.file_name = vc
     self.swift[vc] = C
     self.gen_components(False)
 
-  def gen_viewcontroller_header(self):
+  def gen_viewcontroller_header(self, view_controller, declare_vars):
     """
+    Args:
+      view_controller (str): name of viewcontroller
+      declare_vars (bool): whether or not to declare global variables.
     Returns (str): swift code of the view controller header
     """
-    artboard = self.globals['artboard'].capitalize()
-    viewController = '{}ViewController'.format(artboard)
     header = ("import UIKit\nimport SnapKit\n\n"
               "class {}: UIViewController {{\n\n"
-             ).format(viewController)
-    header += self.declare_g_vars()
+             ).format(view_controller)
+    header += self.declare_g_vars() if declare_vars else ""
     header += "\noverride func viewDidLoad() {\nsuper.viewDidLoad()\n"
     return header
 
@@ -195,6 +195,8 @@ class Interpreter(object):
       if type_ == 'UILabel':
         cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
         C += cf.swift
+      elif type_ == 'UITabBar':
+        self.gen_tabbar(comp)
       else:
         cf = ComponentFactory(type_, comp, in_v)
         C += cf.swift
@@ -202,6 +204,14 @@ class Interpreter(object):
           self.info["tc_elem"] = comp
           self.info["tc_methods"] = cf.tc_methods
     return C
+
+  def gen_tabbar(self, component):
+    view_controller = component['id'].capitalize() + 'ViewController'
+    C = self.gen_viewcontroller_header(view_controller, False)
+    C = C.replace(': UIViewController', ': UITabBarController')
+      
+
+
 
   def subclass_tc(self):
     """
