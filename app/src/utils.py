@@ -1,11 +1,3 @@
-from components.uibutton import UIButton
-from components.uiimageview import UIImageView
-from components.uilabel import UILabel
-from components.uitablecollectionview import UITableCollectionView
-from components.uitextfieldview import UITextFieldView
-from components.uiview import UIView
-
-
 def convert_hex_to_rgb(hex_string):
   """
   Returns: (tuple) [hex_string] converted to a rgb tuple.
@@ -34,9 +26,13 @@ def set_bg(id_, color):
 
   Returns: (str) swift code that sets the background color of id_ to [color].
   """
+  color = create_uicolor(color)
   if id_ is not None:
-    return ('{}.backgroundColor = {}\n').format(id_, create_uicolor(color))
-  return ('backgroundColor = {}\n').format(create_uicolor(color))
+    if 'navBar' in id_ or 'NavBar' in id_:
+      return ('self.navigationController?.navigationBar.barTintColor = {}\n\n'
+             ).format(color)
+    return ('{}.backgroundColor = {}\n').format(id_, color)
+  return ('backgroundColor = {}\n').format(color)
 
 def add_subview(view, id_):
   if view is None:
@@ -122,26 +118,3 @@ def ins_after_key(s, k, ins):
     raise Exception("Key not found in s")
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
-
-def create_component(type_, id_, info, env):
-  """
-  Args:
-    type_ (str): the component to be created
-    id_ (str): the name of the component
-    info (dict): information on component
-    env (dict): env for component. Possible keys are
-                [set_prop, in_view, in_cell, in_header]
-
-  Returns: (obj) An instance of the component to be created
-  """
-  # init keys
-  for key in ["set_prop", "in_view", "in_cell", "in_header"]:
-    if key not in env:
-      env[key] = False
-
-  if type_ == 'UITextField' or type_ == 'UITextView':
-    type_ = 'UITextFieldView'
-  elif type_ == 'UITableView' or type_ == 'UICollectionView':
-    type_ = 'UITableCollectionView'
-  # using eval for clean code
-  return eval(type_ + "(id_, info, env)") # pylint: disable=W0123
