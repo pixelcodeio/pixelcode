@@ -11,6 +11,18 @@ def get_vals(keys, d):
   """
   return [d.get(k) for k in keys]
 
+def uppercase(string):
+  """
+  Returns: string with the first letter capitalized.
+  """
+  return string if not string else string[0].upper() + string[1:]
+
+def word_in_str(word, string):
+  """
+  Returns (bool): whether string contains word or capitalized version of word
+  """
+  return word in string or uppercase(word) in string
+
 def create_uicolor(color):
   """
   Returns: The UIColor of [color].
@@ -28,7 +40,7 @@ def set_bg(id_, color):
   """
   color = create_uicolor(color)
   if id_ is not None:
-    if 'navBar' in id_ or 'NavBar' in id_:
+    if word_in_str('navBar', id_):
       return ('self.navigationController?.navigationBar.barTintColor = {}\n\n'
              ).format(color)
     return ('{}.backgroundColor = {}\n').format(id_, color)
@@ -67,7 +79,7 @@ def set_corner_radius(id_, radius):
 def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   """
   Args:
-    cid: (int) id of component
+    cid: (str) id of component
     rect: (dict) see generate_component for more information
 
   Returns: (str) swift code to apply all the properties from rect.
@@ -82,6 +94,8 @@ def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   if fill is not None:
     if tc_header:
       c += set_bg('backgroundView?', fill)
+    elif cid is not None and word_in_str('tabBar', cid):
+      c += set_bg('tabBar', fill)
     else:
       c += set_bg(cid, fill)
   else:

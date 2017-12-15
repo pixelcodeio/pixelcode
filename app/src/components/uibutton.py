@@ -16,7 +16,8 @@ class UIButton(BaseComponent):
     """
     tspan = self.info.get('text').get('textspan')
     C = ""
-    if self.info.get('bg_img') is not None:
+    bg_img = self.info['bg_img']
+    if bg_img is not None and bg_img.get('path') is not None:
       C += self.set_bg_image()
     if len(tspan) == 1: # the contents of the textspan don't vary
       txt = tspan[0]

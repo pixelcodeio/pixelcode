@@ -27,7 +27,8 @@ class Interpreter(object):
     Returns: Fills in the swift instance var with generated code for artboard.
     """
     # Generate header of view controller file
-    view_controller = self.globals['artboard'].capitalize() + 'ViewController'
+    artboard = utils.uppercase(self.globals['artboard'])
+    view_controller = '{}ViewController'.format(artboard)
     C = self.gen_viewcontroller_header(view_controller, True) \
         + utils.set_bg('view', self.globals['bgc'])
 
@@ -94,7 +95,7 @@ class Interpreter(object):
 
     Returns (str): swift code to generate the header of a cell
     """
-    tc_id = tc_id.capitalize()
+    tc_id = utils.uppercase(tc_id)
     C = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
          "{{\n\n{}"
          "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
@@ -105,7 +106,7 @@ class Interpreter(object):
          "super.layoutSubviews()\n\n"
         ).format(tc_id, self.init_g_vars(cell.get('components')))
 
-    if "collection" in tc_id or "Collection" in tc_id:
+    if utils.word_in_str('collection', tc_id):
       C = C.replace('style: UITableViewCellStyle, reuseIdentifier: String?',
                     'frame: CGRect')
       C = C.replace('style: style, reuseIdentifier: reuseIdentifier',
@@ -122,7 +123,7 @@ class Interpreter(object):
 
     Returns (str): swift code for generating the header of a header
     """
-    tc_id = tc_id.capitalize()
+    tc_id = utils.uppercase(tc_id)
     C = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
          "UITableViewHeaderFooterView {{\n\n{}"
          "\noverride init(reuseIdentifier: String?) {{\n"
@@ -132,7 +133,7 @@ class Interpreter(object):
          "\nsuper.layoutSubviews()\n\n"
         ).format(tc_id, self.init_g_vars(header.get('components')))
 
-    if "collection" in tc_id or "Collection" in tc_id:
+    if utils.word_in_str('collection', tc_id):
       C = C.replace('reuseIdentifier: String?', 'frame: CGRect')
       C = C.replace('reuseIdentifier: reuseIdentifier', 'frame: frame')
       C = C.replace('UITableViewHeaderFooterView', 'UICollectionReusableView')
@@ -191,24 +192,33 @@ class Interpreter(object):
 
     for comp in components:
       type_ = comp['type']
-      if type_ == 'UILabel':
-        cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
-        C += cf.swift
-      elif type_ == 'UITabBar':
-        self.gen_tabbar(comp)
-      else:
+      if type_ == 'UITabBar':
+        comp['active_vc'] = self.file_name # name of active view controller
         cf = ComponentFactory(type_, comp, in_v)
+        self.gen_tabbar_viewcontroller(comp['id'], cf.swift)
+      else:
+        if type_ == 'UILabel':
+          cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
+        else:
+          cf = ComponentFactory(type_, comp, in_v)
+          if type_ == 'UITableView' or type_ == 'UICollectionView':
+            self.info["tc_elem"] = comp
+            self.info["tc_methods"] = cf.tc_methods
         C += cf.swift
-        if type_ == 'UITableView' or type_ == 'UICollectionView':
-          self.info["tc_elem"] = comp
-          self.info["tc_methods"] = cf.tc_methods
     return C
 
-  def gen_tabbar(self, component):
-    view_controller = component['id'].capitalize() + 'ViewController'
+  def gen_tabbar_viewcontroller(self, id_, swift):
+    """
+    Args:
+      swift (str): code generated for the tabbar
+
+    Returns (None): generates file for tabbar view controller in self.swift
+    """
+    view_controller = utils.uppercase(id_) + 'ViewController'
     C = self.gen_viewcontroller_header(view_controller, False)
     C = C.replace(': UIViewController', ': UITabBarController')
-    # in progress
+    C += ("{}}}\n}}\n").format(swift)
+    self.swift[view_controller] = C
 
   def subclass_tc(self):
     """
@@ -242,11 +252,11 @@ class Interpreter(object):
       NOTE: also sets up (table/collection)view header/cell file.
     """
     if type_ == "cell":
-      self.file_name = id_.capitalize() + "Cell"
+      self.file_name = utils.uppercase(id_) + "Cell"
       C = self.gen_cell_header(id_, info)
       C += utils.setup_rect(id_, info.get('rect'), True, tc_cell=True)
     else: # type_ is header
-      self.file_name = id_.capitalize() + "HeaderView"
+      self.file_name = utils.uppercase(id_) + "HeaderView"
       C = self.gen_header_header(id_, info)
       C += utils.setup_rect(id_, info.get('rect'), True, tc_header=True)
 
@@ -266,7 +276,7 @@ class Interpreter(object):
     self.swift[self.file_name] += "\n{}\n}}\n".format(self.info["tc_methods"])
     id_ = tc_elem['id']
     cell = tc_elem.get('cells')[0]
-    self.file_name = id_.capitalize() + 'Cell'
+    self.file_name = utils.uppercase(id_) + 'Cell'
     self.swift[self.file_name] = self.gen_cell_header(id_, cell)
     # get components of first cell
     self.info["components"] = tc_elem.get('cells')[0].get('components')

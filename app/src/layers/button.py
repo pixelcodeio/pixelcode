@@ -12,7 +12,11 @@ class Button(BaseLayer):
     bg_img = None
     for child in elem["children"]:
       if child["type"] == "UIView":
-        rect = child
+        if utils.word_in_str('bound', child["id"]):
+          rect = child
+        else:
+          child['path'] = child['id'] # add path key
+          bg_img = child
       elif child["type"] == "UILabel":
         text = child
       elif child["type"] == "UIImageView":
