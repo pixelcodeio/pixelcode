@@ -13,12 +13,12 @@ class NavBar(BaseLayer):
     title_view = None
     rect = None
     for child in elem["children"]:
-      if "titleView" in child["id"] or "TitleView" in child["id"]:
+      if utils.word_in_str('titleView', child["id"]):
         if title_view:
           raise Exception("Navbar: Only one title view allowed.")
         else:
           title_view = child
-      elif "barButton" in child["id"] or "BarButton" in child["id"]:
+      elif utils.word_in_str('barButton', child["id"]):
         if child["x"] < 375.0/2: # on left side of screen
           left_bar_buttons.append(child)
         else:

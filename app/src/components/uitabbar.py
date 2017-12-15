@@ -12,19 +12,19 @@ class UITabBar(BaseComponent):
     Returns: (str) swift code to setup uinavbar items
     """
     C = ""
-    case = 0 # counter used to name empty view controllers
+    counter = 0 # counter used to name empty view controllers
     active_index = -1 # index of selected tabbar item
     view_controllers = [] # ids of viewcontrollers in tabbar
 
     for index, button in enumerate(self.info['tabbar-buttons']):
       if button['active']:
         active_index = index
-        vc_name = self.info['active-vc'].lower()
-        C += 'let {} = {}()\n'.format(vc_name, self.info['active-vc'])
+        vc_name = self.info['active_vc'].lower()
+        C += 'let {} = {}()\n'.format(vc_name, self.info['active_vc'])
       else:
-        vc_name = 'viewController{}'.format(case)
+        vc_name = 'viewController{}'.format(counter)
         C += 'let {} = UIViewController()\n'.format(vc_name)
-        case += 1
+        counter += 1
 
       if button['bg_img'] is None:
         raise Exception("UITabbar: Tabbar button does not contain icon/image.")

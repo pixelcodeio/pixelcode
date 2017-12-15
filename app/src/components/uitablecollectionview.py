@@ -34,7 +34,7 @@ class UITableCollectionView(BaseComponent):
     C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
           '{0}.delegate = self\n'
           '{0}.dataSource = self\n'
-         ).format(id_, id_.capitalize())
+         ).format(id_, utils.uppercase(id_))
 
     if self.info.get('type') == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
@@ -54,7 +54,7 @@ class UITableCollectionView(BaseComponent):
          ' as! {}Cell\n'
          'cell.selectionStyle = .none\n'
          "switch indexPath.row {{"
-        ).format(self.id, self.id.capitalize())
+        ).format(self.id, utils.uppercase(self.id))
 
     if self.info.get('type') == 'UICollectionView':
       C = C.replace("table", "collection")
@@ -139,7 +139,7 @@ class UITableCollectionView(BaseComponent):
 
     C = ('{0} {{\nlet header = {1}.{2}: "{1}Header"{3}) as! {4}HeaderView\n'
          'switch {5} {{\n'
-        ).format(func, self.id, deq, path, self.id.capitalize(), section)
+        ).format(func, self.id, deq, path, utils.uppercase(self.id), section)
 
     C += self.info.get('header_set_prop')
     C += ('return header'
@@ -177,7 +177,7 @@ class UITableCollectionView(BaseComponent):
     id_ = self.id
     type_ = self.info.get('type')
     C = ('{0}.register({1}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
-         ' "{0}Header")\n').format(id_, id_.capitalize())
+         ' "{0}Header")\n').format(id_, utils.uppercase(id_))
 
     if type_ == 'UICollectionView':
       ins = ("forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,"
