@@ -27,12 +27,12 @@ class Interpreter(object):
     Returns: Fills in the swift instance var with generated code for artboard.
     """
     # Generate header of view controller file
+    self.info["components"] = components
     artboard = utils.uppercase(self.globals['artboard'])
     view_controller = '{}ViewController'.format(artboard)
     C = self.gen_viewcontroller_header(view_controller, True) \
         + utils.set_bg('view', self.globals['bgc'])
 
-    self.info["components"] = components
     self.file_name = view_controller
     self.swift[view_controller] = C
     self.gen_components(False)

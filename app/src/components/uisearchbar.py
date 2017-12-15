@@ -11,4 +11,5 @@ class UISearchBar(BaseComponent):
     """
     Returns: swift code to setup uiview.
     """
-    return "{}.searchBarStyle = .minimal\n"
+    return ('{0}.searchBarStyle = .minimal\n{0}.placeholder = "{1}"\n'
+           ).format(self.id, self.info["contents"].decode('utf-8'))
