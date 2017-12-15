@@ -121,6 +121,8 @@ class Parser(object):
           elem.name = "tableview"
         elif utils.word_in_str("navBar", elem["id"]):
           elem.name = "navbar"
+        elif utils.word_in_str("searchBar", elem["id"]):
+          elem.name = "searchbar"
         elif utils.word_in_str("tabBar", elem["id"]):
           elem.name = "tabbar"
         elif utils.word_in_str("textField", elem["id"]):
@@ -151,6 +153,8 @@ class Parser(object):
         parsed_elem = NavBar(elem, "UINavBar")
       elif elem.name == "rect" or elem.name == "view":
         parsed_elem = Rect(elem, "UIView")
+      elif elem.name == "searchbar":
+        parsed_elem = SearchBar(elem, "UISearchBar")
       elif elem.name == "tabbar":
         parsed_elem = TabBar(elem, "UITabBar")
       elif elem.name == "tableview":
