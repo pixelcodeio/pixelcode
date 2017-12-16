@@ -1,5 +1,5 @@
 from components.component_factory import ComponentFactory
-import utils
+from interpreter_h import *
 
 class Interpreter(object):
   """
@@ -47,7 +47,7 @@ class Interpreter(object):
     header = ("import UIKit\nimport SnapKit\n\n"
               "class {}: UIViewController {{\n\n"
              ).format(view_controller)
-    header += self.declare_g_vars() if declare_vars else ""
+    header += declare_g_vars(self.info["components"]) if declare_vars else ""
     header += "\noverride func viewDidLoad() {\nsuper.viewDidLoad()\n"
     return header
 
@@ -86,99 +86,6 @@ class Interpreter(object):
     """
     self.info["tc_elem"] = {}
     self.info["tc_methods"] = ""
-
-  def gen_cell_header(self, tc_id, cell):
-    """
-    Args:
-      tc_id (str): id of the parent (table/collection)view
-      cell (dict): info of cell being generated
-
-    Returns (str): swift code to generate the header of a cell
-    """
-    tc_id = utils.uppercase(tc_id)
-    C = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
-         "{{\n\n{}"
-         "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
-         "String?) {{\n"
-         "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-         "layoutSubviews()\n}}\n\n"
-         "override func layoutSubviews() {{\n"
-         "super.layoutSubviews()\n\n"
-        ).format(tc_id, self.init_g_vars(cell.get('components')))
-
-    if utils.word_in_str('collection', tc_id):
-      C = C.replace('style: UITableViewCellStyle, reuseIdentifier: String?',
-                    'frame: CGRect')
-      C = C.replace('style: style, reuseIdentifier: reuseIdentifier',
-                    'frame: frame')
-      C = C.replace('Table', 'Collection')
-
-    return C
-
-  def gen_header_header(self, tc_id, header):
-    """
-    Args:
-      tc_id (str): id of the parent (table/collection)view
-      header: (dict) info of header being generated
-
-    Returns (str): swift code for generating the header of a header
-    """
-    tc_id = utils.uppercase(tc_id)
-    C = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
-         "UITableViewHeaderFooterView {{\n\n{}"
-         "\noverride init(reuseIdentifier: String?) {{\n"
-         "super.init(reuseIdentifier: reuseIdentifier)\n"
-         "layoutSubviews()\n}}\n\n"
-         "override func layoutSubviews() {{"
-         "\nsuper.layoutSubviews()\n\n"
-        ).format(tc_id, self.init_g_vars(header.get('components')))
-
-    if utils.word_in_str('collection', tc_id):
-      C = C.replace('reuseIdentifier: String?', 'frame: CGRect')
-      C = C.replace('reuseIdentifier: reuseIdentifier', 'frame: frame')
-      C = C.replace('UITableViewHeaderFooterView', 'UICollectionReusableView')
-
-    return C
-
-  def declare_g_vars(self):
-    """
-    Returns (str): swift code to declare global variables
-    """
-    components = list(self.info["components"]) # get copy of components
-    navbar_items = [c.get("navbar-items") for c in components]
-    navbar_items = [n for n in navbar_items if n is not None]
-    if navbar_items:
-      navbar_items = navbar_items[0] # only one nav bar per screen
-      components.extend(navbar_items['left-buttons'])
-      components.extend(navbar_items['right-buttons'])
-      if navbar_items.get('title') is not None:
-        components.append(navbar_items['title'])
-        if navbar_items['title'].get('components') is not None:
-          components.extend(navbar_items['title']['components'])
-
-    # filter components to not include navigation bar
-    filter_comps = [c for c in components if c['type'] != 'UINavBar']
-
-    # one-liner to concat all variable names
-    gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in filter_comps]
-    return "".join(gvars)
-
-  def init_g_vars(self, components):
-    """
-    Args:
-      components: (dict list) contains info about components
-
-    Returns (str): swift code to generate/init all glob vars of components
-    """
-    C = ""
-    for comp in components:
-      if comp['type'] == 'UICollectionView': # do not init collection views
-        C += "var {}: UICollectionView!\n".format(comp['id'])
-      elif comp['type'] == 'UINavBar': # cannot init navigation bars
-        continue
-      else:
-        C += "var {} = {}()\n".format(comp['id'], comp['type'])
-    return C
 
   def gen_comps(self, components, in_v):
     """
@@ -253,54 +160,31 @@ class Interpreter(object):
     """
     if type_ == "cell":
       self.file_name = utils.uppercase(id_) + "Cell"
-      C = self.gen_cell_header(id_, info)
+      C = gen_cell_header(id_, info)
       C += utils.setup_rect(id_, info.get('rect'), True, tc_cell=True)
     else: # type_ is header
       self.file_name = utils.uppercase(id_) + "HeaderView"
-      C = self.gen_header_header(id_, info)
+      C = gen_header_header(id_, info)
       C += utils.setup_rect(id_, info.get('rect'), True, tc_header=True)
 
     C += self.gen_comps(info.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.req_init())
-    self.swift[self.file_name] = C
 
     tc_elem = self.info["tc_elem"]
     if not tc_elem:
-      self.swift[self.file_name] += "}"
+      self.swift[self.file_name] = C + "}"
       return False
 
     # inner table/collection view exists
     if tc_elem['type'] == 'UICollectionView':
-      self.move_collection_view()
-    self.subclass_tc() # add parent classes for table/collection view
-    self.swift[self.file_name] += "\n{}\n}}\n".format(self.info["tc_methods"])
+      C = move_collection_view(C, self.info)
+    # add parent classes for table/collection view
+    C = subclass_tc(C, self.info)
+    self.swift[self.file_name] = C + "\n{}\n}}".format(self.info["tc_methods"])
     id_ = tc_elem['id']
     cell = tc_elem.get('cells')[0]
     self.file_name = utils.uppercase(id_) + 'Cell'
-    self.swift[self.file_name] = self.gen_cell_header(id_, cell)
+    self.swift[self.file_name] = gen_cell_header(id_, cell)
     # get components of first cell
     self.info["components"] = tc_elem.get('cells')[0].get('components')
     return True
-
-  def move_collection_view(self):
-    """
-    Returns (None):
-      Moves swift code that sets up UICollectionView to inside current file's
-      init function.
-    """
-    C = self.swift[self.file_name]
-    beg = C.find('layout.')
-    mid = C.find('addSubview', beg)
-    end = C.find('\n', mid)
-    cv = ("let layout = UICollectionViewFlowLayout()\n"
-          "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
-          "{}\n"
-         ).format(self.info['tc_elem']['id'], 'UICollectionView', C[beg:end])
-    C = C[:beg] + C[end:]
-
-    if 'reuseIdentifier)\n' in C:
-      C = utils.ins_after_key(C, 'reuseIdentifier)\n', cv)
-    elif 'frame)\n' in C:
-      C = utils.ins_after_key(C, 'frame)\n', cv)
-
-    self.swift[self.file_name] = C
