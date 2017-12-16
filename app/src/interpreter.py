@@ -41,16 +41,19 @@ class Interpreter(object):
     """
     Returns: Fills in the swift instance variable with generated file.
     """
-    self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
+    C = self.swift[self.file_name]
+    C += self.gen_comps(self.info["components"], in_v)
 
     if not self.info["tc_elem"]:
       if in_v:
-        self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
+        self.swift[self.file_name] = C + "}}\n{}\n}}".format(utils.req_init())
       else:
-        self.swift[self.file_name] += "\n}\n}"
+        self.swift[self.file_name] = C + "\n}\n}"
     else:
-      self.subclass_tc() # add parent classes for table/collection view
-      self.swift[self.file_name] += "\n}}\n{}}}".format(self.info["tc_methods"])
+      # add parent classes for table/collection view
+      C = subclass_tc(C, self.info)
+      C += '\n}}\n{}}}'.format(self.info["tc_methods"])
+      self.swift[self.file_name] = C
 
       tc_elem = self.info["tc_elem"]
       tc_id = tc_elem['id']
