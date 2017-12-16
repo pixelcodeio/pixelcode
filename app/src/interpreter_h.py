@@ -93,9 +93,36 @@ def gen_header_header(tc_id, header):
 
   return C
 
+def gen_viewcontroller_header(view_controller, info, declare_vars):
+  """
+  Args:
+    view_controller (str): name of viewcontroller
+    declare_vars (bool): whether or not to declare global variables.
+
+  Returns (str): swift code of the view controller header
+  """
+  header = ("import UIKit\nimport SnapKit\n\n"
+            "class {}: UIViewController {{\n\n"
+           ).format(view_controller)
+  header += declare_g_vars(info["components"]) if declare_vars else ""
+  header += "\noverride func viewDidLoad() {\nsuper.viewDidLoad()\n"
+  return header
+
+def gen_tabbar_vc(view_controller, swift, info):
+  """
+  Args:
+    swift (str): code generated for the tabbar
+
+  Returns (str): code to generate tabbar view controller.
+  """
+  C = gen_viewcontroller_header(view_controller, info, False)
+  C = C.replace(': UIViewController', ': UITabBarController')
+  C += ("{}}}\n}}\n").format(swift)
+  return C
+
 def move_collection_view(swift, info):
   """
-  Returns (None):
+  Returns (str):
     Returns swift code with UICollectionView setup code moved to current file's
     init function.
   """
@@ -118,7 +145,7 @@ def move_collection_view(swift, info):
 
 def subclass_tc(swift, info):
   """
-  Returns (None): adds necessary (table/collection)view parent classes
+  Returns (str): adds necessary (table/collection)view parent classes to swift
   """
   C = swift
   ext = ", UITableViewDelegate, UITableViewDataSource"
