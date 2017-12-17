@@ -1,5 +1,16 @@
 import utils
 
+def init_g_var(comp):
+  """
+  Returns: swift code to generate/init one component.
+  """
+  if comp['type'] == 'UICollectionView': # do not init collection views
+    return "var {}: UICollectionView!\n".format(comp['id'])
+  elif comp['type'] == 'UINavBar': # cannot init navigation bars
+    return ""
+  else:
+    return "var {} = {}()\n".format(comp['id'], comp['type'])
+
 def init_g_vars(components):
   """
   Args:
@@ -7,24 +18,17 @@ def init_g_vars(components):
 
   Returns (str): swift code to generate/init all glob vars of components
   """
-  C = ""
-  for comp in components:
-    if comp['type'] == 'UICollectionView': # do not init collection views
-      C += "var {}: UICollectionView!\n".format(comp['id'])
-    elif comp['type'] == 'UINavBar': # cannot init navigation bars
-      continue
-    else:
-      C += "var {} = {}()\n".format(comp['id'], comp['type'])
-  return C
+  return "".join([init_g_var(c) for c in components])
 
 def declare_g_vars(components):
   """
   Returns (str): swift code to declare global variables
   """
-  #components = list(self.info["components"]) # get copy of components
-  navbar_items = [c.get("navbar-items") for c in components]
-  navbar_items = [n for n in navbar_items if n is not None]
+  navbar_items = [c.get("navbar-items") for c in components \
+                  if not c.get("navbar_items")]
   if navbar_items:
+    if len(navbar_items) > 1:
+      raise Exception("Interpreter_h: More than one navbar is present.")
     navbar_items = navbar_items[0] # only one nav bar per screen
     components.extend(navbar_items['left-buttons'])
     components.extend(navbar_items['right-buttons'])
@@ -68,7 +72,7 @@ def gen_cell_header(tc_id, cell):
 
   return C
 
-def gen_header_header(tc_id, header):
+def gen_header_header(tc_id, header): # TODO: Rename this function.
   """
   Args:
     tc_id (str): id of the parent (table/collection)view
@@ -126,22 +130,21 @@ def move_collection_view(swift, info):
     Returns swift code with UICollectionView setup code moved to current file's
     init function.
   """
-  C = swift
-  beg = C.find('layout.')
-  mid = C.find('addSubview', beg)
-  end = C.find('\n', mid)
+  beg = swift.find('layout.')
+  mid = swift.find('addSubview', beg)
+  end = swift.find('\n', mid)
   cv = ("let layout = UICollectionViewFlowLayout()\n"
         "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
         "{}\n"
-       ).format(info['tc_elem']['id'], 'UICollectionView', C[beg:end])
-  C = C[:beg] + C[end:]
+       ).format(info['tc_elem']['id'], 'UICollectionView', swift[beg:end])
+  swift = swift[:beg] + swift[end:]
 
-  if 'reuseIdentifier)\n' in C:
-    C = utils.ins_after_key(C, 'reuseIdentifier)\n', cv)
-  elif 'frame)\n' in C:
-    C = utils.ins_after_key(C, 'frame)\n', cv)
+  if 'reuseIdentifier)\n' in swift:
+    swift = utils.ins_after_key(swift, 'reuseIdentifier)\n', cv)
+  elif 'frame)\n' in swift:
+    swift = utils.ins_after_key(swift, 'frame)\n', cv)
 
-  return C
+  return swift
 
 def subclass_tc(swift, info):
   """
