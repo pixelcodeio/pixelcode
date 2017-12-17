@@ -11,6 +11,8 @@ class Interpreter(object):
       - tc_elem (dict): info on current (table/collection)view being generated
       - tc_methods (str): any necessary (table/collection)view methods
     swift (dict): swift code to generate all components
+
+  NOTE: The variable C used in functions is used to denote "code".
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
