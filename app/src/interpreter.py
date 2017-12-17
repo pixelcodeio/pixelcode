@@ -12,7 +12,7 @@ class Interpreter(object):
       - tc_methods (str): any necessary (table/collection)view methods
     swift (dict): swift code to generate all components
 
-  NOTE: The variable C used in functions is used to denote "code".g
+  NOTE: The variable C used in functions is used to denote "code".
   """
   def __init__(self, globals_):
     globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
@@ -78,11 +78,15 @@ class Interpreter(object):
     Returns (str): swift code to generate components.
     """
     self.clear_tv()
+    navbar_item_ids = [] # holds ids of navbar items
     C = ""
 
     for comp in components:
       type_ = comp['type']
-      if type_ == 'UITabBar':
+      if comp['id'] in navbar_item_ids:
+        # navbar items already generated with navbar
+        continue
+      elif type_ == 'UITabBar':
         comp['active_vc'] = self.file_name # name of active view controller
         cf = ComponentFactory(type_, comp, in_v)
         # generate tabbar viewcontroller file
@@ -96,6 +100,14 @@ class Interpreter(object):
           if type_ == 'UITableView' or type_ == 'UICollectionView':
             self.info["tc_elem"] = comp
             self.info["tc_methods"] = cf.tc_methods
+          elif type_ == 'UINavBar':
+            items = comp["navbar-items"]
+            navbar_item_ids.extend([i['id'] for i in items['left-buttons']])
+            navbar_item_ids.extend([i['id'] for i in items['right-buttons']])
+            if items.get('title') is not None:
+              title = items['title']
+              navbar_item_ids.append(title['id'])
+              navbar_item_ids.extend(c['id'] for c in title['components'])
         C += cf.swift
     return C
 
