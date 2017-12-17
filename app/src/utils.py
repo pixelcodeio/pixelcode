@@ -13,7 +13,9 @@ def get_vals(keys, d):
 
 def uppercase(string):
   """
-  Returns: string with the first letter capitalized.
+  Returns (str):
+    string with the first letter capitalized. if string is the empty string, the
+    empty string is returned.
   """
   return string if not string else string[0].upper() + string[1:]
 
