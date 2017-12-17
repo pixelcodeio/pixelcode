@@ -25,7 +25,7 @@ def declare_g_vars(components):
   Returns (str): swift code to declare global variables
   """
   navbar_items = [c.get("navbar-items") for c in components \
-                  if not c.get("navbar_items")]
+                  if c.get("navbar-items")]
   if navbar_items:
     if len(navbar_items) > 1:
       raise Exception("Interpreter_h: More than one navbar is present.")
@@ -150,23 +150,22 @@ def subclass_tc(swift, info):
   """
   Returns (str): adds necessary (table/collection)view parent classes to swift
   """
-  C = swift
   ext = ", UITableViewDelegate, UITableViewDataSource"
   if info["tc_elem"]['type'] == 'UICollectionView':
     ext = ext.replace('Table', 'Collection')
     ext += ", UICollectionViewDelegateFlowLayout"
 
-  if ": UIViewController" in C:
-    C = utils.ins_after_key(C, ": UIViewController", ext)
-  elif ": UITableViewCell" in C:
-    C = utils.ins_after_key(C, ": UITableViewCell", ext)
-  elif ": UITableViewHeaderFooterView" in C:
-    C = utils.ins_after_key(C, ": UITableViewHeaderFooterView", ext)
-  elif ": UICollectionReusableView" in C:
-    C = utils.ins_after_key(C, ": UICollectionReusableView", ext)
-  elif ": UICollectionViewCell" in C:
-    C = utils.ins_after_key(C, ": UICollectionViewCell", ext)
+  if ": UIViewController" in swift:
+    swift = utils.ins_after_key(swift, ": UIViewController", ext)
+  elif ": UITableViewCell" in swift:
+    swift = utils.ins_after_key(swift, ": UITableViewCell", ext)
+  elif ": UITableViewHeaderFooterView" in swift:
+    swift = utils.ins_after_key(swift, ": UITableViewHeaderFooterView", ext)
+  elif ": UICollectionReusableView" in swift:
+    swift = utils.ins_after_key(swift, ": UICollectionReusableView", ext)
+  elif ": UICollectionViewCell" in swift:
+    swift = utils.ins_after_key(swift, ": UICollectionViewCell", ext)
   else:
     raise Exception("Interpreter_h: invalid file in subclass_tc()")
 
-  return C
+  return swift
