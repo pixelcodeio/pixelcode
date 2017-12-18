@@ -10,7 +10,6 @@ class SearchBar(BaseLayer):
     bookmark_icon = None
 
     for child in elem["children"]:
-      print(child['id'] + ': ' + child['type'])
       if child["type"] == "UILabel":
         contents = child["textspan"][0]["contents"].decode('utf-8')
       elif child["type"] == "UIImageView":
