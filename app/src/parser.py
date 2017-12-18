@@ -123,6 +123,8 @@ class Parser(object):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):
           elem.name = "searchbar"
+        elif utils.word_in_str("statusBar", elem["id"]):
+          continue
         elif utils.word_in_str("tabBar", elem["id"]):
           elem.name = "tabbar"
         elif utils.word_in_str("textField", elem["id"]):
@@ -147,7 +149,7 @@ class Parser(object):
         parsed_elem = TableCollectionView(elem, "UICollectionView")
       elif elem.name == "header":
         parsed_elem = Container(elem, "Header")
-      elif elem.name == "image" or elem.name == "polygon":
+      elif elem.name in {"image", "polygon", "path"}:
         parsed_elem = Image(elem, "UIImageView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")

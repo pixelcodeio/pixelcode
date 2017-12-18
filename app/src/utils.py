@@ -134,3 +134,12 @@ def ins_after_key(s, k, ins):
     raise Exception("Key not found in s")
   end_i = i + len(k)
   return s[:end_i] + ins + s[end_i:]
+
+def set_frame(component):
+  """
+  Returns (str): swift code to set frame of the component
+  """
+  keys = ['id', 'x', 'y', 'rwidth', 'rheight']
+  id_, x, y, w, h = get_vals(keys, component)
+  return ("{}.frame = CGRect(x: {}, y: {}, width: {}, height: {})\n"
+         ).format(id_, x, y, w, h)
