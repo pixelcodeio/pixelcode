@@ -61,6 +61,7 @@ class BaseLayer(object):
     """
     params = [
         "bg_img",
+        "bookmark-button",
         "border-radius",
         "cells",
         "char-spacing",
@@ -83,6 +84,7 @@ class BaseLayer(object):
         "rect",
         "rwidth", # width in pixels
         "rheight", # height in pixels
+        "search-button",
         "separator",
         "stroke-color",
         "stroke-width",
