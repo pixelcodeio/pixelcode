@@ -198,7 +198,7 @@ class ComponentFactory(object):
       C += self.init_comp(type_, id_)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
-      C += self.set_frame(comp) if not add_constraints else ""
+      C += utils.set_frame(comp) if not add_constraints else ""
       C += utils.add_subview(parent_id, id_) if parent_id is not None else ""
       C += self.gen_constraints(comp) if add_constraints else ""
 
@@ -241,15 +241,6 @@ class ComponentFactory(object):
     C = ""
     if title is not None:
       C += self.init_comp(title['type'], title['id'])
-      C += self.set_frame(title)
+      C += utils.set_frame(title)
       C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C
-
-  def set_frame(self, component):
-    """
-    Returns (str): swift code to set frame of the component
-    """
-    keys = ['id', 'x', 'y', 'rwidth', 'rheight']
-    id_, x, y, w, h = utils.get_vals(keys, component)
-    return ("{}.frame = CGRect(x: {}, y: {}, width: {}, height: {})\n"
-           ).format(id_, x, y, w, h)
