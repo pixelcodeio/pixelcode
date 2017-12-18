@@ -94,6 +94,8 @@ class Interpreter(object):
         self.swift[vc_name] = gen_tabbar_vc(vc_name, cf.swift, self.info)
       else:
         if type_ == 'UILabel':
+          if self.swift.get('InsetLabel') is None: # generate custom UILabel
+            self.swift['InsetLabel'] = gen_inset_label()
           cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
         else:
           cf = ComponentFactory(type_, comp, in_v)
