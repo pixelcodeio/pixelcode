@@ -149,8 +149,7 @@ class Parser(object):
         parsed_elem = TableCollectionView(elem, "UICollectionView")
       elif elem.name == "header":
         parsed_elem = Container(elem, "Header")
-      elif elem.name == "image" or elem.name == "polygon" \
-      or elem.name == "path":
+      elif elem.name in {"image", "polygon", "path"}:
         parsed_elem = Image(elem, "UIImageView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
