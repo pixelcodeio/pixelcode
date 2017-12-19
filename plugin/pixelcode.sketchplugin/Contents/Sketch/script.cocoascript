@@ -70,18 +70,22 @@ function exportJSON(artboard, filepath){
 
 // Account for sublayers in checking formatting
 function checkFormatting(layer, layerNames) {
-    var ret = {"isCorrect": true, "layerNames": layerNames, "dictList": [] }
+    var ret = {"isCorrect": true, "layerNames": layerNames, "dictList": []}
     var stack = [layer];
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
-        layerName = String(currentLayer.name.replace(/\s+/, "-"));
+        layerName = currentLayer.name.replace(/\s+/, "-");
 
-        var f = layerName.charAt(0);
         if (arrayContains(layerName, ret["layerNames"])) {
-          var count = countInArray(layerName, ret["layerNames"]);
-          currentLayer.name = layerName + count;
-          layerName = currentLayer.name;
+          var name = layerName;
+          var counter = 1;
+          while (arrayContains(name, ret["layerNames"])) {
+            name = layerName + counter;
+            counter++;
+          }
+          currentLayer.name = name;
+          layerName = name;
         }
 
         var currentDict = {};
@@ -92,6 +96,7 @@ function checkFormatting(layer, layerNames) {
         currentDict["width"] = String(currentLayer.frame.width);
         if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
+        var f = layerName.charAt(0);
         if (f !== f.toLowerCase()) {
             ret["isCorrect"] = false;
             ret["incorrectLayer"] = layerName;
@@ -115,12 +120,4 @@ function hasWhiteSpace(s) {
 
 function arrayContains(needle, arrhaystack) {
     return (arrhaystack.indexOf(needle) > -1);
-}
-
-function countInArray(element, array) {
-  counter = 0;
-  for (i = 0; i < array.length; i++) {
-    if (array[i] == element) counter++;
-  }
-  return counter;
 }
