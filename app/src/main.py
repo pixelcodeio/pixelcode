@@ -1,5 +1,6 @@
 import os
 import sys
+import zipfile
 from parser import Parser
 from interpreter import Interpreter
 
@@ -22,10 +23,7 @@ class Main(object):
 
     i = Interpreter(p.globals)
     i.gen_code(p.elements)
-    code = ""
-    for (k, v) in i.swift.items():
-      code += "{}:\n{}\n".format(k, v)
-    return code
+    return i.swift
 
 def update_test_dir(path):
   """
@@ -40,9 +38,17 @@ def update_test_dir(path):
   for f in svg:
     print("Generating from file: " + f + ".svg")
     m = Main(path, f)
-    o = open(path + f + ".out", "w+")
-    o.write(m.convert_artboard())
-    o.close()
+    swift_files = []
+    for (filename, code) in m.convert_artboard().items():
+      swift_file = filename + ".swift"
+      swift_files.append(swift_file)
+      o = open(path + swift_file, "w+")
+      o.write(code)
+      o.close()
+    with zipfile.ZipFile(path + f + '.zip', 'w', zipfile.ZIP_DEFLATED) as myzip:
+      for swift_file in swift_files:
+        myzip.write(path + swift_file)
+        os.remove(path + swift_file)
 
 if __name__ == "__main__":
   if len(sys.argv) == 2:
