@@ -16,15 +16,15 @@ var onRun = function(context) {
                 output = exportJSON(layer, filepath);
 
                 if (output["isCorrect"]) {
-                    var options = { 
-                        "scales" : "1", 
-                        "formats" : "svg", 
-                        "overwriting" : "true", 
-                        "output": filepath 
+                    var options = {
+                        "scales" : "1",
+                        "formats" : "svg",
+                        "overwriting" : "true",
+                        "output": filepath
                     };
                     layer.export(options);
                     context.document.showMessage("PixelCode: Export finished!");
-                } else { 
+                } else {
                     context.document.showMessage("PixelCode: Layer '" + output["incorrectLayer"] + "' is incorrectly labeled. Please check documentation.");
                 }
 
@@ -77,6 +77,13 @@ function checkFormatting(layer, layerNames) {
         var currentLayer = stack.pop();
         layerName = String(currentLayer.name.replace(/\s+/, "-"));
 
+        var f = layerName.charAt(0);
+        if (arrayContains(layerName, ret["layerNames"])) {
+          var count = countInArray(layerName, ret["layerNames"]);
+          currentLayer.name = layerName + count;
+          layerName = currentLayer.name;
+        }
+
         var currentDict = {};
         currentDict["name"] = layerName;
         currentDict["x"] = String(currentLayer.frame.x);
@@ -85,9 +92,7 @@ function checkFormatting(layer, layerNames) {
         currentDict["width"] = String(currentLayer.frame.width);
         if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
-        var f = layerName.charAt(0);
-        if (arrayContains(layerName, ret["layerNames"]) ||
-            f !== f.toLowerCase()) {
+        if (f !== f.toLowerCase()) {
             ret["isCorrect"] = false;
             ret["incorrectLayer"] = layerName;
         }
@@ -110,4 +115,12 @@ function hasWhiteSpace(s) {
 
 function arrayContains(needle, arrhaystack) {
     return (arrhaystack.indexOf(needle) > -1);
+}
+
+function countInArray(element, array) {
+  counter = 0;
+  for (i = 0; i < array.length; i++) {
+    if (array[i] == element) counter++;
+  }
+  return counter;
 }
