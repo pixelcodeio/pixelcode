@@ -81,6 +81,7 @@ class BaseLayer(object):
         "navbar-items",
         "opacity",
         "path",
+        "progress_fill",
         "rect",
         "rwidth", # width in pixels
         "rheight", # height in pixels
