@@ -15,19 +15,14 @@ var onRun = function(context) {
             if (layer.isArtboard) {
                 output = exportJSON(layer, filepath);
 
-                if (output["isCorrect"]) {
-                    var options = {
-                        "scales" : "1",
-                        "formats" : "svg",
-                        "overwriting" : "true",
-                        "output": filepath
-                    };
-                    layer.export(options);
-                    context.document.showMessage("PixelCode: Export finished!");
-                } else {
-                    context.document.showMessage("PixelCode: Layer '" + output["incorrectLayer"] + "' is incorrectly labeled. Please check documentation.");
-                }
-
+                var options = {
+                    "scales" : "1",
+                    "formats" : "svg",
+                    "overwriting" : "true",
+                    "output": filepath
+                };
+                layer.export(options);
+                context.document.showMessage("PixelCode: Export finished!");
             } else {
                 context.document.showMessage("PixelCode: No artboard selected.");
             }
@@ -37,7 +32,7 @@ var onRun = function(context) {
 
 function exportJSON(artboard, filepath){
     var layerArray = [];
-    var ret = { "isCorrect": true, "layerNames": [], "dictList": [] };
+    var ret = { "layerNames": [], "dictList": [] };
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
@@ -50,10 +45,8 @@ function exportJSON(artboard, filepath){
             layer.export(options);
         }
 
-        if (ret["isCorrect"]) {
-            output = checkFormatting(layer, ret["layerNames"]);
-            ret = output;
-        }
+        output = checkFormatting(layer, ret["layerNames"]);
+        ret = output;
 
         for (var i = 0; i < ret["dictList"].length; i++) {
             layerArray.push(ret["dictList"][i]);
@@ -70,12 +63,13 @@ function exportJSON(artboard, filepath){
 
 // Account for sublayers in checking formatting
 function checkFormatting(layer, layerNames) {
-    var ret = {"isCorrect": true, "layerNames": layerNames, "dictList": []}
+    var ret = {"layerNames": layerNames, "dictList": []}
     var stack = [layer];
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
-        layerName = currentLayer.name.replace(/\s+/, "-");
+        layerName = String(currentLayer.name.replace(/\s+/, ""));
+        layerName = lowerCaseFirstChar(layerName);
 
         if (arrayContains(layerName, ret["layerNames"])) {
           var name = layerName;
@@ -84,9 +78,10 @@ function checkFormatting(layer, layerNames) {
             name = layerName + counter;
             counter++;
           }
-          currentLayer.name = name;
           layerName = name;
         }
+
+        currentLayer.name = layerName;
 
         var currentDict = {};
         currentDict["name"] = layerName;
@@ -95,12 +90,6 @@ function checkFormatting(layer, layerNames) {
         currentDict["height"] = String(currentLayer.frame.height);
         currentDict["width"] = String(currentLayer.frame.width);
         if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
-
-        var f = layerName.charAt(0);
-        if (f !== f.toLowerCase()) {
-            ret["isCorrect"] = false;
-            ret["incorrectLayer"] = layerName;
-        }
 
         ret["layerNames"].push(layerName);
         ret["dictList"].push(currentDict);
@@ -120,4 +109,8 @@ function hasWhiteSpace(s) {
 
 function arrayContains(needle, arrhaystack) {
     return (arrhaystack.indexOf(needle) > -1);
+}
+
+function lowerCaseFirstChar(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
 }
