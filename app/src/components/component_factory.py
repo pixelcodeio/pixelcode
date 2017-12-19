@@ -151,6 +151,8 @@ class ComponentFactory(object):
       return "{} = UIButton(type: .system)\n".format(id_)
     elif type_ == 'UINavBar' or type_ == "UITabBar":
       return "" # cannot initialize a navigation/tab bar
+    elif type_ == 'UILabel':
+      type_ = "InsetLabel" # use our custom label
     return "{} = {}()\n".format(id_, type_)
 
   def setup_set_properties(self):

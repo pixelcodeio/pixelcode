@@ -169,3 +169,26 @@ def subclass_tc(swift, info):
     raise Exception("Interpreter_h: invalid file in subclass_tc()")
 
   return swift
+
+def gen_inset_label():
+  """
+  Returns (str): swift code of our custom UILabel
+  """
+  return ("import UIKit\n\n"
+          "class InsetLabel: UILabel {\n"
+          "let topInset = CGFloat(-10)\n"
+          "let bottomInset = CGFloat(-10)\n"
+          "let leftInset = CGFloat(0)\n"
+          "let rightInset = CGFloat(0)\n\n"
+          "override func drawText(in rect: CGRect) {\n"
+          "let insets: UIEdgeInsets = UIEdgeInsets(top: topInset, left: "
+          "leftInset, bottom: bottomInset, right: rightInset)\n"
+          "super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))\n"
+          "}\n\n"
+          "override public var intrinsicContentSize: CGSize {\n"
+          "var intrinsicSuperViewContentSize = super.intrinsicContentSize\n"
+          "intrinsicSuperViewContentSize.height += topInset + bottomInset\n"
+          "intrinsicSuperViewContentSize.width += leftInset + rightInset\n"
+          "return intrinsicSuperViewContentSize\n"
+          "}\n"
+          "}\n")
