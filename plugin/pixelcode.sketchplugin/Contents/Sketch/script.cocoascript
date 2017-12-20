@@ -81,9 +81,8 @@ function checkFormatting(layer, layerNames) {
           layerName = name;
         }
 
-        currentLayer.name = layerName;
-
         var currentDict = {};
+        currentDict["original_name"] = String(currentLayer.name)
         currentDict["name"] = layerName;
         currentDict["x"] = String(currentLayer.frame.x);
         currentDict["y"] = String(currentLayer.frame.y);
