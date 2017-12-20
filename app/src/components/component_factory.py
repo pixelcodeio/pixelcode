@@ -45,7 +45,7 @@ class ComponentFactory(object):
     C += component.swift
 
     if rect is not None:
-      C += utils.setup_rect(id_, rect, self.in_view)
+      C += utils.setup_rect(id_, rect)
 
     if type_ == 'UIView' and self.info.get('components') is not None:
       # generate subcomponents

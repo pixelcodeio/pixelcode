@@ -127,6 +127,8 @@ class Parser(object):
           elem.name = "slider"
         elif utils.word_in_str("statusBar", elem["id"]):
           continue
+        elif utils.word_in_str("switch", elem["id"]):
+          elem.name = "switch"
         elif utils.word_in_str("tabBar", elem["id"]):
           elem.name = "tabbar"
         elif utils.word_in_str("textField", elem["id"]):
@@ -161,6 +163,8 @@ class Parser(object):
         parsed_elem = SearchBar(elem, "UISearchBar")
       elif elem.name == "slider":
         parsed_elem = Slider(elem, "UISlider")
+      elif elem.name == "switch":
+        parsed_elem = Switch(elem, "UISwitch")
       elif elem.name == "tabbar":
         parsed_elem = TabBar(elem, "UITabBar")
       elif elem.name == "tableview":

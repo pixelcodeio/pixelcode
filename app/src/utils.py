@@ -78,7 +78,7 @@ def set_corner_radius(id_, radius):
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
   return ("layer.cornerRadius = {}\n").format(radius)
 
-def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
+def setup_rect(cid, rect, tc_header=False, tc_cell=False):
   """
   Args:
     cid: (str) id of component
@@ -89,27 +89,29 @@ def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   keys = ["fill", "border-radius", "stroke-color", "stroke-width"]
   fill, border_r, str_c, str_w = get_vals(keys, rect)
 
-  c = ""
+  C = ""
   if tc_cell or tc_header:
     cid = None
 
-  if fill is not None:
-    if tc_header:
-      c += set_bg('backgroundView?', fill)
-    elif cid is not None and word_in_str('tabBar', cid):
-      c += set_bg('tabBar', fill)
+  if cid is not None and not word_in_str("switch", cid):
+    # do not set background color of UISwitch
+    if fill is not None:
+      if tc_header:
+        C += set_bg('backgroundView?', fill)
+      elif cid is not None and word_in_str('tabBar', cid):
+        C += set_bg('tabBar', fill)
+      else:
+        C += set_bg(cid, fill)
     else:
-      c += set_bg(cid, fill)
-  else:
-    c += set_bg(cid, [0, 0, 0, 0]) # transparent color
+      C += set_bg(cid, [0, 0, 0, 0]) # transparent color
   if str_c is not None:
-    c += set_border_color(cid, str_c)
+    C += set_border_color(cid, str_c)
   if str_w is not None:
-    c += set_border_width(cid, str_w)
+    C += set_border_width(cid, str_w)
   if border_r is not None:
-    c += set_corner_radius(cid, border_r)
+    C += set_corner_radius(cid, border_r)
 
-  return c
+  return C
 
 def req_init():
   """

@@ -26,6 +26,27 @@ Any artboards exported using the plugin should have `.svg` files created in `app
 
 ## XCode Setup
 
+### Podfile Setup
+We use [SnapKit](http://snapkit.io/) to implement concise AutoLayout code. To setup SnapKit:
+
+1. Go to project directory and run `pod init`.
+2. Go into the generated `Podfile` and paste:
+```
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '11.0'
+
+target '`[Your project name]`' do
+  # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+  use_frameworks!
+
+    # Pods for sketchtoswift
+    pod 'SnapKit'
+    end
+```
+3. Run `pod install` in your project directory.
+4. Done!
+
+### Font Setup
 To import fonts into Xcode, you can follow the steps below or the ones detailed [here](https://medium.com/yay-its-erica/how-to-import-fonts-into-xcode-swift-3-f0de7e921ef8
 ).
 
