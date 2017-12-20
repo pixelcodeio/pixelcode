@@ -4,6 +4,7 @@ from layers.image import Image
 from layers.navbar import NavBar
 from layers.rect import Rect
 from layers.searchbar import SearchBar
+from layers.slider import Slider
 from layers.text import Text
 from layers.tabbar import TabBar
 from layers.table_collection_view import TableCollectionView
