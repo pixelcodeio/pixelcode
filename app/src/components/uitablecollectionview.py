@@ -3,8 +3,14 @@ from . import *
 class UITableCollectionView(BaseComponent):
   """
   Class representing a UI(Table/Collection)View in swift
-    tc_methods: (str) swift code of necessary (table/collection)view methods
+    tc_methods (str): swift code of necessary (table/collection)view methods
+    tv_separate (bool): whether type is UITableView and cells are separated
   """
+  def __init__(self, id_, info, env):
+    self.tv_separate = (info['type'] == 'UITableView' and info['separator'])
+    super().__init__(id_, info, env)
+
+
   def generate_swift(self):
     keys = ["cells", "header"]
     cells, header = utils.get_vals(keys, self.info)
@@ -16,6 +22,9 @@ class UITableCollectionView(BaseComponent):
     if header is not None:
       methods += self.view_for_header(header)
       methods += self.size_for_header(header)
+
+    if self.tv_separate:
+      methods += self.number_of_sections(cells)
 
     self.tc_methods = methods
     return self.setup_component()
@@ -56,13 +65,15 @@ class UITableCollectionView(BaseComponent):
          "switch indexPath.row {{"
         ).format(self.id, utils.uppercase(self.id))
 
-    if self.info.get('type') == 'UICollectionView':
+    if self.info['type'] == 'UICollectionView':
       C = C.replace("table", "collection")
       C = C.replace("Table", "Collection")
       C = C.replace("Row", "Item")
       C = C.replace("withIdentifier", "withReuseIdentifier")
       C = C.replace("cell.selectionStyle = .none\n", '')
       C = utils.ins_after_key(C, 'CellID"', ', for: indexPath')
+    elif self.tv_separate:
+      C = C.replace("indexPath.row", "indexPath.section")
 
     C += self.info.get('cell_set_prop')
     C += '\ndefault: return cell\n}\n}\n\n'
@@ -75,23 +86,23 @@ class UITableCollectionView(BaseComponent):
 
     Returns (str): swift code for numberOf(Rows/Items)InSection
     """
-    fst_cell_comps = cells[0].get('components')
-    num_rows = 0
-    for cell in cells:
-      components = cell.get('components')
-      if len(components) == len(fst_cell_comps): # all components are present
-        num_rows += 1
-
     if self.info.get('type') == 'UITableView':
       func = "func tableView(_ tableView: UITableView, numberOfRows"
     else:
       func = ("func collectionView(_ collectionView: UICollectionView, "
               "numberOfItems")
 
+    if self.tv_separate:
+      return ("{}InSection section: Int) -> Int {{\n"
+              "return 1 \n"
+              "}}\n"
+             ).format(func)
+
+    num_cells = self.get_number_cells(cells)
     return ("{}InSection section: Int) -> Int {{\n"
             "return {} \n"
             "}}\n"
-           ).format(func, num_rows)
+           ).format(func, num_cells)
 
   def size_for_row_item(self, cells):
     """
@@ -143,8 +154,16 @@ class UITableCollectionView(BaseComponent):
 
     C += self.info.get('header_set_prop')
     C += ('return header'
-          '\ndefault:\nreturn header\n'
-          '}\n}\n\n')
+          '\ndefault:\n')
+
+    if self.tv_separate:
+      C += ("let view = UIView()\n"
+            "view.backgroundColor = .clear\n"
+            "return view\n")
+    else:
+      C += "return header\n"
+
+    C += '}\n}\n\n'
     return C
 
   def size_for_header(self, header):
@@ -157,18 +176,22 @@ class UITableCollectionView(BaseComponent):
     width = header.get('width')
     height = header.get('height')
 
-    if self.info.get('type') == 'UITableView':
+    if self.info['type'] == 'UITableView':
+      body = ("return {}.frame.height * {}\n").format(self.id, height)
+      if self.tv_separate:
+        body = ("switch section {{\n"
+                "case 0:\n{}\n"
+                "default:\nreturn {}\n}}"
+               ).format(body, self.info['separator'][0])
       return ("func tableView(_ tableView: UITableView, heightForHeaderIn"
               "Section section: Int) -> CGFloat {{\n"
-              "return {}.frame.height * {}\n}}\n\n"
-             ).format(self.id, height)
+              "{}\n}}\n\n").format(body)
 
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
             "HeaderInSection section: Int) -> CGSize {{\n"
             "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-            "height*{2})\n}}\n"
-           ).format(self.id, width, height)
+            "height*{2})\n}}\n").format(self.id, width, height)
 
   def reg_header(self):
     """
@@ -205,3 +228,22 @@ class UITableCollectionView(BaseComponent):
         C += "layout.minimumLineSpacing = {}\n".format(sep[1])
       C += scroll
     return C
+
+  def number_of_sections(self, cells):
+    """
+    Returns (str): swift code to set height of sections for UITableView
+    """
+    return ("func numberOfSections(in tableView: UITableView) -> Int {{\n"
+            "return {}\n}}\n").format(self.get_number_cells(cells))
+
+  def get_number_cells(self, cells):
+    """
+    Returns (int): number of cells
+    """
+    fst_cell_comps = cells[0].get('components')
+    num_cells = 0
+    for cell in cells:
+      components = cell.get('components')
+      if len(components) == len(fst_cell_comps): # all components are present
+        num_cells += 1
+    return num_cells
