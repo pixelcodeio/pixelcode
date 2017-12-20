@@ -12,7 +12,7 @@ class TableCollectionView(BaseLayer):
     header = None
     cells = []
     for child in elem["children"]:
-      if child["type"] == "UIView":
+      if utils.word_in_str("bound", child["id"]):
         if rect:
           raise Exception("TableCollectionView: Only one wash allowed in "
                           + elem["id"])

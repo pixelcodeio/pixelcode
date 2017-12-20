@@ -94,6 +94,7 @@ class BaseLayer(object):
         "text",
         "textspan",
         "text-align",
+        "thumb_fill",
         "type",
         "vertical",
         "width",
