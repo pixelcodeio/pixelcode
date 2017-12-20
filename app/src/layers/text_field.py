@@ -10,7 +10,7 @@ class TextField(BaseLayer):
     rect = None
     text = None
     for child in elem["children"]:
-      if child["type"] == "UIView":
+      if utils.word_in_str("bound", child["id"]):
         rect = child
       elif child["type"] == "UILabel":
         text = child

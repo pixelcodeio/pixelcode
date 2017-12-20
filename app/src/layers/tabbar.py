@@ -14,9 +14,9 @@ class TabBar(BaseLayer):
       if utils.word_in_str("tabButton", child["id"]):
         child["active"] = utils.word_in_str("active", child["id"])
         tabbar_buttons.append(child)
-      elif utils.word_in_str('wash', child["id"]):
+      elif utils.word_in_str('bound', child["id"]):
         if rect:
-          raise Exception("Tabbar: Only one wash allowed in " + elem["id"])
+          raise Exception("Tabbar: Only one bound allowed in " + elem["id"])
         else:
           rect = child
       else:

@@ -23,9 +23,9 @@ class NavBar(BaseLayer):
           left_bar_buttons.append(child)
         else:
           right_bar_buttons.append(child)
-      elif "wash" in child["id"]:
+      elif utils.word_in_str("bound", child["id"]):
         if rect:
-          raise Exception("Navbar: Only one wash allowed in " + elem["id"])
+          raise Exception("Navbar: Only one bound allowed in " + elem["id"])
         else:
           rect = child
       else:
