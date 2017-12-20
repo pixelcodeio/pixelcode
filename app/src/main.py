@@ -1,6 +1,6 @@
 import os
 import sys
-import zipfile
+from zipfile import *
 from parser import Parser
 from interpreter import Interpreter
 
@@ -25,7 +25,7 @@ class Main(object):
     i.gen_code(p.elements)
     return i.swift
 
-def update_test_dir(path):
+def update_test_dir(path, zip_):
   """
   Generates ".out" files for any files in "./tests"
   """
@@ -45,13 +45,17 @@ def update_test_dir(path):
       o = open(path + swift_file, "w+")
       o.write(code)
       o.close()
-    with zipfile.ZipFile(path + f + '.zip', 'w', zipfile.ZIP_DEFLATED) as myzip:
-      for swift_file in swift_files:
-        myzip.write(path + swift_file)
-        os.remove(path + swift_file)
+    if zip_:
+      with ZipFile(path + f + '.zip', 'w', ZIP_DEFLATED) as myzip:
+        for swift_file in swift_files:
+          myzip.write(path + swift_file)
+          os.remove(path + swift_file)
 
 if __name__ == "__main__":
   if len(sys.argv) == 2:
-    update_test_dir(sys.argv[1])
+    if sys.argv[1] == 'zip':
+      update_test_dir("../exports/", True)
+    else:
+      update_test_dir(sys.argv[1], False)
   else:
-    update_test_dir("../exports/")
+    update_test_dir("../exports/", False)
