@@ -17,4 +17,8 @@ class UISlider(BaseComponent):
       C += ("{}.minimumTrackTintColor = {}\n"
            ).format(self.id, utils.create_uicolor(self.info['progress_fill']))
 
+    if self.info.get('thumb_fill'):
+      C += ("{}.thumbTintColor = {}\n"
+           ).format(self.id, utils.create_uicolor(self.info['thumb_fill']))
+
     return C
