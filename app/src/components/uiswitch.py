@@ -11,4 +11,5 @@ class UISwitch(BaseComponent):
     """
     Returns: swift code to setup UISlider.
     """
-    return ""
+    return ("{}.onTintColor = {}\n"
+           ).format(self.id, utils.create_uicolor(self.info['rect']['fill']))

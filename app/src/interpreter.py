@@ -122,11 +122,11 @@ class Interpreter(object):
     if type_ == "cell":
       self.file_name = utils.uppercase(id_) + "Cell"
       C = gen_cell_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), True, tc_cell=True)
+      C += utils.setup_rect(id_, info.get('rect'), tc_cell=True)
     else: # type_ is header
       self.file_name = utils.uppercase(id_) + "HeaderView"
       C = gen_header_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), True, tc_header=True)
+      C += utils.setup_rect(id_, info.get('rect'), tc_header=True)
 
     C += self.gen_comps(info.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.req_init())
