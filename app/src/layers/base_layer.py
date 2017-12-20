@@ -60,6 +60,7 @@ class BaseLayer(object):
     Returns: object to be sent to the interpreter class
     """
     params = [
+        "actions",
         "bg_img",
         "bookmark-icon",
         "border-radius",

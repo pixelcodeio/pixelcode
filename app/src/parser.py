@@ -109,7 +109,9 @@ class Parser(object):
 
       # correctly name grouped elements
       if elem.name == "g":
-        if utils.word_in_str("button", elem["id"]):
+        if utils.word_in_str("actionSheet", elem["id"]):
+          elem.name = "actionsheet"
+        elif utils.word_in_str("button", elem["id"]):
           elem.name = "button"
         elif utils.word_in_str("cell", elem["id"]):
           elem.name = "cell"
@@ -119,6 +121,8 @@ class Parser(object):
           elem.name = "header"
         elif utils.word_in_str("listView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("overlay", elem["id"]): # ignore overlays
+          continue
         elif utils.word_in_str("navBar", elem["id"]):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):
@@ -145,7 +149,9 @@ class Parser(object):
           continue
 
       elem["children"] = self.parse_elements(elem["children"], elem)
-      if elem.name == "button":
+      if elem.name == "actionsheet":
+        parsed_elem = ActionSheet(elem, "UIActionSheet")
+      elif elem.name == "button":
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
         parsed_elem = Container(elem, "Cell")

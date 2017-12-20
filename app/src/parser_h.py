@@ -21,7 +21,7 @@ def inherit_from_json(child, json):
   """
   if "id" in child.attrs:
     for layer in json["layers"]:
-      if child["id"] == layer["name"]:
+      if child["id"] == layer["original_name"]:
         for key in layer.keys():
           if key not in child.attrs:
             child[key] = layer[key]
