@@ -88,7 +88,6 @@ def setup_rect(cid, rect, in_v, tc_header=False, tc_cell=False):
   """
   keys = ["fill", "border-radius", "stroke-color", "stroke-width"]
   fill, border_r, str_c, str_w = get_vals(keys, rect)
-
   c = ""
   if tc_cell or tc_header:
     cid = None
