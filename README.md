@@ -29,8 +29,8 @@ Any artboards exported using the plugin should have `.svg` files created in `app
 ### Podfile Setup
 We use [SnapKit](http://snapkit.io/) to implement concise AutoLayout code. To setup SnapKit:
 
-1. Go to project directory and `pod init`
-2. Go into the generated Podfile and paste:
+1. Go to project directory and run `pod init`.
+2. Go into the generated `Podfile` and paste:
 ```
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '11.0'
