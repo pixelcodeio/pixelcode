@@ -240,10 +240,10 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (int): number of cells
     """
-    fst_cell_comps = cells[0].get('components')
+    fst_cell_comps = cells[0]['components']
     num_cells = 0
     for cell in cells:
-      components = cell.get('components')
+      components = cell['components']
       if len(components) == len(fst_cell_comps): # all components are present
         num_cells += 1
     return num_cells
