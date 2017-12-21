@@ -23,8 +23,9 @@ class Parser(object):
       - background_color (tuple)
       - pagename (str)
       - artboard (str)
+    is_ios: whether the code being generated is iOS code
   """
-  def __init__(self, path, artboard):
+  def __init__(self, path, artboard, is_ios):
     """
     Returns: Parser object for parsing the file located at filepath
     """
@@ -35,6 +36,7 @@ class Parser(object):
     self.globals = {}
     self.scale = 1.0
     self.path = path
+    self.is_ios = is_ios # Always True for now.
 
   def parse_artboard(self):
     """
@@ -96,6 +98,8 @@ class Parser(object):
 
       elem["x"] = float(elem["x"])
       elem["y"] = float(elem["y"])
+      elem["abs_x"] = float(elem["abs_x"])
+      elem["abs_y"] = float(elem["abs_y"])
       elem["width"] = float(elem["width"])
       elem["height"] = float(elem["height"])
       elements.append(elem)
@@ -104,12 +108,14 @@ class Parser(object):
     parsed_elements = []
     while elements:
       elem = elements.pop(0)
-      elem = calculate_spacing(elem, parsed_elements)
+      elem = calculate_spacing(elem, parsed_elements, self.is_ios)
       elem = convert_coords(elem, parent)
 
       # correctly name grouped elements
       if elem.name == "g":
-        if utils.word_in_str("button", elem["id"]):
+        if utils.word_in_str("actionSheet", elem["id"]):
+          elem.name = "actionsheet"
+        elif utils.word_in_str("button", elem["id"]):
           elem.name = "button"
         elif utils.word_in_str("cell", elem["id"]):
           elem.name = "cell"
@@ -145,7 +151,9 @@ class Parser(object):
           continue
 
       elem["children"] = self.parse_elements(elem["children"], elem)
-      if elem.name == "button":
+      if elem.name == "actionsheet":
+        parsed_elem = ActionSheet(elem, "UIActionSheet")
+      elif elem.name == "button":
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
         parsed_elem = Container(elem, "Cell")
