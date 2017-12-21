@@ -15,7 +15,6 @@ class Interpreter(object):
   NOTE: The variable C used in functions is used to denote "code".
   """
   def __init__(self, globals_):
-    globals_['bgc'] = globals_['background_color'] + ("1.0",) # adding opacity
     self.globals = globals_
     self.file_name = ""
     self.info = {"components": [], "tc_elem": {}, "tc_methods": ""}
@@ -33,7 +32,7 @@ class Interpreter(object):
     artboard = utils.uppercase(self.globals['artboard'])
     view_controller = '{}ViewController'.format(artboard)
     C = gen_viewcontroller_header(view_controller, self.info, True) \
-        + utils.set_bg('view', self.globals['bgc'])
+        + utils.set_bg('view', self.globals['background_color'])
 
     self.file_name = view_controller
     self.swift[view_controller] = C
@@ -102,7 +101,8 @@ class Interpreter(object):
         if type_ == 'UILabel':
           if self.swift.get('InsetLabel') is None: # generate custom UILabel
             self.swift['InsetLabel'] = gen_inset_label()
-          cf = ComponentFactory(type_, comp, in_v, bgc=self.globals['bgc'])
+          cf = ComponentFactory(type_, comp, in_v,
+                                bgc=self.globals['background_color'])
         else:
           cf = ComponentFactory(type_, comp, in_v)
           if type_ == 'UITableView' or type_ == 'UICollectionView':
