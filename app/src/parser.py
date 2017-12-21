@@ -121,8 +121,6 @@ class Parser(object):
           elem.name = "header"
         elif utils.word_in_str("listView", elem["id"]):
           elem.name = "tableview"
-        elif utils.word_in_str("overlay", elem["id"]): # ignore overlays
-          continue
         elif utils.word_in_str("navBar", elem["id"]):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):

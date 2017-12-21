@@ -11,22 +11,22 @@ class UIActionSheet(BaseComponent):
     """
     Returns: swift code to setup UIActionSheet.
     """
-    C = ("let alertController = UIAlertController(title: nil, message: nil,"
+    C = ("let alertController = UIAlertController(title: nil, message: nil, "
          "preferredStyle: .actionSheet)\n")
 
+    actions = self.info["actions"]
+    actions = [action.decode('utf-8') for action in actions]
     for i, action in enumerate(actions):
       if i == (len(actions) - 1):
         style = ".cancel"
       else:
         style = ".default"
-      action = action.decode('utf-8')
       C += self.gen_action(action, style)
 
     add_actions = [self.add_action(action) for action in actions]
     C += "".join(add_actions)
     C += "self.present(alertController, animated: true, completion: nil)\n"
     return C
-
 
   def gen_action(self, action, style):
     """
@@ -37,5 +37,8 @@ class UIActionSheet(BaseComponent):
             ': nil)\n').format(lowercased, action, style)
 
   def add_action(self, action):
+    """
+    Returns (str): swift code to add action to alertController
+    """
     lowercased = action if not action else action[0].lower() + action[1:]
     return ("alertController.addAction({}Action)\n").format(lowercased)

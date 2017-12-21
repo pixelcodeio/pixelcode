@@ -21,7 +21,7 @@ def inherit_from_json(child, json):
   """
   if "id" in child.attrs:
     for layer in json["layers"]:
-      if child["id"] == layer["original_name"]:
+      if child["id"] == layer["name"]:
         for key in layer.keys():
           if key not in child.attrs:
             child[key] = layer[key]
@@ -88,8 +88,8 @@ def convert_coords(elem, parent):
   elem["rwidth"] = elem["width"]
   elem["rheight"] = elem["height"]
   # convert units to percentages
-  elem["width"] /= width
-  elem["height"] /= height
+  elem["width"] = min(elem["width"]/width, 1.0)
+  elem["height"] = min(elem["height"]/height, 1.0)
   elem["horizontal"]["distance"] /= width
   elem["vertical"]["distance"] /= height
 

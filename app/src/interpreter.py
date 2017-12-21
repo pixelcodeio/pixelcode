@@ -10,7 +10,7 @@ class Interpreter(object):
       - components (list): info on all components
       - tc_elem (dict): info on current (table/collection)view being generated
       - tc_methods (str): any necessary (table/collection)view methods
-    swift (dict): swift code to generate all components
+    swift (dict): swift code to generate the artboard
 
   NOTE: The variable C used in functions is used to denote "code".
   """
@@ -45,11 +45,15 @@ class Interpreter(object):
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
 
+    types = [c['type'] for c in self.info["components"]]
+    if "UIActionSheet" in types: # move UIActionSheet code to viewDidAppear
+      self.swift[self.file_name] = move_action_sheet(self.swift[self.file_name])
+
     if not self.info["tc_elem"]:
       if in_v:
-        self.swift[self.file_name] += "}}\n{}\n}}".format(utils.req_init())
+        self.swift[self.file_name] += "{}\n}}".format(utils.req_init())
       else:
-        self.swift[self.file_name] += "\n}\n}"
+        self.swift[self.file_name] += "}"
     else:
       # add parent classes for table/collection view
       self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
