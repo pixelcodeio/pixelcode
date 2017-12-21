@@ -111,14 +111,8 @@ class ComponentFactory(object):
 
     if vert_id:
       opp_dir = self.get_opp_dir(vert_dir)
-      if vert_id == 'navBar': # cannot position relative to navbar
-        navbar_height = ("(self.navigationController?.navigationBar.intrinsicCo"
-                         "ntentSize.height)!")
-        C += ('make.{}.equalToSuperview().offset(frame.height*{} + {})\n'
-             ).format(vert_dir, vert_dist, navbar_height)
-      else:
-        C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
-             ).format(vert_dir, vert_id, opp_dir, vert_dist)
+      C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+           ).format(vert_dir, vert_id, opp_dir, vert_dist)
     else:
       C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
            ).format(vert_dist)
