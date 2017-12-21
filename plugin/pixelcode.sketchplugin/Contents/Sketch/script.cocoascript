@@ -22,17 +22,29 @@ var onRun = function(context) {
                     "output": filepath
                 };
                 layer.export(options);
+                layer.iterate(function(currentLayer) {
+                    renameLayers(currentLayer, output["originalNames"]);
+                });
                 context.document.showMessage("PixelCode: Export finished!");
             } else {
                 context.document.showMessage("PixelCode: No artboard selected.");
             }
         });
-    }
+    };
 };
+
+function renameLayers(layer, originalNames) {
+  layer.name = originalNames[layer.id];
+  if (layer.isGroup) {
+    layer.iterate(function(subLayer) {
+      renameLayers(subLayer, originalNames);
+    });
+  }
+}
 
 function exportJSON(artboard, filepath){
     var layerArray = [];
-    var ret = { "layerNames": [], "dictList": [] };
+    var ret = { "layerNames": [], "dictList": [] , "originalNames": {} };
 
     artboard.iterate(function(layer) {
         if (layer.isImage) {
@@ -45,7 +57,7 @@ function exportJSON(artboard, filepath){
             layer.export(options);
         }
 
-        output = checkFormatting(layer, ret["layerNames"]);
+        output = checkFormatting(layer, ret["layerNames"], ret["originalNames"]);
         ret = output;
 
         for (var i = 0; i < ret["dictList"].length; i++) {
@@ -62,12 +74,16 @@ function exportJSON(artboard, filepath){
 }
 
 // Account for sublayers in checking formatting
-function checkFormatting(layer, layerNames) {
-    var ret = {"layerNames": layerNames, "dictList": []}
+function checkFormatting(layer, layerNames, originalNames) {
+    var ret = {"layerNames": layerNames, "dictList": [],
+               "originalNames": originalNames};
     var stack = [layer];
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
+        var originalName = String(currentLayer.name.replace(/\s+/, "-"));
+        ret["originalNames"][currentLayer.id] = originalName;
+
         layerName = String(currentLayer.name.replace(/\s+/, ""));
         layerName = lowerCaseFirstChar(layerName);
 
@@ -84,12 +100,23 @@ function checkFormatting(layer, layerNames) {
         currentLayer.name = layerName;
 
         var currentDict = {};
+        currentDict["originalName"] = originalName;
         currentDict["name"] = layerName;
         currentDict["x"] = String(currentLayer.frame.x);
         currentDict["y"] = String(currentLayer.frame.y);
         currentDict["height"] = String(currentLayer.frame.height);
         currentDict["width"] = String(currentLayer.frame.width);
         if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
+
+        if (currentLayer.container.isArtboard) {
+          currentDict["abs_x"] = currentDict["x"];
+          currentDict["abs_y"] = currentDict["y"];
+        } else {
+          var absx = String(currentLayer.frame.x + currentLayer.container.frame.x);
+          var absy = String(currentLayer.frame.y + currentLayer.container.frame.y);
+          currentDict["abs_x"] = absx;
+          currentDict["abs_y"] = absy;
+        }
 
         ret["layerNames"].push(layerName);
         ret["dictList"].push(currentDict);

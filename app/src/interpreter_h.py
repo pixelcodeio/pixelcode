@@ -38,7 +38,8 @@ def declare_g_vars(components):
         components.extend(navbar_items['title']['components'])
 
   # filter components to not include navigation bar
-  filter_comps = [c for c in components if c['type'] != 'UINavBar']
+  ignore_comps = {'UINavBar', 'UIActionSheet'}
+  filter_comps = [c for c in components if c['type'] not in ignore_comps]
 
   # one-liner to concat all variable names
   gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in filter_comps]
@@ -144,6 +145,19 @@ def move_collection_view(swift, info):
   elif 'frame)\n' in swift:
     swift = utils.ins_after_key(swift, 'frame)\n', cv)
 
+  return swift
+
+def move_action_sheet(swift):
+  """
+  Returns (str):
+    Returns swift code with UIActionSheet setup code moved to current file's
+    viewDidAppear function.
+  """
+  beg = swift.find('let alertController')
+  end = swift.find('completion: nil)\n', beg) + 17
+  swift += ("\noverride func viewDidAppear(_ animated: Bool) {{\n"
+            "{}\n}}\n").format(swift[beg:end])
+  swift = swift[:beg] + swift[end:]
   return swift
 
 def subclass_tc(swift, info):

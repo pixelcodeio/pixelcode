@@ -35,7 +35,7 @@ class TableCollectionView(BaseLayer):
 
     separator = []
     if len(cells) >= 2:
-      cells = sorted(cells, key=lambda c: c.get('y')) # sort by y
+      cells = sorted(cells, key=lambda c: c['y']) # sort by y
       if elem['type'] == 'UITableView':
         vert_sep = cells[1]['y'] - cells[0]['y'] - cells[0]['rheight']
         separator = [vert_sep]

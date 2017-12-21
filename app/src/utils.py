@@ -92,18 +92,22 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
   C = ""
   if tc_cell or tc_header:
     cid = None
+  if word_in_str("navBar", cid): # only set background color for UINavBar
+    str_c = None
+    str_w = None
+    border_r = None
 
-  if cid is not None and not word_in_str("switch", cid):
-    # do not set background color of UISwitch
-    if fill is not None:
-      if tc_header:
-        C += set_bg('backgroundView?', fill)
-      elif cid is not None and word_in_str('tabBar', cid):
-        C += set_bg('tabBar', fill)
-      else:
-        C += set_bg(cid, fill)
+  if fill is not None:
+    if tc_header:
+      C += set_bg('backgroundView?', fill)
+    elif cid is not None and word_in_str('tabBar', cid):
+      C += set_bg('tabBar', fill)
+    elif cid is not None and not word_in_str("switch", cid):
+      C += ""
     else:
-      C += set_bg(cid, [0, 0, 0, 0]) # transparent color
+      C += set_bg(cid, fill)
+  else:
+    C += set_bg(cid, [0, 0, 0, 0]) # transparent color
   if str_c is not None:
     C += set_border_color(cid, str_c)
   if str_w is not None:

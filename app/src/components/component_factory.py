@@ -57,7 +57,7 @@ class ComponentFactory(object):
       self.tc_methods = component.tc_methods
     elif type_ == 'UILabel':
       C += utils.set_bg(id_, bgc)
-    elif type_ == 'UINavBar' or type_ == 'UITabBar':
+    elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
       return C
 
     view = 'view' if not self.in_view else None
@@ -143,8 +143,8 @@ class ComponentFactory(object):
              ).format(id_, type_)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
-    elif type_ == 'UINavBar' or type_ == "UITabBar":
-      return "" # cannot initialize a navigation/tab bar
+    elif type_ in {"UINavBar", "UITabBar", "UIActionSheet"}:
+      return "" # cannot initialize these components
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label
     return "{} = {}()\n".format(id_, type_)
