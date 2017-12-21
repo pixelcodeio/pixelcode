@@ -14,7 +14,6 @@ class UIView(BaseComponent):
     keys = ["fill", "border-radius", "stroke-color", "stroke-width",
             "components"]
     fill, border_r, stroke_c, stroke_w, comps = utils.get_vals(keys, self.info)
-
     C = ""
     if fill is not None:
       C += utils.set_bg(self.id, fill)

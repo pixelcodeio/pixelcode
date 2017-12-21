@@ -1,3 +1,5 @@
+import utils
+
 def inherit_from(parent, child, init=False):
   """
   Returns: (dict) child with attributes from parent passed down
@@ -46,13 +48,44 @@ def create_children(elem, json):
   elem["children"] = children
   return elem
 
-def calculate_spacing(elem, parsed_elements):
+def contains(elem1, elem2):
+  """
+  Returns (str): whether elem2 is inside elem1
+  """
+  return (elem2["abs_x"] >= elem1["abs_x"] and \
+          elem2["abs_x"] <= (elem1["abs_x"] + elem1["width"]) and \
+          elem2["abs_y"] >= elem1["abs_y"] and \
+          elem2["abs_y"] <= (elem1["abs_y"] + elem1["height"]))
+
+def filter_elements(elem, elements):
+  filtered_elements = []
+  ignored_elements = []
+  ignore = {"UIActionSheet", "UINavBar", "UITabBar"}
+  for e in elements:
+    if e['type'] in ignore or utils.word_in_str("overlay", e["id"]):
+      ignored_elements.append(e)
+
+  for e in elements:
+    should_ignore = [contains(i, e) for i in ignored_elements]
+    if e not in ignored_elements and not any(should_ignore):
+      filtered_elements.append(e)
+
+  return filtered_elements
+
+
+def calculate_spacing(elem, parsed_elements, is_ios):
   """
   Returns:
     (dict) elem with keys vertical and horizontal added, where
     vertical and horizontal represent the relative spacing between elem
     and parsed_elements
   """
+  if is_ios:
+    #print("filtered")
+    parsed_elements = filter_elements(elem, parsed_elements)
+  # for p in parsed_elements:
+  #   print(p["id"])
+
   vertical = {}
   horizontal = {}
   for check in parsed_elements:

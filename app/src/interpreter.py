@@ -44,6 +44,7 @@ class Interpreter(object):
     Returns: Fills in the swift instance variable with generated file.
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
+    self.swift[self.file_name] += "}\n"
 
     types = [c['type'] for c in self.info["components"]]
     if "UIActionSheet" in types: # move UIActionSheet code to viewDidAppear

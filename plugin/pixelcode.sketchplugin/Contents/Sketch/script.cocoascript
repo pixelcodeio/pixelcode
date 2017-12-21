@@ -108,6 +108,16 @@ function checkFormatting(layer, layerNames, originalNames) {
         currentDict["width"] = String(currentLayer.frame.width);
         if (currentLayer.isText) currentDict["text_align"] = String(currentLayer.alignment);
 
+        if (currentLayer.container.isArtboard) {
+          currentDict["abs_x"] = currentDict["x"];
+          currentDict["abs_y"] = currentDict["y"];
+        } else {
+          var absx = String(currentLayer.frame.x + currentLayer.container.frame.x);
+          var absy = String(currentLayer.frame.y + currentLayer.container.frame.y);
+          currentDict["abs_x"] = absx;
+          currentDict["abs_y"] = absy;
+        }
+
         ret["layerNames"].push(layerName);
         ret["dictList"].push(currentDict);
 

@@ -23,6 +23,7 @@ class Parser(object):
       - background_color (tuple)
       - pagename (str)
       - artboard (str)
+    is_ios: whether the code being generated is iOS code
   """
   def __init__(self, path, artboard):
     """
@@ -35,6 +36,7 @@ class Parser(object):
     self.globals = {}
     self.scale = 1.0
     self.path = path
+    self.is_ios = True # Always True for now.
 
   def parse_artboard(self):
     """
@@ -96,6 +98,8 @@ class Parser(object):
 
       elem["x"] = float(elem["x"])
       elem["y"] = float(elem["y"])
+      elem["abs_x"] = float(elem["abs_x"])
+      elem["abs_y"] = float(elem["abs_y"])
       elem["width"] = float(elem["width"])
       elem["height"] = float(elem["height"])
       elements.append(elem)
@@ -104,8 +108,6 @@ class Parser(object):
     parsed_elements = []
     while elements:
       elem = elements.pop(0)
-      elem = calculate_spacing(elem, parsed_elements)
-      elem = convert_coords(elem, parent)
 
       # correctly name grouped elements
       if elem.name == "g":
@@ -145,6 +147,9 @@ class Parser(object):
             child["height"] = float(child["height"])
             elements.insert(0, child)
           continue
+
+      elem = calculate_spacing(elem, parsed_elements, self.is_ios)
+      elem = convert_coords(elem, parent)
 
       elem["children"] = self.parse_elements(elem["children"], elem)
       if elem.name == "actionsheet":

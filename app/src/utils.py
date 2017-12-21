@@ -74,6 +74,7 @@ def set_corner_radius(id_, radius):
   """
   Returns: (str) swift code to set the corner radius of id_.
   """
+  print(id_)
   if id_ is not None:
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
   return ("layer.cornerRadius = {}\n").format(radius)
@@ -92,6 +93,10 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
   C = ""
   if tc_cell or tc_header:
     cid = None
+  if word_in_str("navBar", cid): # only set background color for UINavBar
+    str_c = None
+    str_w = None
+    border_r = None
 
   if fill is not None:
     if tc_header:
