@@ -158,7 +158,6 @@ def move_action_sheet(swift):
   swift += ("\noverride func viewDidAppear(_ animated: Bool) {{\n"
             "{}\n}}\n").format(swift[beg:end])
   swift = swift[:beg] + swift[end:]
-  print(swift)
   return swift
 
 def subclass_tc(swift, info):

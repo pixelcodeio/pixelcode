@@ -58,6 +58,11 @@ def contains(elem1, elem2):
           elem2["abs_y"] <= (elem1["abs_y"] + elem1["height"]))
 
 def filter_elements(elem, elements):
+  """
+  Returns:
+    The filtered elements (filtered based on their types and ids) to calculate
+    spacing for generating iOS code.
+  """
   filtered_elements = []
   ignored_elements = []
   ignore = {"UIActionSheet", "UINavBar", "UITabBar"}
@@ -81,10 +86,7 @@ def calculate_spacing(elem, parsed_elements, is_ios):
     and parsed_elements
   """
   if is_ios:
-    #print("filtered")
     parsed_elements = filter_elements(elem, parsed_elements)
-  # for p in parsed_elements:
-  #   print(p["id"])
 
   vertical = {}
   horizontal = {}

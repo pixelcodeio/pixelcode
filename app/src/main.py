@@ -18,7 +18,7 @@ class Main(object):
     self.artboard = artboard
 
   def convert_artboard(self):
-    p = Parser(self.path, self.artboard)
+    p = Parser(self.path, self.artboard, True)
     p.parse_artboard()
 
     i = Interpreter(p.globals)
