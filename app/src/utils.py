@@ -74,7 +74,6 @@ def set_corner_radius(id_, radius):
   """
   Returns: (str) swift code to set the corner radius of id_.
   """
-  print(id_)
   if id_ is not None:
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
   return ("layer.cornerRadius = {}\n").format(radius)
