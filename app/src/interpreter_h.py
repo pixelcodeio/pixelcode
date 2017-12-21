@@ -45,6 +45,23 @@ def declare_g_vars(components):
   gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in filter_comps]
   return "".join(gvars)
 
+def gen_global_colors(global_fills, swift):
+  """
+  Returns (dict): Updated dictionary of all generated files using global colors
+  """
+  C = ("import UIKit\n\nextension UIColor {\n\n")
+  colors = [utils.create_uicolor(f) for f in global_fills]
+  counter = 0
+  for (filename, code) in swift.items():
+    for color in colors:
+      color_name = ("color{}").format(counter)
+      code = code.replace(color, "UIColor." + color_name)
+      C += "@nonobjc static let {}: UIColor = {}\n".format(color_name, color)
+      counter += 1
+    swift[filename] = code
+  swift["UIColorExtension"] = C + "}\n"
+  return swift
+
 def gen_cell_header(tc_id, cell):
   """
   Args:
