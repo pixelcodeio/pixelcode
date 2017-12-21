@@ -22,7 +22,7 @@ chmod +x run.sh
 sh run.sh
 ```
 
-Any artboards exported using the plugin should have `.svg` files created in `app/exports`, and their xcode files generated with an `.out` extension.
+Any artboards exported using the plugin should have `.svg` files created in `app/exports`, and their xcode files generated with an `.swift` extension.
 
 ## XCode Setup
 
