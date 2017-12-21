@@ -13,16 +13,16 @@ class Parser(object):
     artboard: name of artboard
     elements: list of elements in svg
     filepath: path to file
-    info: dictionary with keys (used for style-guide)
-      - fill (list)
-      - font-family (list)
-      - font-size(list)
     globals: dictionary with keys
       - width (int)
       - height (int)
       - background_color (tuple)
       - pagename (str)
       - artboard (str)
+      - info: dictionary with keys (used for style-guide)
+        - fill (list)
+        - font-family (list)
+        - font-size(list)
     is_ios: whether the code being generated is iOS code
   """
   def __init__(self, path, artboard, is_ios):
@@ -32,7 +32,6 @@ class Parser(object):
     self.artboard = artboard
     self.elements = []
     self.json = {}
-    self.info = {'fill': [], 'font-family': [], 'font-size': []}
     self.globals = {}
     self.scale = 1.0
     self.path = path
@@ -76,11 +75,13 @@ class Parser(object):
     width = svg["width"][:-2]
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
+    info = {'fill': [], 'font-family': [], 'font-size': []}
     return {"background_color": utils.convert_hex_to_rgb(bg_color),
             "width": float(width),
             "height": float(height),
             "pagename": pagename,
-            "artboard": artboard}
+            "artboard": artboard,
+            "info": info}
 
   def parse_elements(self, children, parent, init=False):
     """
@@ -207,5 +208,5 @@ class Parser(object):
     Args:
       key (str): either 'font', 'font-family', or 'font-size'
     """
-    if new_value is not None and new_value not in self.info[key]:
-      self.info[key].append(new_value)
+    if new_value is not None and new_value not in self.globals["info"][key]:
+      self.globals["info"][key].append(new_value)
