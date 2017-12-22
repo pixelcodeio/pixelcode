@@ -115,21 +115,20 @@ class UITableCollectionView(BaseComponent):
 
     Returns (str): swift code for heightForRowAt/sizeForItemAt
     """
-    width = cells[0].get('width')
-    height = cells[0].get('height')
+    width = cells[0].get('rwidth')
+    height = cells[0].get('rheight')
 
     if self.info.get('type') == 'UITableView':
       return ("func tableView(_ tableView: UITableView, heightForRowAt "
               "indexPath: IndexPath) -> CGFloat {{\n"
-              "return {}.frame.height * {}\n}}\n\n"
-             ).format(self.id, height)
+              "return {}\n}}\n\n"
+             ).format(width)
 
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
             "indexPath: IndexPath) -> CGSize {{\nreturn "
-            "CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height*{2}"
-            ")\n}}\n"
-           ).format(self.id, width, height)
+            "CGSize(width: {}, height: {})\n}}\n"
+           ).format(width, height)
 
   def view_for_header(self, header):
     """
@@ -181,14 +180,14 @@ class UITableCollectionView(BaseComponent):
     Returns (str): swift code for setting size of header
     """
     if header is not None:
-      width = header.get('width')
-      height = header.get('height')
+      width = header.get('rwidth')
+      height = header.get('rheight')
 
     if self.info['type'] == 'UITableView':
       if header is None: # means tv_separate is True
         body = ("return {}\n").format(self.info["separator"][0])
       else:
-        body = ("return {}.frame.height * {}\n").format(self.id, height)
+        body = ("return {}\n").format(height)
         if self.tv_separate:
           body = ("switch section {{\n"
                   "case 0:\n{}\n"
@@ -201,8 +200,7 @@ class UITableCollectionView(BaseComponent):
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
             "HeaderInSection section: Int) -> CGSize {{\n"
-            "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-            "height*{2})\n}}\n").format(self.id, width, height)
+            "return CGSize(width: {}, height: {})\n}}\n").format(width, height)
 
   def reg_header(self):
     """
