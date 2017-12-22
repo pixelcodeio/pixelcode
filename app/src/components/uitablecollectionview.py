@@ -175,7 +175,6 @@ class UITableCollectionView(BaseComponent):
     """
     Args:
       header (dict): contains info about header
-      fake_header (bool): whether to generate a fake header
 
     Returns (str): swift code for setting size of header
     """

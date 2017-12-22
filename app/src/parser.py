@@ -213,5 +213,8 @@ class Parser(object):
     Args:
       key (str): either 'font', 'font-family', or 'font-size'
     """
-    if new_value is not None and new_value not in self.globals["info"][key]:
-      self.globals["info"][key].append(new_value)
+    if new_value is not None:
+      if key == 'fill':
+        new_value = [float(v) for v in new_value] # convert strings to float
+      if new_value not in self.globals["info"][key]:
+        self.globals["info"][key].append(new_value)
