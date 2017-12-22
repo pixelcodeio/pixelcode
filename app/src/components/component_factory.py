@@ -10,19 +10,18 @@ class ComponentFactory(object):
     tc_methods (str): (table/collection) view methods
     in_view (bool): whether component is generated inside a custom view file
   """
-  def __init__(self, type_, info, in_v, bgc=None):
+  def __init__(self, type_, info, in_v):
     """
     Args:
-      bgc (tuple): background color of screen
       info (dict): info on component
       in_v (bool): is whether generating from within a custom view
     """
     self.tc_methods = ""
     self.info = info
     self.in_view = in_v
-    self.swift = self.generate_component(type_, bgc)
+    self.swift = self.generate_component(type_)
 
-  def generate_component(self, type_, bgc):
+  def generate_component(self, type_):
     """
     Returns: (str) The swift code to generate component
     """
@@ -56,12 +55,12 @@ class ComponentFactory(object):
       # extract (table/collection) view methods
       self.tc_methods = component.tc_methods
     elif type_ == 'UILabel':
-      C += utils.set_bg(id_, bgc)
+      C += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
     elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
       return C
 
     view = 'view' if not self.in_view else None
-    C += utils.add_subview(view, id_)
+    C += utils.add_subview(view, id_, type_)
     C += self.gen_constraints(self.info)
     return C
 
@@ -137,10 +136,12 @@ class ComponentFactory(object):
     """
     Returns (str): swift code to initialize a component
     """
-    if type_ == 'UICollectionView':
+    if type_ == "UICollectionView":
       return ("let layout = UICollectionViewFlowLayout()\n"
               "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
              ).format(id_, type_)
+    elif type_ == "UITableView":
+      return ("{} = {}(frame: .zero, style: .grouped)\n").format(id_, type_)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
     elif type_ in {"UINavBar", "UITabBar", "UIActionSheet"}:
@@ -182,7 +183,7 @@ class ComponentFactory(object):
 
     self.info["cell_set_prop"] = C
 
-  def gen_subcomponents(self, parent_id, components, add_constraints):
+  def gen_subcomponents(self, parent, components, add_constraints):
     """
     Returns (str): swift code to generate subcomponents of parent_id
     """
@@ -195,7 +196,7 @@ class ComponentFactory(object):
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
       C += utils.set_frame(comp) if not add_constraints else ""
-      C += utils.add_subview(parent_id, id_) if parent_id is not None else ""
+      C += utils.add_subview(parent, id_, type_) if parent is not None else ""
       C += self.gen_constraints(comp) if add_constraints else ""
 
     return C

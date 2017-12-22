@@ -11,7 +11,7 @@
     }
   ],
   "menu" : {
-    "title" : "pixelcode",
+    "title" : "Pixelcode",
     "items" : [
       "com.bohemiancoding.sketch.runscriptidentifier"
     ]
@@ -20,5 +20,5 @@
   "version" : "0.1",
   "description" : "Converts Artboards to Swift Code",
   "authorEmail" : "kim.thunderbird@gmail.com",
-  "name" : "pixelcode"
+  "name" : "Pixelcode"
 }

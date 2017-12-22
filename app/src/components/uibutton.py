@@ -6,19 +6,28 @@ class UIButton(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      contents = self.info.get('text').get('textspan')[0].get('contents')
-      return self.set_title(contents) if contents is not None else ""
+      C = ""
+      if self.info.get('text'):
+        contents = self.info['text']['textspan'][0]['contents']
+        C += self.set_title(contents)
+      if self.info.get('bg_img'):
+        C += self.set_bg_image()
+      return C
     return self.setup_component()
 
   def setup_component(self):
     """
     Returns: (str) swift code to setup uibutton
     """
-    tspan = self.info.get('text').get('textspan')
     C = ""
     bg_img = self.info.get('bg_img')
+
     if bg_img is not None and bg_img.get('path') is not None:
       C += self.set_bg_image()
+    if self.info.get('text') is None:
+      return C
+
+    tspan = self.info['text']['textspan']
     if len(tspan) == 1: # the contents of the textspan don't vary
       txt = tspan[0]
       keys = ['contents', 'fill', 'font-family', 'font-size']

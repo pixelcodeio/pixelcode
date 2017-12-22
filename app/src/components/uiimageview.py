@@ -6,7 +6,7 @@ class UIImageView(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      path = info.get('path')
+      path = self.info.get('path')
       return self.set_image(path) if path is not None else ""
     return self.setup_component()
 
@@ -34,6 +34,5 @@ class UIImageView(BaseComponent):
 
     Returns (str): swift code to set the image
     """
-    index = image_fname.index(".")
-    image_name = image_fname[0:index]
+    image_name = utils.str_before_key(image_fname, ".")
     return ("{}.image = UIImage(named: \"{}\")\n").format(self.id, image_name)

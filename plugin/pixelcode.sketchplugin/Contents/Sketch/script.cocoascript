@@ -25,9 +25,9 @@ var onRun = function(context) {
                 layer.iterate(function(currentLayer) {
                     renameLayers(currentLayer, output["originalNames"]);
                 });
-                context.document.showMessage("PixelCode: Export finished!");
+                context.document.showMessage("Pixelcode: Export finished!");
             } else {
-                context.document.showMessage("PixelCode: No artboard selected.");
+                context.document.showMessage("Pixelcode: No artboard selected.");
             }
         });
     };
@@ -81,7 +81,7 @@ function checkFormatting(layer, layerNames, originalNames) {
 
     while (stack.length >= 1) {
         var currentLayer = stack.pop();
-        var originalName = String(currentLayer.name.replace(/\s+/, "-"));
+        var originalName = String(currentLayer.name);
         ret["originalNames"][currentLayer.id] = originalName;
 
         layerName = String(currentLayer.name.replace(/\s+/, ""));

@@ -59,7 +59,7 @@ class Interpreter(object):
       # add parent classes for table/collection view
       self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
                                                self.info)
-      self.swift[self.file_name] += '\n}}\n{}}}'.format(self.info["tc_methods"])
+      self.swift[self.file_name] += '\n{}}}'.format(self.info["tc_methods"])
 
       tc_elem = self.info["tc_elem"]
       tc_id = tc_elem['id']
@@ -101,8 +101,7 @@ class Interpreter(object):
         if type_ == 'UILabel':
           if self.swift.get('InsetLabel') is None: # generate custom UILabel
             self.swift['InsetLabel'] = gen_inset_label()
-          cf = ComponentFactory(type_, comp, in_v,
-                                bgc=self.globals['background_color'])
+          cf = ComponentFactory(type_, comp, in_v)
         else:
           cf = ComponentFactory(type_, comp, in_v)
           if type_ == 'UITableView' or type_ == 'UICollectionView':

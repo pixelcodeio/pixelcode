@@ -79,6 +79,7 @@ class BaseLayer(object):
         "height",
         "horizontal",
         "id",
+        "img_fill",
         "left-inset",
         "line-spacing",
         "navbar-items",

@@ -51,14 +51,15 @@ def gen_global_colors(global_fills, swift):
   """
   C = ("import UIKit\n\nextension UIColor {\n\n")
   colors = [utils.create_uicolor(f) for f in global_fills]
-  counter = 0
-  for (filename, code) in swift.items():
-    for color in colors:
-      color_name = ("color{}").format(counter)
-      code = code.replace(color, "UIColor." + color_name)
-      C += "@nonobjc static let {}: UIColor = {}\n".format(color_name, color)
-      counter += 1
+
+  for index, color in enumerate(colors): # generate colors file
+    color_name = ("color{}").format(index)
+    C += "@nonobjc static let {}: UIColor = {}\n".format(color_name, color)
+  for (filename, code) in swift.items(): # replace colors in files
+    for index, color in enumerate(colors):
+      code = code.replace(color, ("UIColor.color{}").format(index))
     swift[filename] = code
+
   swift["UIColorExtension"] = C + "}\n"
   return swift
 
