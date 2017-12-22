@@ -156,3 +156,12 @@ def set_frame(component):
   id_, x, y, w, h = get_vals(keys, component)
   return ("{}.frame = CGRect(x: {}, y: {}, width: {}, height: {})\n"
          ).format(id_, x, y, w, h)
+
+def str_before_key(string, key):
+  """
+  Returns: The part of [string] that appears before [key].
+  """
+  index = string.index(key)
+  if index == -1:
+    return ""
+  return string[0:index]
