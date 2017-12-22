@@ -48,10 +48,17 @@ def set_bg(id_, color):
     return ('{}.backgroundColor = {}\n').format(id_, color)
   return ('backgroundColor = {}\n').format(color)
 
-def add_subview(view, id_):
+def add_subview(view, id_, type_):
   if view is None:
-    return 'addSubview({})\n\n'.format(id_)
-  return '{}.addSubview({})\n\n'.format(view, id_)
+    if type_ == "UIImageView":
+      return ("addSubview({0})\n"
+              "sendSubview(toBack: {0})\n\n").format(id_)
+    return "addSubview({})\n\n".format(id_)
+  if type_ == "UIImageView":
+    return ("{0}.addSubview({1})\n"
+            "{0}.sendSubview(toBack: {1})\n\n").format(view, id_)
+  return ("{0}.addSubview({1})\n\n").format(view, id_)
+
 
 def set_border_width(id_, width):
   """
@@ -90,12 +97,12 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
   fill, border_r, str_c, str_w = get_vals(keys, rect)
 
   C = ""
-  if tc_cell or tc_header:
-    cid = None
   if word_in_str("navBar", cid): # only set background color for UINavBar
     str_c = None
     str_w = None
     border_r = None
+  if tc_cell or tc_header:
+    cid = None
 
   if fill is not None:
     if tc_header:

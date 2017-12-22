@@ -70,13 +70,17 @@ class Parser(object):
     """
     Returns: dict of globals taken from parsing svg element
     """
-    bg_hex = svg["style"][:-1].split(" ")[1] # parse hexcode
-    bg_color = utils.convert_hex_to_rgb(bg_hex) + ("1.0",)
+    if svg.get('style') is not None:
+      bg_hex = svg["style"][:-1].split(" ")[1] # parse hexcode
+      bg_color = utils.convert_hex_to_rgb(bg_hex) + (1.0,)
+    else:
+      bg_color = (255, 255, 255, 1.0)
     height = svg["height"][:-2]
     width = svg["width"][:-2]
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
-    info = {'fill': [bg_color], 'font-family': [], 'font-size': []}
+    fill = [bg_color, (0, 0, 0, 0)]
+    info = {'fill': fill, 'font-family': [], 'font-size': []}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),

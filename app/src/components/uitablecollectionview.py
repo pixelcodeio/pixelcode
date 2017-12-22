@@ -7,7 +7,9 @@ class UITableCollectionView(BaseComponent):
     tv_separate (bool): whether type is UITableView and cells are separated
   """
   def __init__(self, id_, info, env):
-    self.tv_separate = (info['type'] == 'UITableView' and info['separator'])
+    keys = ["type", "separator"]
+    type_, separator = utils.get_vals(keys, info)
+    self.tv_separate = (type_ == 'UITableView' and len(separator) == 1)
     super().__init__(id_, info, env)
 
 
@@ -19,7 +21,7 @@ class UITableCollectionView(BaseComponent):
     methods += self.number_in_section(cells)
     methods += self.size_for_row_item(cells)
 
-    if header is not None:
+    if header is not None or self.tv_separate:
       methods += self.view_for_header(header)
       methods += self.size_for_header(header)
 
@@ -95,13 +97,13 @@ class UITableCollectionView(BaseComponent):
     if self.tv_separate:
       return ("{}InSection section: Int) -> Int {{\n"
               "return 1 \n"
-              "}}\n"
+              "}}\n\n"
              ).format(func)
 
     num_cells = self.get_number_cells(cells)
     return ("{}InSection section: Int) -> Int {{\n"
             "return {} \n"
-            "}}\n"
+            "}}\n\n"
            ).format(func, num_cells)
 
   def size_for_row_item(self, cells):
@@ -148,13 +150,15 @@ class UITableCollectionView(BaseComponent):
       path = ", for: indexPath"
       section = "indexPath.section"
 
-    C = ('{0} {{\nlet header = {1}.{2}: "{1}Header"{3}) as! {4}HeaderView\n'
-         'switch {5} {{\n'
-        ).format(func, self.id, deq, path, utils.uppercase(self.id), section)
+    C = ("{} {{\n").format(func)
+    if header is not None:
+      C += ('let header = {0}.{1}: "{0}Header"{2}) as! {3}HeaderView\n'
+            'switch {4} {{\n'
+           ).format(self.id, deq, path, utils.uppercase(self.id), section)
 
-    C += self.info.get('header_set_prop')
-    C += ('return header'
-          '\ndefault:\n')
+      C += self.info.get('header_set_prop')
+      C += ('return header'
+            '\ndefault:\n')
 
     if self.tv_separate:
       C += ("let view = UIView()\n"
@@ -163,29 +167,34 @@ class UITableCollectionView(BaseComponent):
     else:
       C += "return header\n"
 
-    C += '}\n}\n\n'
+    C += '}\n\n' if header is None else '}\n}\n\n'
     return C
 
   def size_for_header(self, header):
     """
     Args:
       header (dict): contains info about header
+      fake_header (bool): whether to generate a fake header
 
     Returns (str): swift code for setting size of header
     """
-    width = header.get('width')
-    height = header.get('height')
+    if header is not None:
+      width = header.get('width')
+      height = header.get('height')
 
     if self.info['type'] == 'UITableView':
-      body = ("return {}.frame.height * {}\n").format(self.id, height)
-      if self.tv_separate:
-        body = ("switch section {{\n"
-                "case 0:\n{}\n"
-                "default:\nreturn {}\n}}"
-               ).format(body, self.info['separator'][0])
+      if header is None: # means tv_separate is True
+        body = ("return {}\n").format(self.info["separator"][0])
+      else:
+        body = ("return {}.frame.height * {}\n").format(self.id, height)
+        if self.tv_separate:
+          body = ("switch section {{\n"
+                  "case 0:\n{}\n"
+                  "default:\nreturn {}\n}}"
+                 ).format(body, self.info['separator'][0])
       return ("func tableView(_ tableView: UITableView, heightForHeaderIn"
               "Section section: Int) -> CGFloat {{\n"
-              "{}\n}}\n\n").format(body)
+              "{}}}\n\n").format(body)
 
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"

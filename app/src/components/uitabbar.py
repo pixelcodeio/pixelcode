@@ -30,9 +30,13 @@ class UITabBar(BaseComponent):
         raise Exception("UITabbar: Tabbar button does not contain icon/image.")
 
       view_controllers.append(vc_name)
-      title = button['text']['textspan'][0]['contents'].decode('utf-8')
+      if button.get('text'):
+        title = button['text']['textspan'][0]['contents'].decode('utf-8')
+        title = ('"{}"').format(title)
+      else:
+        title = "nil"
       image = 'UIImage(named: "{}")'.format(button['bg_img']['path'])
-      item = ('UITabBarItem(title: "{}", image: {}, tag: {})'
+      item = ('UITabBarItem(title: {}, image: {}, tag: {})'
              ).format(title, image, index)
       C += '{}.tabBarItem = {}\n'.format(vc_name, item)
 

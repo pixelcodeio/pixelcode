@@ -6,7 +6,7 @@ class UIImageView(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      path = info.get('path')
+      path = self.info.get('path')
       return self.set_image(path) if path is not None else ""
     return self.setup_component()
 
