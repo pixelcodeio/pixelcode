@@ -45,6 +45,8 @@ class UITableCollectionView(BaseComponent):
     C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
           '{0}.delegate = self\n'
           '{0}.dataSource = self\n'
+          '{0}.showsVerticalScrollIndicator = false\n'
+          '{0}.showsHorizontalScrollIndicator = false\n'
          ).format(id_, utils.uppercase(id_))
 
     if self.info.get('type') == 'UICollectionView':

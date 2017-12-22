@@ -136,10 +136,12 @@ class ComponentFactory(object):
     """
     Returns (str): swift code to initialize a component
     """
-    if type_ == 'UICollectionView':
+    if type_ == "UICollectionView":
       return ("let layout = UICollectionViewFlowLayout()\n"
               "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
              ).format(id_, type_)
+    elif type_ == "UITableView":
+      return ("{} = {}(frame: .zero, style: .grouped)\n").format(id_, type_)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
     elif type_ in {"UINavBar", "UITabBar", "UIActionSheet"}:
