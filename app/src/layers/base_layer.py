@@ -27,6 +27,8 @@ class BaseLayer(object):
       elif param == "filter":
         if "filter" in elem.attrs and elem["filter"] != None:
           elem["filter"] = elem["filter"][5:-1] # format is url(#[id])
+        else:
+          elem["filter"] = None
       elif param == "font-family":
         if "font-family" in elem.attrs:
           elem["font-family"] = elem["font-family"].split(",")[0]

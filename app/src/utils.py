@@ -165,3 +165,11 @@ def str_before_key(string, key):
   if index == -1:
     return ""
   return string[0:index]
+
+def add_shadow(id_, filter_):
+  keys = ["fill", "dx", "dy"]
+  fill, dx, dy = get_vals(keys, filter_)
+  return ("{0}.layer.shadowColor = {1}.cgColor\n"
+          "{0}.layer.shadowOpacity = 1\n"
+          "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
+         ).format(id_, create_uicolor(fill), dx, dy)

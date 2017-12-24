@@ -25,8 +25,8 @@ class ComponentFactory(object):
     """
     Returns: (str) The swift code to generate component
     """
-    id_ = self.info.get('id')
-    rect = self.info.get('rect')
+    keys = ["id", "rect", "filter"]
+    id_, rect, filter_ = utils.get_vals(keys, self.info)
 
     C = ""
 
@@ -45,6 +45,9 @@ class ComponentFactory(object):
 
     if rect is not None:
       C += utils.setup_rect(id_, rect)
+
+    if filter_ is not None:
+      C += utils.add_shadow(id_, filter_)
 
     if type_ == 'UIView' and self.info.get('components') is not None:
       # generate subcomponents

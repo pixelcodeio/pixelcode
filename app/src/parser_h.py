@@ -217,6 +217,29 @@ def check_spacing(r1, r2, direction):
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
 
+def add_to_info(key, new_value, info):
+  """
+  Args:
+    key (str): either 'font', 'font-family', or 'font-size'
+  """
+  if new_value is not None:
+    if key == 'fill':
+      new_value = [float(v) for v in new_value] # convert strings to float
+    if new_value not in info[key]:
+      info[key].append(new_value)
+  return info
+
+def extract_to_info(elem, info):
+  """
+  Returns: extracts style-guide information from elem and adds it to info
+  """
+  keys = ['fill', 'font-family', 'font-size']
+  fill, font_family, font_size = utils.get_vals(keys, elem)
+  info = add_to_info('fill', fill, info)
+  info = add_to_info('font-family', font_family, info)
+  info = add_to_info('font-size', font_size, info)
+  return info
+
 def parse_filter_matrix(matrix):
   """
   Args:
