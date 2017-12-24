@@ -19,6 +19,7 @@ class Parser(object):
       - background_color (tuple)
       - pagename (str)
       - artboard (str)
+      - filters: (dict) contains information about shadows
       - info: dictionary with keys (used for style-guide)
         - fill (list)
         - font-family (list)
@@ -81,12 +82,21 @@ class Parser(object):
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
     info = {'fill': fill, 'font-family': [], 'font-size': []}
+    svg_filters = svg.find_all("filter")
+    filters = {}
+    for f in svg_filters:
+      id_ = f.attrs["id"]
+      dx = f.feoffset.attrs["dx"]
+      dy = f.feoffset.attrs["dy"]
+      fill = parse_filter_matrix(f.fecolormatrix.attrs["values"])
+      filters[id_] = {"dx": dx, "dy": dy, "fill": fill}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),
             "pagename": pagename,
             "artboard": artboard,
-            "info": info}
+            "info": info,
+            "filters": filters}
 
   def parse_elements(self, children, parent, init=False):
     """

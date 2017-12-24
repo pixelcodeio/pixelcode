@@ -19,10 +19,14 @@ class BaseLayer(object):
     """
     for param in params:
       if param == "fill":
-        if "fill" in elem.attrs and elem["fill"] != "none":
+        if "fill" in elem.attrs and elem["fill"] != "none" and \
+        elem["fill"][0] == '#':
           elem["fill"] = utils.convert_hex_to_rgb(elem["fill"])
         else:
           elem["fill"] = None
+      elif param == "filter":
+        if "filter" in elem.attrs and elem["filter"] != None:
+          elem["filter"] = elem["filter"][5:-1] # format is url(#[id])
       elif param == "font-family":
         if "font-family" in elem.attrs:
           elem["font-family"] = elem["font-family"].split(",")[0]
@@ -73,6 +77,7 @@ class BaseLayer(object):
         "cx",
         "cy",
         "fill",
+        "filter",
         "font-family",
         "font-size",
         "header",

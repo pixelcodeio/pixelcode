@@ -216,3 +216,19 @@ def check_spacing(r1, r2, direction):
       if t_btwn or b_btwn or contains:
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
+
+def parse_filter_matrix(matrix):
+  """
+  Args:
+    matrix (str): string representation of a filter matrix.
+
+  Returns (tuple): r,g,b,a values parsed from matrix.
+  """
+  matrix = matrix.split()
+  if len(matrix) != 20:
+    raise Exception("Parser_h: Filter matrix has invalid format.")
+  r = float(matrix[0])
+  g = float(matrix[6])
+  b = float(matrix[12])
+  a = float(matrix[18])
+  return (r, g, b, a)
