@@ -47,7 +47,7 @@ class ComponentFactory(object):
       C += utils.setup_rect(id_, rect)
 
     if filter_ is not None:
-      C += utils.add_shadow(id_, filter_)
+      C += utils.add_shadow(id_, type_, filter_)
 
     if type_ == 'UIView' and self.info.get('components') is not None:
       # generate subcomponents

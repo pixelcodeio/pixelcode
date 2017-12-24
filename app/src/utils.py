@@ -166,10 +166,14 @@ def str_before_key(string, key):
     return ""
   return string[0:index]
 
-def add_shadow(id_, filter_):
+def add_shadow(id_, type_, filter_):
   keys = ["fill", "dx", "dy"]
   fill, dx, dy = get_vals(keys, filter_)
-  return ("{0}.layer.shadowColor = {1}.cgColor\n"
-          "{0}.layer.shadowOpacity = 1\n"
-          "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
-         ).format(id_, create_uicolor(fill), dx, dy)
+  C = ("{0}.layer.shadowColor = {1}.cgColor\n"
+       "{0}.layer.shadowOpacity = 1\n"
+       "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
+      ).format(id_, create_uicolor(fill), dx, dy)
+  if type_ == "UINavBar":
+    C = C.replace(id_, "navigationController?.navigationBar")
+    C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
+  return C

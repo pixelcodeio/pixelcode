@@ -5,14 +5,15 @@ def inherit_from(parent, child, init=False):
   Returns: (dict) child with attributes from parent passed down
   """
   for attr in parent.attrs:
-    skip = attr == "id"
+    skip = attr == "id" or (attr == "fill" and (parent["fill"] == "none" or \
+                                                parent["fill"][0] != "#"))
     if init:
       skip = (skip
-              or (attr == "fill" and parent["fill"] == "none")
+              or (attr == "fill" and (parent["fill"] == "none" or \
+                  parent["fill"][0] != "#"))
               or (attr == "stroke" and parent["stroke"] == "none")
               or (attr == "stroke-width" and parent["stroke"] == "none")
               or attr == "fill-rule")
-
     if not skip and attr not in child.attrs:
       child[attr] = parent[attr]
   return child
