@@ -86,9 +86,9 @@ class Parser(object):
     filters = {}
     for f in svg_filters:
       id_ = f.attrs["id"]
-      dx = f.feoffset.attrs["dx"]
-      dy = f.feoffset.attrs["dy"]
-      fill = parse_filter_matrix(f.fecolormatrix.attrs["values"])
+      dx = f.feoffset["dx"]
+      dy = f.feoffset["dy"]
+      fill = parse_filter_matrix(f.fecolormatrix["values"])
       filters[id_] = {"dx": dx, "dy": dy, "fill": fill}
     return {"background_color": bg_color,
             "width": float(width),

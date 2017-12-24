@@ -25,7 +25,7 @@ class BaseLayer(object):
         else:
           elem["fill"] = None
       elif param == "filter":
-        if "filter" in elem.attrs and elem["filter"] != None:
+        if "filter" in elem.attrs and elem["filter"] != "none":
           elem["filter"] = elem["filter"][5:-1] # format is url(#[id])
         else:
           elem["filter"] = None
