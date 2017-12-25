@@ -88,8 +88,10 @@ class Parser(object):
       id_ = f.attrs["id"]
       dx = f.feoffset["dx"]
       dy = f.feoffset["dy"]
+      print(f.femorphology)
+      radius = float(f.femorphology["radius"])
       fill = parse_filter_matrix(f.fecolormatrix["values"])
-      filters[id_] = {"dx": dx, "dy": dy, "fill": fill}
+      filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),

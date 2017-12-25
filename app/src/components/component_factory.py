@@ -44,7 +44,7 @@ class ComponentFactory(object):
     C += component.swift
 
     if rect is not None:
-      C += utils.setup_rect(id_, rect)
+      C += utils.setup_rect(id_, type_, rect)
 
     if filter_ is not None:
       C += utils.add_shadow(id_, type_, filter_)

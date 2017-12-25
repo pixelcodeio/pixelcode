@@ -27,6 +27,10 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
+    # for comp in components:
+    #   for i in comp.items():
+    #     print(i)
+    #   print('\n')
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals['artboard'])
@@ -127,11 +131,11 @@ class Interpreter(object):
     if type_ == "cell":
       self.file_name = utils.uppercase(id_) + "Cell"
       C = gen_cell_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), tc_cell=True)
+      C += utils.setup_rect(id_, type_, info.get('rect'), tc_cell=True)
     else: # type_ is header
       self.file_name = utils.uppercase(id_) + "HeaderView"
       C = gen_header_header(id_, info)
-      C += utils.setup_rect(id_, info.get('rect'), tc_header=True)
+      C += utils.setup_rect(id_, type_, info.get('rect'), tc_header=True)
 
     C += self.gen_comps(info.get('components'), True)
     C += "}}\n\n{}\n\n".format(utils.req_init())

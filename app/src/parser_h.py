@@ -169,7 +169,7 @@ def parse_fake_group(elem):
           break
 
     # ensure that there is only one main child
-    if len(main_children) == 1 and use_children:
+    if len(main_children) == 1:
       parent_id = elem["id"]
       for child in use_children:
         elem = inherit_from(child, elem)

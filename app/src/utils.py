@@ -85,7 +85,26 @@ def set_corner_radius(id_, radius):
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
   return ("layer.cornerRadius = {}\n").format(radius)
 
-def setup_rect(cid, rect, tc_header=False, tc_cell=False):
+def add_shadow(id_, type_, filter_):
+  """
+  Returns (str): swift code to add shadow to id_.
+  """
+  keys = ["fill", "radius", "dx", "dy"]
+  fill, radius, dx, dy = get_vals(keys, filter_)
+  C = ("{0}.layer.shadowColor = {1}.cgColor\n"
+       "{0}.layer.shadowOpacity = 1\n"
+       "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
+       "{0}.layer.shadowRadius = {4}\n"
+      ).format(id_, create_uicolor(fill), dx, dy, radius)
+
+  if id_ is None:
+    C = C.replace("None.", "")
+  if type_ == "UINavBar":
+    C = C.replace(id_, "navigationController?.navigationBar")
+    C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
+  return C
+
+def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
   """
   Args:
     cid: (str) id of component
@@ -93,8 +112,8 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
 
   Returns: (str) swift code to apply all the properties from rect.
   """
-  keys = ["fill", "border-radius", "stroke-color", "stroke-width"]
-  fill, border_r, str_c, str_w = get_vals(keys, rect)
+  keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
+  fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
 
   C = ""
   if word_in_str("navBar", cid): # only set background color for UINavBar
@@ -121,6 +140,8 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
     C += set_border_width(cid, str_w)
   if border_r is not None:
     C += set_corner_radius(cid, border_r)
+  if filter_ is not None:
+    C += add_shadow(cid, type_, filter_)
 
   return C
 
@@ -165,15 +186,3 @@ def str_before_key(string, key):
   if index == -1:
     return ""
   return string[0:index]
-
-def add_shadow(id_, type_, filter_):
-  keys = ["fill", "dx", "dy"]
-  fill, dx, dy = get_vals(keys, filter_)
-  C = ("{0}.layer.shadowColor = {1}.cgColor\n"
-       "{0}.layer.shadowOpacity = 1\n"
-       "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
-      ).format(id_, create_uicolor(fill), dx, dy)
-  if type_ == "UINavBar":
-    C = C.replace(id_, "navigationController?.navigationBar")
-    C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
-  return C
