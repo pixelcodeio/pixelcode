@@ -89,13 +89,18 @@ def add_shadow(id_, type_, filter_):
   """
   Returns (str): swift code to add shadow to id_.
   """
-  keys = ["fill", "radius", "dx", "dy"]
-  fill, radius, dx, dy = get_vals(keys, filter_)
+  keys = ["fill", "radius", "dx", "dy", "d_size"]
+  fill, radius, dx, dy, d_size = get_vals(keys, filter_)
   C = ("{0}.layer.shadowColor = {1}.cgColor\n"
        "{0}.layer.shadowOpacity = 1\n"
        "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
        "{0}.layer.shadowRadius = {4}\n"
       ).format(id_, create_uicolor(fill), dx, dy, radius)
+
+  if d_size != 0:
+    C += ("{0}.layer.shadowPath = UIBezierPath(rect: CGRect(x: -{1}, y: -{1}, "
+          "width: {0}.frame.width+{2}, height: {0}.frame.height+{2})).cgPath\n"
+         ).format(id_, d_size, d_size*2.0)
 
   if id_ is None:
     C = C.replace("None.", "")

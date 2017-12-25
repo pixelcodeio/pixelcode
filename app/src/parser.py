@@ -88,10 +88,16 @@ class Parser(object):
       id_ = f.attrs["id"]
       dx = f.feoffset["dx"]
       dy = f.feoffset["dy"]
-      print(f.femorphology)
-      radius = float(f.femorphology["radius"])
+      d_size = 0 # change in width and height of shadow in pixels
+      radius = 0
+      if f.femorphology is not None:
+        radius += float(f.femorphology["radius"])
+        d_size = float(f.femorphology["radius"]) * 2.0
+      if f.fegaussianblur is not None:
+        radius += float(f.fegaussianblur["stddeviation"])
       fill = parse_filter_matrix(f.fecolormatrix["values"])
-      filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill}
+      filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
+                      "d_size": d_size}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),
