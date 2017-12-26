@@ -76,9 +76,11 @@ class Interpreter(object):
     Args:
       components: (dict list) contains information about components
 
-    Returns (str): swift code to generate components.
+    Returns (tuple):
+      swift code to generate components and info on (table/collection) view if
+      there is one.
     """
-    # Clear instance variables regarding (table/collection) views
+    # Clear (table/collection) view methods
     self.info["methods"]["tc_methods"] = ""
     navbar_item_ids = [] # holds ids of navbar items
     tc_elem = None
