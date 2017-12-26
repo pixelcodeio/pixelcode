@@ -1,31 +1,31 @@
 from components._all import *
 from . import *
 
-
 class ComponentFactory(object):
   """
   Initializes components (constraints, background-color, etc.)
     swift (str): swift code to generate a component
     info (dict): contains information about component
-    tc_methods (str): (table/collection) view methods
+    methods (dict): contains methods to be added outside of file's init function
     in_view (bool): whether component is generated inside a custom view file
   """
-  def __init__(self, type_, info, in_v):
+  def __init__(self, info, in_v):
     """
     Args:
       info (dict): info on component
       in_v (bool): is whether generating from within a custom view
     """
-    self.tc_methods = ""
     self.info = info
+    self.methods = {}
     self.in_view = in_v
-    self.swift = self.generate_component(type_)
+    self.swift = self.generate_component()
 
-  def generate_component(self, type_):
+  def generate_component(self):
     """
     Returns: (str) The swift code to generate component
     """
     id_ = self.info["id"]
+    type_ = self.info["type"]
     C = ""
 
     if not self.in_view:
@@ -72,10 +72,14 @@ class ComponentFactory(object):
       swift += self.gen_subcomponents(id_, components, True)
     elif type_ == 'UITableView' or type_ == 'UICollectionView':
       # extract (table/collection) view methods
-      self.tc_methods = component.tc_methods
+      self.methods["tc_methods"] = component.tc_methods
     elif type_ == 'UILabel':
       swift += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
     elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
+      if type_ == "UIActionSheet":
+        # move UIActionSheet code to viewDidAppear function
+        swift = swift.replace(component.swift, "")
+        self.methods["viewDidAppear"] = component.swift    
       return swift
 
     view = 'view' if not self.in_view else None

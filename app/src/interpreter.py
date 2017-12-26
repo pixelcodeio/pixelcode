@@ -9,6 +9,7 @@ class Interpreter(object):
     info (dict): has keys:
       - components (list): info on all components
       - tc_elem (dict): info on current (table/collection)view being generated
+      - methods (dict): has methods to be added outside of file's init function
       - tc_methods (str): any necessary (table/collection)view methods
     swift (dict): swift code to generate the artboard
 
@@ -17,7 +18,7 @@ class Interpreter(object):
   def __init__(self, globals_):
     self.globals = globals_
     self.file_name = ""
-    self.info = {"components": [], "tc_elem": {}, "tc_methods": ""}
+    self.info = {"components": [], "tc_elem": {}, "methods": {}}
     self.swift = {}
 
   def gen_code(self, components):
@@ -48,11 +49,7 @@ class Interpreter(object):
     Returns: Fills in the swift instance variable with generated file.
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
-    self.swift[self.file_name] += "}\n"
-
-    types = [c['type'] for c in self.info["components"]]
-    if "UIActionSheet" in types: # move UIActionSheet code to viewDidAppear
-      self.swift[self.file_name] = move_action_sheet(self.swift[self.file_name])
+    self.swift[self.file_name] += "}\n" + add_methods(self.info["methods"])
 
     if not self.info["tc_elem"]:
       if in_v:
@@ -63,7 +60,7 @@ class Interpreter(object):
       # add parent classes for table/collection view
       self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
                                                self.info)
-      self.swift[self.file_name] += '\n{}}}'.format(self.info["tc_methods"])
+      self.swift[self.file_name] += "}"
 
       tc_elem = self.info["tc_elem"]
       tc_id = tc_elem['id']
@@ -86,7 +83,9 @@ class Interpreter(object):
 
     Returns (str): swift code to generate components.
     """
-    self.clear_tv()
+    # Clear instance variables regarding (table/collection) views
+    self.info["tc_elem"] = {}
+    self.info["methods"]["tc_methods"] = ""
     navbar_item_ids = [] # holds ids of navbar items
     C = ""
 
@@ -97,7 +96,7 @@ class Interpreter(object):
         continue
       elif type_ == 'UITabBar':
         comp['active_vc'] = self.file_name # name of active view controller
-        cf = ComponentFactory(type_, comp, in_v)
+        cf = ComponentFactory(comp, in_v)
         # generate tabbar viewcontroller file
         vc_name = utils.uppercase(comp['id']) + 'ViewController'
         self.swift[vc_name] = gen_tabbar_vc(vc_name, cf.swift, self.info)
@@ -105,12 +104,11 @@ class Interpreter(object):
         if type_ == 'UILabel':
           if self.swift.get('InsetLabel') is None: # generate custom UILabel
             self.swift['InsetLabel'] = gen_inset_label()
-          cf = ComponentFactory(type_, comp, in_v)
+          cf = ComponentFactory(comp, in_v)
         else:
-          cf = ComponentFactory(type_, comp, in_v)
+          cf = ComponentFactory(comp, in_v)
           if type_ == 'UITableView' or type_ == 'UICollectionView':
             self.info["tc_elem"] = comp
-            self.info["tc_methods"] = cf.tc_methods
           elif type_ == 'UINavBar':
             items = comp["navbar-items"]
             navbar_item_ids.extend([i['id'] for i in items['left-buttons']])
@@ -120,6 +118,7 @@ class Interpreter(object):
               navbar_item_ids.append(title['id'])
               navbar_item_ids.extend(c['id'] for c in title['components'])
         C += cf.swift
+      self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C
 
   def setup_cell_header(self, type_, id_, info):
@@ -150,7 +149,8 @@ class Interpreter(object):
       C = move_collection_view(C, self.info)
     # add parent classes for table/collection view
     C = subclass_tc(C, self.info)
-    self.swift[self.file_name] = C + "\n{}\n}}".format(self.info["tc_methods"])
+    C += "\n{}\n}}".format(self.info["methods"]["tc_methods"])
+    self.swift[self.file_name] = C
     id_ = tc_elem['id']
     cell = tc_elem.get('cells')[0]
     self.file_name = utils.uppercase(id_) + 'Cell'
@@ -158,10 +158,3 @@ class Interpreter(object):
     # get components of first cell
     self.info["components"] = tc_elem.get('cells')[0].get('components')
     return True
-
-  def clear_tv(self):
-    """
-    Returns (None): Resets tc_elem and tc_methods instance variables
-    """
-    self.info["tc_elem"] = {}
-    self.info["tc_methods"] = ""

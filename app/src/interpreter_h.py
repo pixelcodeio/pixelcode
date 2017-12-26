@@ -224,3 +224,37 @@ def gen_inset_label():
           "return intrinsicSuperViewContentSize\n"
           "}\n"
           "}\n")
+
+def concat_dicts(d1, d2):
+  """
+  Args:
+    d1, d2 (dict): dictionary whose key and values are both strings
+
+  Returns (dict):
+    Concats all (key, value) pairs from d2 to d1. If d2 has a key that d1 does
+    not have, the key is added. Otherwise, d2[key] is concatenated onto d1[key].
+  """
+  for key, value in d2.items():
+    if d1.get(key) is None:
+      d1[key] = value
+    else:
+      d1[key] += value
+  return d1
+
+def add_methods(methods):
+  """
+  Returns (str): code of all methods to be added outside of file's init function
+  """
+  C = ""
+  for key, value in methods.items():
+    if key == "viewDidAppear":
+      C += ("\noverride func viewDidAppear(_ animated: Bool) {{\n"
+            "{}\n}}\n\n").format(value)
+    elif key == "viewDidLayoutSubviews":
+      C += ("override func viewDidLayoutSubviews() {{\n"
+            "{}\n}}\n\n").format(value)
+    elif key == "tc_methods":
+      C += value
+    else:
+      raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
+  return C
