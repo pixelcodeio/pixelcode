@@ -178,12 +178,12 @@ def move_action_sheet(swift):
   swift = swift[:beg] + swift[end:]
   return swift
 
-def subclass_tc(swift, info):
+def subclass_tc(swift, tc_elem):
   """
   Returns (str): adds necessary (table/collection)view parent classes to swift
   """
   ext = ", UITableViewDelegate, UITableViewDataSource"
-  if info["tc_elem"]['type'] == 'UICollectionView':
+  if tc_elem['type'] == 'UICollectionView':
     ext = ext.replace('Table', 'Collection')
     ext += ", UICollectionViewDelegateFlowLayout"
 

@@ -8,9 +8,7 @@ class Interpreter(object):
     file_name (str): name of current file being generated
     info (dict): has keys:
       - components (list): info on all components
-      - tc_elem (dict): info on current (table/collection)view being generated
       - methods (dict): has methods to be added outside of file's init function
-      - tc_methods (str): any necessary (table/collection)view methods
     swift (dict): swift code to generate the artboard
 
   NOTE: The variable C used in functions is used to denote "code".
@@ -18,7 +16,7 @@ class Interpreter(object):
   def __init__(self, globals_):
     self.globals = globals_
     self.file_name = ""
-    self.info = {"components": [], "tc_elem": {}, "methods": {}}
+    self.info = {"components": [], "methods": {}}
     self.swift = {}
 
   def gen_code(self, components):
@@ -44,11 +42,12 @@ class Interpreter(object):
     """
     Returns: Fills in the swift instance variable with generated file.
     """
-    self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
-    self.swift[self.file_name] += "}\n" + add_methods(self.info["methods"])
+    swift, tc_elem = self.gen_comps(self.info["components"], in_v)
+    self.swift[self.file_name] += swift + "}\n" + \
+                                  add_methods(self.info["methods"])
     self.info["methods"] = {}
 
-    if not self.info["tc_elem"]:
+    if not tc_elem:
       if in_v:
         self.swift[self.file_name] += "{}\n}}".format(utils.req_init())
       else:
@@ -56,10 +55,9 @@ class Interpreter(object):
     else:
       # add parent classes for table/collection view
       self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
-                                               self.info)
+                                               tc_elem)
       self.swift[self.file_name] += "}"
 
-      tc_elem = self.info["tc_elem"]
       tc_id = tc_elem['id']
       tc_header = tc_elem.get('header')
 
@@ -81,9 +79,9 @@ class Interpreter(object):
     Returns (str): swift code to generate components.
     """
     # Clear instance variables regarding (table/collection) views
-    self.info["tc_elem"] = {}
     self.info["methods"]["tc_methods"] = ""
     navbar_item_ids = [] # holds ids of navbar items
+    tc_elem = None
     C = ""
 
     for comp in components:
@@ -105,7 +103,7 @@ class Interpreter(object):
         else:
           cf = ComponentFactory(comp, in_v)
           if type_ == 'UITableView' or type_ == 'UICollectionView':
-            self.info["tc_elem"] = comp
+            tc_elem = comp
           elif type_ == 'UINavBar':
             items = comp["navbar-items"]
             navbar_item_ids.extend([i['id'] for i in items['left-buttons']])
@@ -116,7 +114,7 @@ class Interpreter(object):
               navbar_item_ids.extend(c['id'] for c in title['components'])
         C += cf.swift
       self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
-    return C
+    return C, tc_elem
 
   def setup_cell_header(self, type_, id_, info):
     """
@@ -133,10 +131,9 @@ class Interpreter(object):
       C = gen_header_header(id_, info)
       C += utils.setup_rect(id_, type_, info.get('rect'), tc_header=True)
 
-    C += self.gen_comps(info.get('components'), True)
-    C += "}}\n\n{}\n\n".format(utils.req_init())
+    swift, tc_elem = self.gen_comps(info.get('components'), True)
+    C += "{}}}\n\n{}\n\n".format(swift, utils.req_init())
 
-    tc_elem = self.info["tc_elem"]
     if not tc_elem:
       self.swift[self.file_name] = C + "}"
       return False
@@ -145,7 +142,7 @@ class Interpreter(object):
     if tc_elem['type'] == 'UICollectionView':
       C = move_collection_view(C, self.info)
     # add parent classes for table/collection view
-    C = subclass_tc(C, self.info)
+    C = subclass_tc(C, tc_elem)
     C += "\n{}\n}}".format(self.info["methods"]["tc_methods"])
     self.swift[self.file_name] = C
     id_ = tc_elem['id']
