@@ -88,6 +88,8 @@ class Parser(object):
       id_ = f.attrs["id"]
       dx = f.feoffset["dx"]
       dy = f.feoffset["dy"]
+      # check if shadow is inner or outer
+      is_outer = utils.word_in_str("outer", f.feoffset["result"])
       d_size = 0 # change in width and height of shadow in pixels
       radius = 0
       if f.femorphology is not None:
@@ -97,7 +99,7 @@ class Parser(object):
         radius += float(f.fegaussianblur["stddeviation"])
       fill = parse_filter_matrix(f.fecolormatrix["values"])
       filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
-                      "d_size": d_size}
+                      "d_size": d_size, "is_outer": is_outer}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),

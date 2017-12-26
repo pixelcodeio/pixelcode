@@ -46,6 +46,7 @@ class Interpreter(object):
     """
     self.swift[self.file_name] += self.gen_comps(self.info["components"], in_v)
     self.swift[self.file_name] += "}\n" + add_methods(self.info["methods"])
+    self.info["methods"] = {}
 
     if not self.info["tc_elem"]:
       if in_v:
