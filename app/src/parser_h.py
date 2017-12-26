@@ -162,11 +162,17 @@ def parse_fake_group(elem):
 
     if (not main_children) and use_children:
       for ind, child in enumerate(use_children):
-        if "xlink:href" in child.attrs:
+        if "xlink:href" in child.attrs and "filter" not in child.attrs:
           child.name = "rect"
           use_children.pop(ind)
           main_children = [child]
           break
+      if not main_children: # every use tag contains filter
+        child = use_children[0]
+        child.name = "rect"
+        use_children.pop(0)
+        main_children = [child]
+
 
     # ensure that there is only one main child
     if len(main_children) == 1:

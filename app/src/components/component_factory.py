@@ -61,9 +61,18 @@ class ComponentFactory(object):
 
     if rect is not None:
       swift += utils.setup_rect(id_, type_, rect)
+      if rect.get("filter") is not None and not self.in_view:
+        # move code for shadows to viewDidLayoutSubviews function
+        shadow = utils.add_shadow(id_, type_, rect["filter"])
+        swift = swift.replace(shadow, "")
+        self.methods["viewDidLayoutSubviews"] = shadow
 
     if filter_ is not None:
-      swift += utils.add_shadow(id_, type_, filter_)
+      shadow = utils.add_shadow(id_, type_, filter_)
+      if self.in_view:
+        swift += shadow
+      else:
+        self.methods["viewDidLayoutSubviews"] = shadow
 
     if type_ == 'UIView' and self.info.get('components') is not None:
       # generate subcomponents
@@ -79,7 +88,7 @@ class ComponentFactory(object):
       if type_ == "UIActionSheet":
         # move UIActionSheet code to viewDidAppear function
         swift = swift.replace(component.swift, "")
-        self.methods["viewDidAppear"] = component.swift    
+        self.methods["viewDidAppear"] = component.swift
       return swift
 
     view = 'view' if not self.in_view else None
