@@ -5,6 +5,8 @@ from layers.image import Image
 from layers.navbar import NavBar
 from layers.rect import Rect
 from layers.searchbar import SearchBar
+from layers.segment import Segment
+from layers.segmentedcontrol import SegmentedControl
 from layers.slider import Slider
 from layers.switch import Switch
 from layers.text import Text
