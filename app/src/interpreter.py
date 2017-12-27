@@ -14,6 +14,7 @@ class Interpreter(object):
   NOTE: The variable C used in functions is used to denote "code".
   """
   def __init__(self, globals_):
+    print(gen_menu_bar())
     self.globals = globals_
     self.file_name = ""
     self.info = {"components": [], "methods": {}}

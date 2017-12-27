@@ -258,3 +258,41 @@ def add_methods(methods):
     else:
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
+
+def gen_menu_bar():
+  num_items = 3
+  return ("import UIKit\nimport SnapKit\n\n"
+          "class MenuBar: UIView, UICollectionViewDataSource, UICollectionView"
+          "Delegate, UICollectionViewDelegateFlowLayout {{\n\n"
+          "lazy var collectionView: UICollectionView = {{\n"
+          "let layout = UICollectionViewFlowLayout()\n"
+          "let cv = UICollectionView(frame: .zero, collectionViewLayout: "
+          "layout)\ncv.backgroundColor = .white\n"
+          "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n\n"
+          "override init(frame: CGRect) {{\n"
+          "super.init(frame: frame)\n"
+          "collectionView.register(MenuCell.self, forCellWithReuse"
+          'Identifier: "menuCellId")\n'
+          "addSubview(collectionView)\n"
+          "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
+          "collectionView.selectItem(at: selectedIndexPath, animated: \n"
+          "false, scrollPosition: [])\n}}\n\n"
+          "func collectionView(_ collectionView: UICollectionView, "
+          "numberOfItemsInSection section: Int) -> Int {{\nreturn {0}\n}}\n\n"
+          "func collectionView(_ collectionView: UICollectionView, cellForItem"
+          "At indexPath: IndexPath) -> UICollectionViewCell {{\n"
+          "let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "
+          '"menuCellId", for: indexPath) as! MenuCell\n'
+          "return cell\n}}\n\n"
+          "func collectionView(collectionView: UICollectionView, layout "
+          "collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath"
+          " indexPath: NSIndexPath) -> CGSize {{\n"
+          "return CGSize(width: frame.width / {0}, height: frame.height)\n}}\n"
+          "func collectionView(collectionView: UICollectionView, layout "
+          "collectionViewLayout: UICollectionViewLayout, minimumInteritem"
+          "SpacingForSectionAtIndex section: Int) -> CGFloat {{\nreturn 0\n}}"
+          "\n\n{1}\n}}\n\n"
+          "class MenuCell: UICollectionViewCell {{\n\n"
+          "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n}}\n\n"
+          "{1}\n}}\n"
+         ).format(num_items, utils.req_init())
