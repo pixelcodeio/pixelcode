@@ -1,68 +1,100 @@
 from components._all import *
 from . import *
 
-
 class ComponentFactory(object):
   """
   Initializes components (constraints, background-color, etc.)
     swift (str): swift code to generate a component
     info (dict): contains information about component
-    tc_methods (str): (table/collection) view methods
+    methods (dict): contains methods to be added outside of file's init function
     in_view (bool): whether component is generated inside a custom view file
   """
-  def __init__(self, type_, info, in_v):
+  def __init__(self, info, in_v):
     """
     Args:
       info (dict): info on component
       in_v (bool): is whether generating from within a custom view
     """
-    self.tc_methods = ""
     self.info = info
+    self.methods = {}
     self.in_view = in_v
-    self.swift = self.generate_component(type_)
+    self.swift = self.generate_component()
 
-  def generate_component(self, type_):
+  def generate_component(self):
     """
     Returns: (str) The swift code to generate component
     """
-    id_ = self.info.get('id')
-    rect = self.info.get('rect')
-
+    id_ = self.info["id"]
+    type_ = self.info["type"]
     C = ""
 
     if not self.in_view:
       C += self.init_comp(type_, id_)
 
     # prepare for create_component
-    if type_ == 'UITableView' or type_ == 'UICollectionView':
-      self.setup_set_properties()
-    elif type_ == 'UINavBar':
-      self.setup_navbar_items()
+    self.prepare_for_create_component()
 
     env = {"in_view": self.in_view}
     component = self.create_component(type_, id_, self.info, env)
     C += component.swift
 
+    # finish creating component
+    return self.finish_creating_component(C, component)
+
+
+  def prepare_for_create_component(self):
+    """
+    Returns (None): preparation before creating component
+    """
+    type_ = self.info["type"]
+    if type_ == 'UITableView' or type_ == 'UICollectionView':
+      self.setup_set_properties()
+    elif type_ == 'UINavBar':
+      self.setup_navbar_items()
+
+  def finish_creating_component(self, swift, component):
+    """
+    Returns (str): swift code with finishing touches to creating component
+    """
+    keys = ["id", "type", "rect", "filter"]
+    id_, type_, rect, filter_ = utils.get_vals(keys, self.info)
+
     if rect is not None:
-      C += utils.setup_rect(id_, rect)
+      swift += utils.setup_rect(id_, type_, rect)
+      if rect.get("filter") is not None and not self.in_view:
+        # move code for shadows to viewDidLayoutSubviews function
+        shadow = utils.add_shadow(id_, type_, rect["filter"])
+        swift = swift.replace(shadow, "")
+        self.methods["viewDidLayoutSubviews"] = shadow
+
+    if filter_ is not None:
+      shadow = utils.add_shadow(id_, type_, filter_)
+      if self.in_view:
+        swift += shadow
+      else:
+        self.methods["viewDidLayoutSubviews"] = shadow
 
     if type_ == 'UIView' and self.info.get('components') is not None:
       # generate subcomponents
       id_ = self.info['id']
       components = self.info['components']
-      C += self.gen_subcomponents(id_, components, True)
+      swift += self.gen_subcomponents(id_, components, True)
     elif type_ == 'UITableView' or type_ == 'UICollectionView':
       # extract (table/collection) view methods
-      self.tc_methods = component.tc_methods
+      self.methods["tc_methods"] = component.tc_methods
     elif type_ == 'UILabel':
-      C += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
+      swift += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
     elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
-      return C
+      if type_ == "UIActionSheet":
+        # move UIActionSheet code to viewDidAppear function
+        swift = swift.replace(component.swift, "")
+        self.methods["viewDidAppear"] = component.swift
+      return swift
 
     view = 'view' if not self.in_view else None
-    C += utils.add_subview(view, id_, type_)
-    C += self.gen_constraints(self.info)
-    return C
+    swift += utils.add_subview(view, id_, type_)
+    swift += self.gen_constraints(self.info)
+    return swift
 
   def create_component(self, type_, id_, info, env):
     """

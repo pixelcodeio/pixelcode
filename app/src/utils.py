@@ -85,7 +85,42 @@ def set_corner_radius(id_, radius):
     return ("{}.layer.cornerRadius = {}\n").format(id_, radius)
   return ("layer.cornerRadius = {}\n").format(radius)
 
-def setup_rect(cid, rect, tc_header=False, tc_cell=False):
+def add_shadow(id_, type_, filter_):
+  """
+  Returns (str): swift code to add shadow to id_.
+  """
+  keys = ["fill", "radius", "dx", "dy", "d_size", "is_outer"]
+  fill, radius, dx, dy, d_size, is_outer = get_vals(keys, filter_)
+  C = ("{0}.layer.shadowColor = {1}.cgColor\n"
+       "{0}.layer.shadowOpacity = 1\n"
+       "{0}.layer.shadowOffset = CGSize(width: {2}, height: {3})\n"
+       "{0}.layer.shadowRadius = {4}\n"
+      ).format(id_, create_uicolor(fill), dx, dy, radius)
+
+  if is_outer and d_size != 0:
+    C += ("{0}.layer.shadowPath = UIBezierPath(rect: {0}.bounds.insetBy(dx: -"
+          "{1}, dy: -{1})).cgPath\n").format(id_, d_size)
+
+  if not is_outer:
+    C = C.replace(id_ + ".layer", "innerShadowLayer")
+    C = ("let innerShadowLayer = CALayer()\n"
+         "innerShadowLayer.frame = {}.bounds\n"
+         "innerShadowLayer.masksToBounds = true\n{}").format(id_, C)
+    if d_size != 0:
+      C += ("let path = UIBezierPath(rect: innerShadowLayer.bounds.insetBy(dx: "
+            "{0}, dy: {0}))\nlet innerPart = UIBezierPath(rect: innerShadow"
+            "Layer.bounds).reversing()\npath.append(innerPart)\n"
+            "innerShadowLayer.shadowPath = path.cgPath\n").format(d_size/2.0)
+    C += ("{}.layer.addSublayer(innerShadowLayer)\n").format(id_)
+
+  if id_ is None:
+    C = C.replace("None.", "")
+  if type_ == "UINavBar":
+    C = C.replace(id_, "navigationController?.navigationBar")
+    C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
+  return C
+
+def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
   """
   Args:
     cid: (str) id of component
@@ -93,8 +128,8 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
 
   Returns: (str) swift code to apply all the properties from rect.
   """
-  keys = ["fill", "border-radius", "stroke-color", "stroke-width"]
-  fill, border_r, str_c, str_w = get_vals(keys, rect)
+  keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
+  fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
 
   C = ""
   if word_in_str("navBar", cid): # only set background color for UINavBar
@@ -121,6 +156,8 @@ def setup_rect(cid, rect, tc_header=False, tc_cell=False):
     C += set_border_width(cid, str_w)
   if border_r is not None:
     C += set_corner_radius(cid, border_r)
+  if filter_ is not None:
+    C += add_shadow(cid, type_, filter_)
 
   return C
 

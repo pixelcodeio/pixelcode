@@ -5,14 +5,15 @@ def inherit_from(parent, child, init=False):
   Returns: (dict) child with attributes from parent passed down
   """
   for attr in parent.attrs:
-    skip = attr == "id"
+    skip = attr == "id" or (attr == "fill" and (parent["fill"] == "none" or \
+                                                parent["fill"][0] != "#"))
     if init:
       skip = (skip
-              or (attr == "fill" and parent["fill"] == "none")
+              or (attr == "fill" and (parent["fill"] == "none" or \
+                  parent["fill"][0] != "#"))
               or (attr == "stroke" and parent["stroke"] == "none")
               or (attr == "stroke-width" and parent["stroke"] == "none")
               or attr == "fill-rule")
-
     if not skip and attr not in child.attrs:
       child[attr] = parent[attr]
   return child
@@ -161,14 +162,20 @@ def parse_fake_group(elem):
 
     if (not main_children) and use_children:
       for ind, child in enumerate(use_children):
-        if "xlink:href" in child.attrs:
+        if "xlink:href" in child.attrs and "filter" not in child.attrs:
           child.name = "rect"
           use_children.pop(ind)
           main_children = [child]
           break
+      if not main_children: # every use tag contains filter
+        child = use_children[0]
+        child.name = "rect"
+        use_children.pop(0)
+        main_children = [child]
+
 
     # ensure that there is only one main child
-    if len(main_children) == 1 and use_children:
+    if len(main_children) == 1:
       parent_id = elem["id"]
       for child in use_children:
         elem = inherit_from(child, elem)
@@ -216,3 +223,42 @@ def check_spacing(r1, r2, direction):
       if t_btwn or b_btwn or contains:
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
+
+def add_to_info(key, new_value, info):
+  """
+  Args:
+    key (str): either 'font', 'font-family', or 'font-size'
+  """
+  if new_value is not None:
+    if key == 'fill':
+      new_value = [float(v) for v in new_value] # convert strings to float
+    if new_value not in info[key]:
+      info[key].append(new_value)
+  return info
+
+def extract_to_info(elem, info):
+  """
+  Returns: extracts style-guide information from elem and adds it to info
+  """
+  keys = ['fill', 'font-family', 'font-size']
+  fill, font_family, font_size = utils.get_vals(keys, elem)
+  info = add_to_info('fill', fill, info)
+  info = add_to_info('font-family', font_family, info)
+  info = add_to_info('font-size', font_size, info)
+  return info
+
+def parse_filter_matrix(matrix):
+  """
+  Args:
+    matrix (str): string representation of a filter matrix.
+
+  Returns (tuple): r,g,b,a values parsed from matrix.
+  """
+  matrix = matrix.split()
+  if len(matrix) != 20:
+    raise Exception("Parser_h: Filter matrix has invalid format.")
+  r = float(matrix[0])
+  g = float(matrix[6])
+  b = float(matrix[12])
+  a = float(matrix[18])
+  return (r, g, b, a)

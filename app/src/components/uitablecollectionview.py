@@ -47,10 +47,14 @@ class UITableCollectionView(BaseComponent):
           '{0}.dataSource = self\n'
           '{0}.showsVerticalScrollIndicator = false\n'
           '{0}.showsHorizontalScrollIndicator = false\n'
+          '{0}.clipsToBounds = false\n'
          ).format(id_, utils.uppercase(id_))
 
     if self.info.get('type') == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
+    else: # type is UITableView
+      C += ('{0}.sectionHeaderHeight = 0\n'
+            '{0}.sectionFooterHeight = 0\n').format(id_)
 
     return C
 
@@ -122,7 +126,7 @@ class UITableCollectionView(BaseComponent):
       return ("func tableView(_ tableView: UITableView, heightForRowAt "
               "indexPath: IndexPath) -> CGFloat {{\n"
               "return {}\n}}\n\n"
-             ).format(width)
+             ).format(height)
 
     return ("func collectionView(_ collectionView: UICollectionView, layout "
             "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "

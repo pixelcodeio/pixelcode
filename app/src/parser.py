@@ -19,6 +19,7 @@ class Parser(object):
       - background_color (tuple)
       - pagename (str)
       - artboard (str)
+      - filters: (dict) contains information about shadows
       - info: dictionary with keys (used for style-guide)
         - fill (list)
         - font-family (list)
@@ -81,12 +82,31 @@ class Parser(object):
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
     info = {'fill': fill, 'font-family': [], 'font-size': []}
+    svg_filters = svg.find_all("filter")
+    filters = {}
+    for f in svg_filters:
+      id_ = f.attrs["id"]
+      dx = f.feoffset["dx"]
+      dy = f.feoffset["dy"]
+      # check if shadow is inner or outer
+      is_outer = utils.word_in_str("outer", f.feoffset["result"])
+      d_size = 0 # change in width and height of shadow in pixels
+      radius = 0
+      if f.femorphology is not None:
+        radius += float(f.femorphology["radius"])
+        d_size = float(f.femorphology["radius"]) * 2.0
+      if f.fegaussianblur is not None:
+        radius += float(f.fegaussianblur["stddeviation"])
+      fill = parse_filter_matrix(f.fecolormatrix["values"])
+      filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
+                      "d_size": d_size, "is_outer": is_outer}
     return {"background_color": bg_color,
             "width": float(width),
             "height": float(height),
             "pagename": pagename,
             "artboard": artboard,
-            "info": info}
+            "info": info,
+            "filters": filters}
 
   def parse_elements(self, children, parent, init=False):
     """
@@ -194,27 +214,8 @@ class Parser(object):
 
       # finished creating new element
       new_elem = parsed_elem.elem
+      if new_elem.get('filter') is not None: # lookup filter in filters
+        new_elem["filter"] = self.globals["filters"][new_elem["filter"]]
       parsed_elements.insert(0, new_elem)
-      self.extract_to_info(new_elem)
+      self.globals["info"] = extract_to_info(new_elem, self.globals["info"])
     return parsed_elements[::-1]
-
-  def extract_to_info(self, elem):
-    """
-    Returns: extracts style-guide information from elem and adds it to info
-    """
-    keys = ['fill', 'font-family', 'font-size']
-    fill, font_family, font_size = utils.get_vals(keys, elem)
-    self.add_to_info('fill', fill)
-    self.add_to_info('font-family', font_family)
-    self.add_to_info('font-size', font_size)
-
-  def add_to_info(self, key, new_value):
-    """
-    Args:
-      key (str): either 'font', 'font-family', or 'font-size'
-    """
-    if new_value is not None:
-      if key == 'fill':
-        new_value = [float(v) for v in new_value] # convert strings to float
-      if new_value not in self.globals["info"][key]:
-        self.globals["info"][key].append(new_value)
