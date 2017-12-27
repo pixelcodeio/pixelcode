@@ -25,6 +25,8 @@ class SegmentedControl(BaseLayer):
       if i["title_fill"] != tint_fill:
         selected_index = index
         break
+
+    # sort items by x value and get title of each
     items = sorted(items, key=lambda i: i['x'])
     items = [i["title"] for i in items]
     elem["items"] = items
