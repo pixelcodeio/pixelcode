@@ -4,6 +4,7 @@ from components.uiimageview import UIImageView
 from components.uilabel import UILabel
 from components.uinavbar import UINavBar
 from components.uisearchbar import UISearchBar
+from components.uisegmentedcontrol import UISegmentedControl
 from components.uislider import UISlider
 from components.uiswitch import UISwitch
 from components.uitabbar import UITabBar
