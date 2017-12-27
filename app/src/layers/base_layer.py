@@ -98,6 +98,7 @@ class BaseLayer(object):
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "search-icon",
+        "selected_index",
         "separator",
         "stroke-color",
         "stroke-width",

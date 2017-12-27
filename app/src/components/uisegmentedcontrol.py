@@ -11,4 +11,8 @@ class UISegmentedControl(BaseComponent):
     """
     Returns: swift code to setup UISlider.
     """
-    
+    tint_fill = utils.create_uicolor(self.info["tint_fill"])
+    selected_index = self.info["selected_index"]
+    return ("{0}.tintColor = {1}\n"
+            "{0}.selectedSegmentIndex = {2}\n"
+           ).format(self.id, tint_fill, selected_index)

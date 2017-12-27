@@ -17,8 +17,17 @@ class SegmentedControl(BaseLayer):
       elif child["type"] == "Segment":
         items.append(child)
 
+    if not items or tint_fill is None:
+      raise Exception("SegmentedControl: No items or no stroke-color on bound.")
+
+    selected_index = 0
+    for index, i in enumerate(items):
+      if i["title_fill"] != tint_fill:
+        selected_index = index
+        break
     items = sorted(items, key=lambda i: i['x'])
     items = [i["title"] for i in items]
     elem["items"] = items
     elem["tint_fill"] = tint_fill
+    elem["selected_index"] = selected_index
     return super().parse_elem(elem)
