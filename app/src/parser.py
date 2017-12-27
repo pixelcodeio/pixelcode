@@ -151,6 +151,10 @@ class Parser(object):
           elem.name = "header"
         elif utils.word_in_str("listView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("menuBar", elem["id"]):
+          elem.name = "menubar"
+        elif utils.word_in_str("menuItem", elem["id"]):
+          elem.name = "menuitem"
         elif utils.word_in_str("navBar", elem["id"]):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):
