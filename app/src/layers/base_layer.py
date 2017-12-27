@@ -87,6 +87,7 @@ class BaseLayer(object):
         "horizontal",
         "id",
         "img_fill",
+        "items",
         "left-inset",
         "line-spacing",
         "navbar-items",
@@ -97,6 +98,7 @@ class BaseLayer(object):
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "search-icon",
+        "selected_index",
         "separator",
         "stroke-color",
         "stroke-width",
@@ -106,6 +108,9 @@ class BaseLayer(object):
         "textspan",
         "text-align",
         "thumb_fill",
+        "tint_fill",
+        "title",
+        "title_fill",
         "type",
         "vertical",
         "width",

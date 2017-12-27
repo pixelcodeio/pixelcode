@@ -155,6 +155,10 @@ class Parser(object):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):
           elem.name = "searchbar"
+        elif utils.word_in_str("segmentedControl", elem["id"]):
+          elem.name = "segmentedcontrol"
+        elif utils.word_in_str("segment", elem["id"]):
+          elem.name = "segment"
         elif utils.word_in_str("slider", elem["id"]):
           elem.name = "slider"
         elif utils.word_in_str("statusBar", elem["id"]):
@@ -195,6 +199,10 @@ class Parser(object):
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "searchbar":
         parsed_elem = SearchBar(elem, "UISearchBar")
+      elif elem.name == "segmentedcontrol":
+        parsed_elem = SegmentedControl(elem, "UISegmentedControl")
+      elif elem.name == "segment":
+        parsed_elem = Segment(elem, "Segment")
       elif elem.name == "slider":
         parsed_elem = Slider(elem, "UISlider")
       elif elem.name == "switch":

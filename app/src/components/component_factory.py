@@ -180,6 +180,9 @@ class ComponentFactory(object):
       return "" # cannot initialize these components
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label
+    elif type_ == "UISegmentedControl":
+      items = ['"' + i.decode('utf-8') + '"' for i in self.info["items"]]
+      return ("{} = {}(items: [{}])\n").format(id_, type_, ", ".join(items))
     return "{} = {}()\n".format(id_, type_)
 
   def setup_set_properties(self):
