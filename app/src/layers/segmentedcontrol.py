@@ -18,7 +18,7 @@ class SegmentedControl(BaseLayer):
         items.append(child)
 
     if not items or tint_fill is None:
-      raise Exception("SegmentedControl: No items or no stroke-color on bound.")
+      raise Exception("SegmentedControl: No segments/no stroke-color on bound.")
 
     selected_index = 0
     for index, i in enumerate(items):
