@@ -9,7 +9,6 @@ class MenuBar(BaseLayer):
     rect = None
 
     for child in elem["children"]:
-      print(child["id"])
       if child["type"] == "MenuItem":
         items.append(child)
       elif utils.word_in_str("bound", child["id"]):
@@ -26,6 +25,9 @@ class MenuBar(BaseLayer):
       if utils.word_in_str("active", i["id"]):
         selected_index = index
         break
+
+    if items[selected_index]["rect"].get("filter") is None:
+      raise Exception("MenuBar: Selected item missing inner shadow (slider).")
 
     elem["items"] = items
     elem["selected_index"] = selected_index

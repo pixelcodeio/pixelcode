@@ -260,6 +260,12 @@ def add_methods(methods):
   return C
 
 def gen_menu_bar(comp):
+  """
+  Args:
+    comp (dict): info on MenuBar component
+
+  Returns (str): Custom MenuBar and MenuCell swift classes.
+  """
   items = comp["items"]
   item = items[0]
   max_size = 0
@@ -308,18 +314,22 @@ def gen_menu_bar(comp):
                 ).format(utils.create_uicolor(item["rect"]["fill"]))
   else:
     cell_fill = ""
+
+  selected_item = items[comp["selected_index"]]
+  slider_fill = utils.create_uicolor(selected_item["rect"]["filter"]["fill"])
   constraint = ("{}.snp.updateConstraints{{ make in\n"
                 "make.size.equalTo(CGSize(width: {}, height: {}))\n"
                 "make.center.equalToSuperview()\n}}\n"
                ).format(subview, max_width, max_height)
 
-  setup_slider = ("func setupSliderBar() {\n"
-                  "sliderBar.backgroundColor = .black\n"
+  setup_slider = ("func setupSliderBar() {{\n"
+                  "sliderBar.backgroundColor = {}\n"
                   "addSubview(sliderBar)\n\n"
-                  "sliderBar.snp.updateConstraints{ make in\n"
+                  "sliderBar.snp.updateConstraints{{ make in\n"
                   "make.size.equalTo(CGSize(width: 75, height: 3))\n"
                   "make.left.equalToSuperview()\n"
-                  "make.bottom.equalToSuperview()\n}\n}\n\n")
+                  "make.bottom.equalToSuperview()\n}}\n}}\n\n"
+                 ).format(slider_fill)
   menu_bar = ("import UIKit\nimport SnapKit\n\n"
               "class MenuBar: UIView, UICollectionViewDataSource, UICollection"
               "ViewDelegate, UICollectionViewDelegateFlowLayout {{\n\n"
