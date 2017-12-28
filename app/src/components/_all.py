@@ -2,6 +2,7 @@ from components.uiactionsheet import UIActionSheet
 from components.uibutton import UIButton
 from components.uiimageview import UIImageView
 from components.uilabel import UILabel
+from components.uimenubar import UIMenuBar
 from components.uinavbar import UINavBar
 from components.uisearchbar import UISearchBar
 from components.uisegmentedcontrol import UISegmentedControl
