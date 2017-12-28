@@ -26,11 +26,11 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    for comp in components:
-      for i in comp.items():
-        print(i)
-      if comp["type"] == "MenuBar":
-        print(gen_menu_bar(comp))
+    # for comp in components:
+    #   for i in comp.items():
+    #     print(i)
+    #   if comp["type"] == "MenuBar":
+    #     print(gen_menu_bar(comp))
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals['artboard'])
