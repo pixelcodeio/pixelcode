@@ -2,6 +2,8 @@ from layers.actionsheet import ActionSheet
 from layers.button import Button
 from layers.container import Container
 from layers.image import Image
+from layers.menubar import MenuBar
+from layers.menuitem import MenuItem
 from layers.navbar import NavBar
 from layers.rect import Rect
 from layers.searchbar import SearchBar

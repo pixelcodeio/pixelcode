@@ -197,6 +197,10 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name in {"image", "polygon", "path", "circle"}:
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "menubar":
+        parsed_elem = MenuBar(elem, "MenuBar")
+      elif elem.name == "menuitem":
+        parsed_elem = MenuItem(elem, "MenuItem")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
       elif elem.name == "rect" or elem.name == "view":

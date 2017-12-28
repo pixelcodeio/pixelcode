@@ -9,13 +9,16 @@ class MenuBar(BaseLayer):
     rect = None
 
     for child in elem["children"]:
+      print(child["id"])
       if child["type"] == "MenuItem":
         items.append(child)
       elif utils.word_in_str("bound", child["id"]):
         rect = child
 
     if not items:
-      raise Exception("MenuBar: No items in menubar: " + elem["id"])
+      raise Exception("MenuBar: No items in MenuBar: " + elem["id"])
+    elif rect is None:
+      raise Exception("MenuBar: No bound in MenuBar: " + elem["id"])
 
     items = sorted(items, key=lambda i: i["x"])
     selected_index = 0

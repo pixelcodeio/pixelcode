@@ -17,12 +17,6 @@ class BaseComponent(object):
     """
     pass
 
-  def create_font(self, font, size):
-    """
-    Returns: UIFont generated using font and size.
-    """
-    return ("UIFont(name: \"{}\", size: {})").format(font, size)
-
   def set_opacity(self, opacity):
     """
     Returns (str): swift code to set the opacity

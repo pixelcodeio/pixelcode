@@ -259,40 +259,116 @@ def add_methods(methods):
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_menu_bar():
-  num_items = 3
-  return ("import UIKit\nimport SnapKit\n\n"
-          "class MenuBar: UIView, UICollectionViewDataSource, UICollectionView"
-          "Delegate, UICollectionViewDelegateFlowLayout {{\n\n"
-          "lazy var collectionView: UICollectionView = {{\n"
-          "let layout = UICollectionViewFlowLayout()\n"
-          "let cv = UICollectionView(frame: .zero, collectionViewLayout: "
-          "layout)\ncv.backgroundColor = .white\n"
-          "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n\n"
-          "override init(frame: CGRect) {{\n"
-          "super.init(frame: frame)\n"
-          "collectionView.register(MenuCell.self, forCellWithReuse"
-          'Identifier: "menuCellId")\n'
-          "addSubview(collectionView)\n"
-          "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
-          "collectionView.selectItem(at: selectedIndexPath, animated: \n"
-          "false, scrollPosition: [])\n}}\n\n"
-          "func collectionView(_ collectionView: UICollectionView, "
-          "numberOfItemsInSection section: Int) -> Int {{\nreturn {0}\n}}\n\n"
-          "func collectionView(_ collectionView: UICollectionView, cellForItem"
-          "At indexPath: IndexPath) -> UICollectionViewCell {{\n"
-          "let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "
-          '"menuCellId", for: indexPath) as! MenuCell\n'
-          "return cell\n}}\n\n"
-          "func collectionView(collectionView: UICollectionView, layout "
-          "collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath"
-          " indexPath: NSIndexPath) -> CGSize {{\n"
-          "return CGSize(width: frame.width / {0}, height: frame.height)\n}}\n"
-          "func collectionView(collectionView: UICollectionView, layout "
-          "collectionViewLayout: UICollectionViewLayout, minimumInteritem"
-          "SpacingForSectionAtIndex section: Int) -> CGFloat {{\nreturn 0\n}}"
-          "\n\n{1}\n}}\n\n"
-          "class MenuCell: UICollectionViewCell {{\n\n"
-          "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n}}\n\n"
-          "{1}\n}}\n"
-         ).format(num_items, utils.req_init())
+def gen_menu_bar(comp):
+  items = comp["items"]
+  item = items[0]
+  max_size = 0
+  max_width = 0
+  max_height = 0
+  if item.get("text") is not None:
+    texts = []
+    for item in items:
+      text = '"' + item["text"]["textspan"][0]["contents"].decode('utf-8') + '"'
+      texts.append(text)
+      size = item["text"]["rwidth"]*item["text"]["rheight"]
+      if size > max_size:
+        max_size = size
+        max_width = item["text"]["rwidth"]
+        max_height = item["text"]["rheight"]
+    arr = ("let text = [{}]\n").format(", ".join(texts))
+    font = item["text"]["font-family"]
+    size = item["text"]["font-size"]
+    cell_gvar = ("let label: UILabel = {{\nlet lab = InsetLabel()\nlab.textAlig"
+                 "nment = .center\nlab.numberOfLines = 0\nlab.lineBreakMode = "
+                 ".byWordWrapping\nlab.font = {}\nreturn lab\n}}()\n\n"
+                ).format(utils.create_font(font, size))
+    set_prop = "cell.label.text = text[indexPath.item]\n"
+    subview = "label"
+  else: # item["img"] is not None
+    paths = []
+    for item in items:
+      paths.append(utils.str_before_key(item["img"]["path"], "."))
+      size = item["img"]["rwidth"]*item["img"]["rheight"]
+      if size > max_size:
+        max_size = size
+        max_width = item["img"]["rwidth"]
+        max_height = item["img"]["rheight"]
+    arr = ("let images = [{}]\n").format(", ".join(paths))
+    cell_gvar = "let imageView = UIImageView()\n"
+    set_prop = "cell.imageView.image = UIImage(named: images[indexPath.item])\n"
+    subview = "imageView"
+
+  if comp["rect"].get("fill") is not None:
+    cv_fill = utils.create_uicolor(comp["rect"]["fill"])
+  else:
+    cv_fill = ".clear"
+
+  if item["rect"].get("fill") is not None:
+    cell_fill = ("cell.backGroundColor = {}\n"
+                ).format(utils.create_uicolor(item["rect"]["fill"]))
+  else:
+    cell_fill = ""
+  constraint = ("{}.snp.updateConstraints{{ make in\n"
+                "make.size.equalTo(CGSize(width: {}, height: {}))\n"
+                "make.center.equalToSuperview()\n}}\n"
+               ).format(subview, max_width, max_height)
+
+  setup_slider = ("func setupSliderBar() {\n"
+                  "sliderBar.backgroundColor = .black\n"
+                  "addSubview(sliderBar)\n\n"
+                  "sliderBar.snp.updateConstraints{ make in\n"
+                  "make.size.equalTo(CGSize(width: 75, height: 3))\n"
+                  "make.left.equalToSuperview()\n"
+                  "make.bottom.equalToSuperview()\n}\n}\n\n")
+  menu_bar = ("import UIKit\nimport SnapKit\n\n"
+              "class MenuBar: UIView, UICollectionViewDataSource, UICollection"
+              "ViewDelegate, UICollectionViewDelegateFlowLayout {{\n\n"
+              "lazy var collectionView: UICollectionView = {{\n"
+              "let layout = UICollectionViewFlowLayout()\n"
+              "let cv = UICollectionView(frame: .zero, collectionViewLayout: "
+              "layout)\ncv.backgroundColor = {}\n"
+              "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n{}"
+              "let sliderBar = UIView()\n\n"
+              "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
+              "collectionView.register(MenuCell.self, forCellWithReuse"
+              'Identifier: "menuCellId")\n'
+              "addSubview(collectionView)\n"
+              "collectionView.snp.updateConstraints{{ make in\nmake."
+              "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
+              "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
+              "collectionView.selectItem(at: selectedIndexPath, animated: "
+              "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
+             ).format(cv_fill, arr, setup_slider)
+  cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
+                "numberOfItemsInSection section: Int) -> Int "
+                "{{\nreturn {0}\n}}\n\n"
+                "func collectionView(_ collectionView: UICollectionView, cell"
+                "ForItemAt indexPath: IndexPath) -> UICollectionViewCell {{\n"
+                "let cell = collectionView.dequeueReusableCell(withReuseIdentif"
+                'ier: "menuCellId", for: indexPath) as! MenuCell\n{1}{2}'
+                "\nreturn cell\n}}\n\n"
+                "func collectionView(_ collectionView: UICollectionView, layout"
+                " collectionViewLayout: UICollectionViewLayout, sizeForItemAt"
+                " indexPath: IndexPath) -> CGSize {{\n"
+                "return CGSize(width: frame.width/{0}, height: "
+                "frame.height)\n}}\nfunc "
+                "collectionView(_ collectionView: UICollectionView, layout "
+                "collectionViewLayout: UICollectionViewLayout, minimumInteritem"
+                "SpacingForSectionAt section: Int) -> CGFloat {{\nreturn 0\n}}"
+                "\n\n"
+                "func collectionView(_ collectionView: UICollectionView, did"
+                "SelectItemAt indexPath: IndexPath) {{\n"
+                "UIView.animate(withDuration: 0.5, delay: 0, usingSpringWith"
+                "Damping: 1, initialSpringVelocity: 1, options: .curveEaseOut, "
+                "animations: {{\nself.sliderBar.snp.updateConstraints{{\n "
+                "make in\nmake.left.equalTo(CGFloat(indexPath.item) * "
+                "(self.frame.width/{0}))}}\nself.layoutIfNeeded()\n}}, "
+                "completion: nil)\n}}\n{3}\n}}\n\n"
+               ).format(len(items), set_prop, cell_fill, utils.req_init())
+  menu_cell = ("class MenuCell: UICollectionViewCell {{\n\n{}"
+               "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
+               "layoutSubviews()\n}}\n\n"
+               "override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
+               "addSubview({})\n{}\n}}\n\n{}\n}}\n"
+              ).format(cell_gvar, subview, constraint, utils.req_init())
+  return menu_bar + cv_methods + menu_cell

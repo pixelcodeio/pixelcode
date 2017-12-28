@@ -14,7 +14,6 @@ class Interpreter(object):
   NOTE: The variable C used in functions is used to denote "code".
   """
   def __init__(self, globals_):
-    print(gen_menu_bar())
     self.globals = globals_
     self.file_name = ""
     self.info = {"components": [], "methods": {}}
@@ -27,6 +26,11 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
+    for comp in components:
+      for i in comp.items():
+        print(i)
+      if comp["type"] == "MenuBar":
+        print(gen_menu_bar(comp))
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals['artboard'])

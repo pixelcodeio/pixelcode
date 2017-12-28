@@ -119,7 +119,7 @@ class UILabel(BaseComponent):
     """
     Returns (str): swift code to set font-family and size
     """
-    return ("{}.font = {}\n").format(self.id, super().create_font(font, size))
+    return ("{}.font = {}\n").format(self.id, utils.create_font(font, size))
 
   def gen_num_of_lines(self):
     """
@@ -146,7 +146,7 @@ class UILabel(BaseComponent):
     """
     Returns: (str) swift code to set font
     """
-    f = super().create_font(font, size)
+    f = utils.create_font(font, size)
     return self.gen_add_attribute(str_id, '.font', f, [0, str_id + '.length'])
 
   def gen_line_sp(self, str_id, line_sp):

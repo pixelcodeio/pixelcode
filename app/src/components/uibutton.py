@@ -59,7 +59,7 @@ class UIButton(BaseComponent):
     Returns (str): swift code to set the font family and size
     """
     return ("{}.titleLabel?.font = {}\n"
-           ).format(self.id, super().create_font(font, size))
+           ).format(self.id, utils.create_font(font, size))
 
   def set_bg_image(self):
     """

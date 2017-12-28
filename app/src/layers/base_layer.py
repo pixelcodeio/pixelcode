@@ -86,6 +86,7 @@ class BaseLayer(object):
         "height",
         "horizontal",
         "id",
+        "img",
         "img_fill",
         "items",
         "left-inset",

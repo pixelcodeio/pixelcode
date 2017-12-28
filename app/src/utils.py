@@ -202,3 +202,9 @@ def str_before_key(string, key):
   if index == -1:
     return ""
   return string[0:index]
+
+def create_font(font, size):
+  """
+  Returns: UIFont generated using font and size.
+  """
+  return ("UIFont(name: \"{}\", size: {})").format(font, size)
