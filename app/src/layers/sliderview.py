@@ -29,14 +29,13 @@ class SliderView(BaseLayer):
     content_cv["id"] = "sliderCollectionView"
     content_cv["type"] = "UICollectionView"
     content_cv["separator"] = [0]
-    content_cv["cells"] = {"rect": content["rect"],
-                           "components": content["components"]}
+    content_cv["cells"] = [{"rect": content["rect"],
+                            "rwidth": content["rwidth"],
+                            "rheight": content["rheight"],
+                            "components": content["components"]}]
     del content_cv["components"]
 
-    for i in content_cv.items():
-      print(i)
-      print('\n')
-
+    print(type(slider_options))
     elem["content_cv"] = content_cv
     elem["slider_options"] = slider_options
     elem["rect"] = rect

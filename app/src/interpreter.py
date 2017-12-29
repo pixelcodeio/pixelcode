@@ -8,7 +8,7 @@ class Interpreter(object):
     file_name (str): name of current file being generated
     info (dict): has keys:
       - components (list): info on all components
-      - methods (dict): has methods to be added outside of file's init function
+      - methods (dict): has methods to be added outside of file"s init function
     swift (dict): swift code to generate the artboard
 
   NOTE: The variable C used in functions is used to denote "code".
@@ -26,16 +26,16 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    for comp in components:
-      if comp["type"] == "SliderView":
-        print(gen_slider_options(comp["slider_options"]))
-
+    # for comp in components:
+    #   if comp["type"] == "SliderView":
+    #     for i in comp.items():
+    #       print(i)
     # Generate header of view controller file
     self.info["components"] = components
-    artboard = utils.uppercase(self.globals['artboard'])
-    view_controller = '{}ViewController'.format(artboard)
+    artboard = utils.uppercase(self.globals["artboard"])
+    view_controller = "{}ViewController".format(artboard)
     C = gen_viewcontroller_header(view_controller, self.info, True) \
-        + utils.set_bg('view', self.globals['background_color'])
+        + utils.set_bg("view", self.globals["background_color"])
 
     self.file_name = view_controller
     self.swift[view_controller] = C
@@ -62,17 +62,17 @@ class Interpreter(object):
                                                tc_elem)
       self.swift[self.file_name] += "}"
 
-      tc_id = tc_elem['id']
-      tc_header = tc_elem.get('header')
+      tc_id = tc_elem["id"]
+      tc_header = tc_elem.get("header")
 
       if tc_header is not None:
         # nested table/collection view
-        if self.setup_cell_header('header', tc_id, tc_header):
+        if self.setup_cell_header("header", tc_id, tc_header):
           self.gen_file(True)
 
-      tc_cell = tc_elem.get('cells')[0]
+      tc_cell = tc_elem.get("cells")[0]
       # nested table/collection view
-      if self.setup_cell_header('cell', tc_id, tc_cell):
+      if self.setup_cell_header("cell", tc_id, tc_cell):
         self.gen_file(True)
 
   def gen_comps(self, components, in_v):
@@ -91,33 +91,38 @@ class Interpreter(object):
     C = ""
 
     for comp in components:
-      type_ = comp['type']
-      if comp['id'] in navbar_item_ids:
+      type_ = comp["type"]
+      if comp["id"] in navbar_item_ids:
         # navbar items already generated with navbar
         continue
-      elif type_ == 'UITabBar':
-        comp['active_vc'] = self.file_name # name of active view controller
+      elif type_ == "UITabBar":
+        comp["active_vc"] = self.file_name # name of active view controller
         cf = ComponentFactory(comp, in_v)
         # generate tabbar viewcontroller file
-        vc_name = utils.uppercase(comp['id']) + 'ViewController'
+        vc_name = utils.uppercase(comp["id"]) + "ViewController"
         self.swift[vc_name] = gen_tabbar_vc(vc_name, cf.swift, self.info)
+      elif type_ == "SliderView":
+        content_cf = ComponentFactory(comp["content_cv"], in_v)
+        comp["content_cv_swift"] = content_cf.swift
+        comp["content_cv_methods"] = content_cf.methods["tc_methods"]
+        cf = ComponentFactory(comp, in_v)
       else:
-        if type_ == 'UILabel':
-          if self.swift.get('InsetLabel') is None: # generate custom UILabel
-            self.swift['InsetLabel'] = gen_inset_label()
+        if type_ == "UILabel":
+          if self.swift.get("InsetLabel") is None: # generate custom UILabel
+            self.swift["InsetLabel"] = gen_inset_label()
           cf = ComponentFactory(comp, in_v)
         else:
           cf = ComponentFactory(comp, in_v)
-          if type_ == 'UITableView' or type_ == 'UICollectionView':
+          if type_ == "UITableView" or type_ == "UICollectionView":
             tc_elem = comp
-          elif type_ == 'UINavBar':
+          elif type_ == "UINavBar":
             items = comp["navbar-items"]
-            navbar_item_ids.extend([i['id'] for i in items['left-buttons']])
-            navbar_item_ids.extend([i['id'] for i in items['right-buttons']])
-            if items.get('title') is not None:
-              title = items['title']
-              navbar_item_ids.append(title['id'])
-              navbar_item_ids.extend(c['id'] for c in title['components'])
+            navbar_item_ids.extend([i["id"] for i in items["left-buttons"]])
+            navbar_item_ids.extend([i["id"] for i in items["right-buttons"]])
+            if items.get("title") is not None:
+              title = items["title"]
+              navbar_item_ids.append(title["id"])
+              navbar_item_ids.extend(c["id"] for c in title["components"])
         C += cf.swift
       self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
@@ -131,13 +136,13 @@ class Interpreter(object):
     if type_ == "cell":
       self.file_name = utils.uppercase(id_) + "Cell"
       C = gen_cell_header(id_, info)
-      C += utils.setup_rect(id_, type_, info.get('rect'), tc_cell=True)
+      C += utils.setup_rect(id_, type_, info.get("rect"), tc_cell=True)
     else: # type_ is header
       self.file_name = utils.uppercase(id_) + "HeaderView"
       C = gen_header_header(id_, info)
-      C += utils.setup_rect(id_, type_, info.get('rect'), tc_header=True)
+      C += utils.setup_rect(id_, type_, info.get("rect"), tc_header=True)
 
-    swift, tc_elem = self.gen_comps(info.get('components'), True)
+    swift, tc_elem = self.gen_comps(info.get("components"), True)
     C += "{}}}\n\n{}\n\n".format(swift, utils.req_init())
 
     if not tc_elem:
@@ -145,16 +150,16 @@ class Interpreter(object):
       return False
 
     # inner table/collection view exists
-    if tc_elem['type'] == 'UICollectionView':
+    if tc_elem["type"] == "UICollectionView":
       C = move_collection_view(C, self.info)
     # add parent classes for table/collection view
     C = subclass_tc(C, tc_elem)
     C += "\n{}\n}}".format(self.info["methods"]["tc_methods"])
     self.swift[self.file_name] = C
-    id_ = tc_elem['id']
-    cell = tc_elem.get('cells')[0]
-    self.file_name = utils.uppercase(id_) + 'Cell'
+    id_ = tc_elem["id"]
+    cell = tc_elem.get("cells")[0]
+    self.file_name = utils.uppercase(id_) + "Cell"
     self.swift[self.file_name] = gen_cell_header(id_, cell)
     # get components of first cell
-    self.info["components"] = tc_elem.get('cells')[0].get('components')
+    self.info["components"] = tc_elem.get("cells")[0].get("components")
     return True

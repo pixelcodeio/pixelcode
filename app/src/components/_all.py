@@ -6,7 +6,7 @@ from components.uinavbar import UINavBar
 from components.uisearchbar import UISearchBar
 from components.uisegmentedcontrol import UISegmentedControl
 from components.uislider import UISlider
-from components.uisliderview import UISliderView
+from components.sliderview import SliderView
 from components.uiswitch import UISwitch
 from components.uitabbar import UITabBar
 from components.uitablecollectionview import UITableCollectionView
