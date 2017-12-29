@@ -66,7 +66,7 @@ def filter_elements(elem, elements):
   """
   filtered_elements = []
   ignored_elements = []
-  ignore = {"UIActionSheet", "UINavBar", "UITabBar"}
+  ignore = {"UIActionSheet", "UINavBar", "UITabBar", "SliderView"}
   for e in elements:
     if e['type'] in ignore or \
     (e.get("id") and utils.word_in_str("overlay", e["id"])):
