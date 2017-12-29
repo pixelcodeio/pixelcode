@@ -1,5 +1,43 @@
 import utils
 
+def add_navbar_items(components):
+  """
+  Returns (list): components with navbar items added.
+  """
+  navbar_items = [c.get("navbar-items") for c in components \
+                  if c.get("navbar-items")]
+  if navbar_items:
+    if len(navbar_items) > 1:
+      raise Exception("Interpreter_h: More than one navbar is present.")
+    navbar_items = navbar_items[0] # only one nav bar per screen
+    components.extend(navbar_items['left-buttons'])
+    components.extend(navbar_items['right-buttons'])
+    if navbar_items.get('title') is not None:
+      components.append(navbar_items['title'])
+      if navbar_items['title'].get('components') is not None:
+        components.extend(navbar_items['title']['components'])
+  return components
+
+def add_sliderview_items(components):
+  """
+  Returns (list): components with slider view items added.
+  """
+  slider_view = [c for c in components if c["type"] == "SliderView"]
+  if not slider_view:
+    return components
+  elif len(slider_view) > 1:
+    raise Exception("Interpreter_h: More than one slider view is present.")
+  slider_view = slider_view[0]
+  components.append(slider_view["content"])
+  components.append(slider_view["slider_options"])
+  return components
+
+def filter_components(components, types):
+  """
+  Returns (list): components without any components of a type in types
+  """
+  return [c for c in components if c["type"] not in types]
+
 def init_g_var(comp):
   """
   Returns: swift code to generate/init one component.
@@ -18,32 +56,40 @@ def init_g_vars(components):
 
   Returns (str): swift code to generate/init all glob vars of components
   """
-  return "".join([init_g_var(c) for c in components])
+  components = list(components) # get copy of components
+  # add slider view items
+  components = add_sliderview_items(components)
+
+  # filter components to not include certain components
+  filter_comps = filter_components(components, {'SliderView'})
+
+  return "".join([init_g_var(c) for c in filter_comps])
 
 def declare_g_vars(components):
   """
   Returns (str): swift code to declare global variables
   """
-  navbar_items = [c.get("navbar-items") for c in components \
-                  if c.get("navbar-items")]
-  if navbar_items:
-    if len(navbar_items) > 1:
-      raise Exception("Interpreter_h: More than one navbar is present.")
-    navbar_items = navbar_items[0] # only one nav bar per screen
-    components.extend(navbar_items['left-buttons'])
-    components.extend(navbar_items['right-buttons'])
-    if navbar_items.get('title') is not None:
-      components.append(navbar_items['title'])
-      if navbar_items['title'].get('components') is not None:
-        components.extend(navbar_items['title']['components'])
+  components = list(components) # get copy of comps
+  # add navbar items
+  components = add_navbar_items(components)
 
-  # filter components to not include navigation bar
-  ignore_comps = {'UINavBar', 'UIActionSheet'}
-  filter_comps = [c for c in components if c['type'] not in ignore_comps]
+  # add slider view items
+  components = add_sliderview_items(components)
+
+  # filter components to not include certain components
+  ignore_types = {'UINavBar', 'UIActionSheet', 'SliderView'}
+  filter_comps = filter_components(components, ignore_types)
 
   # one-liner to concat all variable names
   gvars = ["var {}: {}!\n".format(e['id'], e['type']) for e in filter_comps]
   return "".join(gvars)
+
+def adjust_components(components):
+  """
+  Returns (list): components with necessary components added/removed.
+  """
+  components = add_navbar_items(components)
+  return components # No components to remove as of now.
 
 def gen_global_colors(global_fills, swift):
   """
@@ -129,6 +175,7 @@ def gen_viewcontroller_header(view_controller, info, declare_vars):
            ).format(view_controller)
   header += declare_g_vars(info["components"]) if declare_vars else ""
   header += "\noverride func viewDidLoad() {\nsuper.viewDidLoad()\n"
+  info["components"] = adjust_components(info["components"])
   return header
 
 def gen_tabbar_vc(view_controller, swift, info):
@@ -186,6 +233,9 @@ def subclass_tc(swift, tc_elem):
   if tc_elem['type'] == 'UICollectionView':
     ext = ext.replace('Table', 'Collection')
     ext += ", UICollectionViewDelegateFlowLayout"
+
+  if ext in swift: # parent classes are already added
+    return swift
 
   if ": UIViewController" in swift:
     swift = utils.ins_after_key(swift, ": UIViewController", ext)
@@ -273,16 +323,12 @@ def gen_slider_options(info):
   max_width = 0
   max_height = 0
   if option.get("text") is not None:
-    texts = []
     for option in options:
-      text = '"' + option["text"]["textspan"][0]["contents"].decode('utf-8') + '"'
-      texts.append(text)
       size = option["text"]["rwidth"]*option["text"]["rheight"]
       if size > max_size:
         max_size = size
         max_width = option["text"]["rwidth"]
         max_height = option["text"]["rheight"]
-    arr = ("let text = [{}]\n").format(", ".join(texts))
     font = option["text"]["font-family"]
     size = option["text"]["font-size"]
     cell_gvar = ("let label: UILabel = {{\nlet lab = InsetLabel()\nlab.textAlig"
@@ -292,15 +338,12 @@ def gen_slider_options(info):
     set_prop = "cell.label.text = names[indexPath.item]\n"
     subview = "label"
   else: # option["img"] is not None
-    paths = []
     for option in options:
-      paths.append(utils.str_before_key(option["img"]["path"], "."))
       size = option["img"]["rwidth"]*option["img"]["rheight"]
       if size > max_size:
         max_size = size
         max_width = option["img"]["rwidth"]
         max_height = option["img"]["rheight"]
-    arr = ("let images = [{}]\n").format(", ".join(paths))
     cell_gvar = "let imageView = UIImageView()\n"
     set_prop = "cell.imageView.image = UIImage(named: names[indexPath.item])\n"
     subview = "imageView"
@@ -316,21 +359,28 @@ def gen_slider_options(info):
   else:
     cell_fill = ""
 
-  selected_option = options[slider_options["selected_index"]]
+  selected_index = slider_options["selected_index"]
+  selected_option = options[selected_index]
   slider_fill = utils.create_uicolor(selected_option["rect"]["filter"]["fill"])
   constraint = ("{}.snp.updateConstraints{{ make in\n"
                 "make.size.equalTo(CGSize(width: {}, height: {}))\n"
                 "make.center.equalToSuperview()\n}}\n"
                ).format(subview, max_width, max_height)
 
+  bar_width = selected_option["rwidth"]
+  bar_height = abs(float(selected_option["rect"]["filter"]["dy"]))
+  left_offset = selected_index * bar_width
   setup_bar = ("func setupSliderBar() {{\n"
                "sliderBar.backgroundColor = {}\n"
                "addSubview(sliderBar)\n\n"
                "sliderBar.snp.updateConstraints{{ make in\n"
-               "make.size.equalTo(CGSize(width: 75, height: 3))\n"
-               "make.left.equalToSuperview()\n"
-               "make.bottom.equalToSuperview()\n}}\n}}\n\n"
-              ).format(slider_fill)
+               "make.size.equalTo(CGSize(width: {}, height: {}))\n"
+               "make.bottom.equalToSuperview()\n}}\n"
+               "sliderBarLeftConstraint = sliderBar.leftAnchor.constraint(equal"
+               "To: self.leftAnchor, constant: {})\n"
+               "sliderBarLeftConstraint.isActive = true\n"
+               "}}\n\n"
+              ).format(slider_fill, bar_width, bar_height, left_offset)
   slider_opts = ("import UIKit\nimport SnapKit\n\n"
                  "class SliderOptions: UIView, UICollectionViewDataSource, "
                  "UICollectionViewDelegate, UICollectionViewDelegateFlowLayout "
@@ -340,7 +390,8 @@ def gen_slider_options(info):
                  " layout)\ncv.backgroundColor = {}\n"
                  "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n"
                  "var names: [String]!\n"
-                 "let sliderBar = UIView()\n\n"
+                 "let sliderBar = UIView()\nvar sliderBarLeftConstraint: "
+                 "NSLayoutConstraint!\n\n"
                  "init(frame: CGRect, names: [String]) {{\n"
                  "super.init(frame: frame)\nself.names = names\n"
                  "collectionView.register(SliderOptionCell.self, forCellWith"
@@ -359,7 +410,7 @@ def gen_slider_options(info):
                 "ForItemAt indexPath: IndexPath) -> UICollectionViewCell {{\n"
                 "let cell = collectionView.dequeueReusableCell(withReuseIdentif"
                 'ier: "sliderOptionCellId", for: indexPath) as! '
-                "SliderOptionCell\n{0}{1}\nreturn cell\n}}\n\n"
+                "SliderOptionCell\n{}{}\nreturn cell\n}}\n\n"
                 "func collectionView(_ collectionView: UICollectionView, layout"
                 " collectionViewLayout: UICollectionViewLayout, sizeForItemAt"
                 " indexPath: IndexPath) -> CGSize {{\n"
@@ -376,7 +427,7 @@ def gen_slider_options(info):
                 "animations: {{\nself.sliderBar.snp.updateConstraints{{ "
                 "make in\nmake.left.equalTo(CGFloat(indexPath.item) * "
                 "self.frame.width / CGFloat(self.names.count))\n}}\n"
-                "self.layoutIfNeeded()\n}}, completion: nil)\n}}\n{2}\n}}\n\n"
+                "self.layoutIfNeeded()\n}}, completion: nil)\n}}\n\n{}\n}}\n\n"
                ).format(set_prop, cell_fill, utils.req_init())
   option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"
                  "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"

@@ -59,7 +59,7 @@ class ComponentFactory(object):
     keys = ["id", "type", "rect", "filter"]
     id_, type_, rect, filter_ = utils.get_vals(keys, self.info)
 
-    if rect is not None:
+    if rect is not None and type_ != "SliderView":
       swift += utils.setup_rect(id_, type_, rect)
       if rect.get("filter") is not None and not self.in_view:
         # move code for shadows to viewDidLayoutSubviews function
@@ -179,7 +179,7 @@ class ComponentFactory(object):
       return ("{} = {}(frame: .zero, style: .grouped)\n").format(id_, type_)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
-    elif type_ in {"UINavBar", "UITabBar", "UIActionSheet"}:
+    elif type_ in {"UINavBar", "UITabBar", "UIActionSheet", "SliderView"}:
       return "" # cannot initialize these components
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label

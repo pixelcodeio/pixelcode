@@ -25,7 +25,7 @@ class SliderView(BaseLayer):
       raise Exception("SliderView: No content in SliderView: " + elem["id"])
 
 
-    content["id"] = "sliderCollectionView"
+    content["id"] = elem["id"] + "CollectionView"
     content["type"] = "UICollectionView"
     content["separator"] = [0]
     content["cells"] = [{"rect": content["rect"], "rwidth": content["rwidth"],

@@ -112,6 +112,8 @@ class Interpreter(object):
           content_cf = ComponentFactory(comp["content"], in_v)
           comp["content_swift"] = content_cf.swift
           comp["content_methods"] = content_cf.methods["tc_methods"]
+          self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
+                                                   comp["content"])
           cf = ComponentFactory(comp, in_v)
           content_id = comp["content"]["id"]
           cell = comp["content"]["cells"][0]
@@ -156,7 +158,6 @@ class Interpreter(object):
 
     if not tc_elem:
       self.swift[self.file_name] = C + "}"
-      print(self.swift[self.file_name])
       return False
 
     # inner table/collection view exists

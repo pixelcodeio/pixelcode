@@ -53,8 +53,18 @@ class SliderView(BaseComponent):
     """
     slider_options = self.info["slider_options"]
     content_methods = self.info["content_methods"]
+    content_methods = self.gen_scrollview_func() + content_methods
     num_cells = ("return {}").format(len(slider_options["options"]))
     content_methods = content_methods.replace("return 1", num_cells)
     case_number = ("case {}").format(slider_options["selected_index"])
     content_methods = content_methods.replace("case 0", case_number)
     return content_methods
+
+  def gen_scrollview_func(self):
+    """
+    Returns (str): The scrollViewDidScroll function for scrollbar.
+    """
+    options = self.info["slider_options"]["options"]
+    return ("func scrollViewDidScroll(_ scrollView: UIScrollView) {{\n"
+            "sliderOptions.sliderBarLeftConstraint.constant = "
+            "scrollView.contentOffset.x / {}\n}}\n\n").format(len(options))
