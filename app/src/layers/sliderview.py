@@ -38,5 +38,6 @@ class SliderView(BaseLayer):
       print('\n')
 
     elem["content_cv"] = content_cv
+    elem["slider_options"] = slider_options
     elem["rect"] = rect
     return super().parse_elem(elem)

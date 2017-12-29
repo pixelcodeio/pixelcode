@@ -288,7 +288,7 @@ def gen_slider_options(comp):
                  "nment = .center\nlab.numberOfLines = 0\nlab.lineBreakMode = "
                  ".byWordWrapping\nlab.font = {}\nreturn lab\n}}()\n\n"
                 ).format(utils.create_font(font, size))
-    set_prop = "cell.label.text = text[indexPath.item]\n"
+    set_prop = "cell.label.text = names[indexPath.item]\n"
     subview = "label"
   else: # option["img"] is not None
     paths = []
@@ -301,7 +301,7 @@ def gen_slider_options(comp):
         max_height = option["img"]["rheight"]
     arr = ("let images = [{}]\n").format(", ".join(paths))
     cell_gvar = "let imageView = UIImageView()\n"
-    set_prop = "cell.imageView.image = UIImage(named: images[indexPath.item])\n"
+    set_prop = "cell.imageView.image = UIImage(named: names[indexPath.item])\n"
     subview = "imageView"
 
   if comp["rect"].get("fill") is not None:
@@ -330,38 +330,40 @@ def gen_slider_options(comp):
                "make.left.equalToSuperview()\n"
                "make.bottom.equalToSuperview()\n}}\n}}\n\n"
               ).format(slider_fill)
-  slider_view = ("import UIKit\nimport SnapKit\n\n"
-                 "class SliderView: UIView, UICollectionViewDataSource, "
+  slider_opts = ("import UIKit\nimport SnapKit\n\n"
+                 "class SliderOptions: UIView, UICollectionViewDataSource, "
                  "UICollectionViewDelegate, UICollectionViewDelegateFlowLayout "
                  "{{\n\nlazy var collectionView: UICollectionView = {{\n"
                  "let layout = UICollectionViewFlowLayout()\n"
                  "let cv = UICollectionView(frame: .zero, collectionViewLayout:"
                  " layout)\ncv.backgroundColor = {}\n"
-                 "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n{}"
+                 "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n"
+                 "var names: [String]!\n"
                  "let sliderBar = UIView()\n\n"
-                 "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
-                 "collectionView.register(MenuCell.self, forCellWithReuse"
-                 'Identifier: "menuCellId")\n'
+                 "init(frame: CGRect, names: [String]) {{\n"
+                 "super.init(frame: frame)\nself.names = names\n"
+                 "collectionView.register(SliderOptionCell.self, forCellWith"
+                 'ReuseIdentifier: "sliderOptionCellId")\n'
                  "addSubview(collectionView)\n"
                  "collectionView.snp.updateConstraints{{ make in\nmake."
                  "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
                  "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
                  "collectionView.selectItem(at: selectedIndexPath, animated: "
                  "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
-                ).format(cv_fill, arr, setup_bar)
+                ).format(cv_fill, setup_bar)
   cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
                 "numberOfItemsInSection section: Int) -> Int "
-                "{{\nreturn {0}\n}}\n\n"
+                "{{\nreturn names.count\n}}\n\n"
                 "func collectionView(_ collectionView: UICollectionView, cell"
                 "ForItemAt indexPath: IndexPath) -> UICollectionViewCell {{\n"
                 "let cell = collectionView.dequeueReusableCell(withReuseIdentif"
-                'ier: "menuCellId", for: indexPath) as! MenuCell\n{1}{2}'
-                "\nreturn cell\n}}\n\n"
+                'ier: "sliderOptionCellId", for: indexPath) as! '
+                "SliderOptionCell\n{0}{1}\nreturn cell\n}}\n\n"
                 "func collectionView(_ collectionView: UICollectionView, layout"
                 " collectionViewLayout: UICollectionViewLayout, sizeForItemAt"
                 " indexPath: IndexPath) -> CGSize {{\n"
-                "return CGSize(width: frame.width/{0}, height: "
-                "frame.height)\n}}\nfunc "
+                "return CGSize(width: frame.width/CGFloat(names.count), height:"
+                " frame.height)\n}}\nfunc "
                 "collectionView(_ collectionView: UICollectionView, layout "
                 "collectionViewLayout: UICollectionViewLayout, minimumInteritem"
                 "SpacingForSectionAt section: Int) -> CGFloat {{\nreturn 0\n}}"
@@ -370,15 +372,15 @@ def gen_slider_options(comp):
                 "SelectItemAt indexPath: IndexPath) {{\n"
                 "UIView.animate(withDuration: 0.5, delay: 0, usingSpringWith"
                 "Damping: 1, initialSpringVelocity: 1, options: .curveEaseOut, "
-                "animations: {{\nself.sliderBar.snp.updateConstraints{{\n "
+                "animations: {{\nself.sliderBar.snp.updateConstraints{{ "
                 "make in\nmake.left.equalTo(CGFloat(indexPath.item) * "
-                "(self.frame.width/{0}))}}\nself.layoutIfNeeded()\n}}, "
-                "completion: nil)\n}}\n{3}\n}}\n\n"
-               ).format(len(options), set_prop, cell_fill, utils.req_init())
+                "self.frame.width / CGFloat(self.names.count))\n}}\n"
+                "self.layoutIfNeeded()\n}}, completion: nil)\n}}\n{2}\n}}\n\n"
+               ).format(set_prop, cell_fill, utils.req_init())
   option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"
                  "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
                  "layoutSubviews()\n}}\n\n"
                  "override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
                  "addSubview({})\n{}\n}}\n\n{}\n}}\n"
                 ).format(cell_gvar, subview, constraint, utils.req_init())
-  return slider_view + cv_methods + option_cell
+  return slider_opts + cv_methods + option_cell

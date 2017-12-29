@@ -26,6 +26,9 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
+    for comp in components:
+      if comp["type"] == "SliderView":
+        print(gen_slider_options(comp["slider_options"]))
 
     # Generate header of view controller file
     self.info["components"] = components
