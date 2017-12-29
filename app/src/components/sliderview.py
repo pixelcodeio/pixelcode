@@ -19,14 +19,10 @@ class SliderView(BaseComponent):
     self.content_methods = self.fix_content_methods()
     self.info["content_swift"] = self.fix_content_swift()
     slider_options = self.info["slider_options"]
-    C = ("{} = SliderOptions(frame: .zero, names: [{}])\n"
-         "view.addSubview(sliderOptions)\n\n"
-         "sliderOptions.snp.updateConstraints{{ make in\n"
-         "make.center.equalToSuperview()\n"
-         "make.size.equalTo(CGSize(width: {}, height: {}))\n"
-         "}}\n\n"
+    C = ("{} = SliderOptions(frame: .zero, names: [{}], controller: self)\n"
+         "view.addSubview(sliderOptions)\n\n{}\n"
         ).format(slider_options["id"], self.get_names(),
-                 slider_options["rwidth"], slider_options["rheight"])
+                 self.info["options_constraint"])
     C += self.info["content_swift"]
     return C
 
@@ -54,7 +50,7 @@ class SliderView(BaseComponent):
     """
     slider_options = self.info["slider_options"]
     content_methods = self.info["content_methods"]
-    content_methods = self.gen_scrollview_func() + content_methods
+    content_methods = self.gen_scrollview_funcs() + content_methods
     num_cells = ("return {}").format(len(slider_options["options"]))
     content_methods = content_methods.replace("return 1", num_cells)
     case_number = ("case {}").format(slider_options["selected_index"])
@@ -68,13 +64,20 @@ class SliderView(BaseComponent):
     content_swift = self.info["content_swift"]
     index = content_swift.find("view.addSubview")
     paging = ("{}.isPagingEnabled = true\n").format(self.info["content"]["id"])
-    return content_swift[:index] + paging + content_swift[index:]
+    content_swift = content_swift[:index] + paging + content_swift[index:]
+    index = content_swift.find("layout.scrollDirection = .horizontal")
+    line_spacing = "layout.minimumLineSpacing = 0\n"
+    return content_swift[:index] + line_spacing + content_swift[index:]
 
-  def gen_scrollview_func(self):
+  def gen_scrollview_funcs(self):
     """
     Returns (str): The scrollViewDidScroll function for scrollbar.
     """
     options = self.info["slider_options"]["options"]
     return ("func scrollViewDidScroll(_ scrollView: UIScrollView) {{\n"
             "sliderOptions.sliderBarLeftConstraint.constant = "
-            "scrollView.contentOffset.x / {}\n}}\n\n").format(len(options))
+            "scrollView.contentOffset.x / {}\n}}\n\n"
+            "func scrollToIndex(index: Int) {{\n"
+            "let indexPath = IndexPath(item: index, section: 0)\n"
+            "{}.scrollToItem(at: indexPath, at: [], animated: true)\n}}\n\n"
+           ).format(len(options), self.info["content"]["id"])

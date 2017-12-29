@@ -51,6 +51,8 @@ class ComponentFactory(object):
       self.setup_set_properties()
     elif type_ == 'UINavBar':
       self.setup_navbar_items()
+    elif type_ == 'SliderView':
+      self.setup_sliderview()
 
   def finish_creating_component(self, swift, component):
     """
@@ -279,3 +281,10 @@ class ComponentFactory(object):
       C += utils.set_frame(title)
       C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C
+
+  def setup_sliderview(self):
+    """
+    Returns (None): setups up code for slider view inside self.info
+    """
+    constraint = self.gen_constraints(self.info["slider_options"])
+    self.info["options_constraint"] = constraint

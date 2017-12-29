@@ -107,8 +107,8 @@ class Interpreter(object):
             self.swift["InsetLabel"] = gen_inset_label()
           cf = ComponentFactory(comp, in_v)
         elif type_ == "SliderView":
-          if self.swift.get("SliderOptions") is None: # generate custom class
-            self.swift["SliderOptions"] = gen_slider_options(comp)
+          slider_opts_id = utils.uppercase(comp["slider_options"]["id"])
+          self.swift[slider_opts_id] = gen_slider_options(comp, self.file_name)
           content_cf = ComponentFactory(comp["content"], in_v)
           comp["content_swift"] = content_cf.swift
           comp["content_methods"] = content_cf.methods["tc_methods"]

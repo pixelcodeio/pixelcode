@@ -24,6 +24,8 @@ class SliderView(BaseLayer):
     elif content is None:
       raise Exception("SliderView: No content in SliderView: " + elem["id"])
 
+    slider_options["vertical"] = elem["vertical"]
+    slider_options["horizontal"] = elem["horizontal"]
 
     content["id"] = elem["id"] + "CollectionView"
     content["type"] = "UICollectionView"

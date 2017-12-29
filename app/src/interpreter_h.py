@@ -309,7 +309,7 @@ def add_methods(methods):
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_slider_options(info):
+def gen_slider_options(info, file_name):
   """
   Args:
     info (dict): info on SliderView component
@@ -384,27 +384,29 @@ def gen_slider_options(info):
 
   slider_opts_name = utils.uppercase(slider_options["id"])
   slider_opts = ("import UIKit\nimport SnapKit\n\n"
-                 "class {}: UIView, UICollectionViewDataSource, "
+                 "class {0}: UIView, UICollectionViewDataSource, "
                  "UICollectionViewDelegate, UICollectionViewDelegateFlowLayout "
                  "{{\n\nlazy var collectionView: UICollectionView = {{\n"
                  "let layout = UICollectionViewFlowLayout()\n"
                  "let cv = UICollectionView(frame: .zero, collectionViewLayout:"
-                 " layout)\ncv.backgroundColor = {}\n"
+                 " layout)\ncv.backgroundColor = {1}\n"
                  "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n"
                  "var names: [String]!\n"
                  "let sliderBar = UIView()\nvar sliderBarLeftConstraint: "
-                 "NSLayoutConstraint!\n\n"
-                 "init(frame: CGRect, names: [String]) {{\n"
+                 "NSLayoutConstraint!\nvar controller: {2}!\n\n"
+                 "init(frame: CGRect, names: [String], controller: {2}) {{\n"
                  "super.init(frame: frame)\nself.names = names\n"
+                 "self.controller = controller\n"
                  "collectionView.register(SliderOptionCell.self, forCellWith"
                  'ReuseIdentifier: "sliderOptionCellId")\n'
                  "addSubview(collectionView)\n"
                  "collectionView.snp.updateConstraints{{ make in\nmake."
                  "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
-                 "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
+                 "let selectedIndexPath = IndexPath(item: {3}, section: 0)\n"
                  "collectionView.selectItem(at: selectedIndexPath, animated: "
-                 "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
-                ).format(slider_opts_name, cv_fill, setup_bar)
+                 "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{4}"
+                ).format(slider_opts_name, cv_fill, file_name, selected_index,
+                         setup_bar)
   cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
                 "numberOfItemsInSection section: Int) -> Int "
                 "{{\nreturn names.count\n}}\n\n"
@@ -423,13 +425,8 @@ def gen_slider_options(info):
                 "SpacingForSectionAt section: Int) -> CGFloat {{\nreturn 0\n}}"
                 "\n\n"
                 "func collectionView(_ collectionView: UICollectionView, did"
-                "SelectItemAt indexPath: IndexPath) {{\n"
-                "UIView.animate(withDuration: 0.5, delay: 0, usingSpringWith"
-                "Damping: 1, initialSpringVelocity: 1, options: .curveEaseOut, "
-                "animations: {{\n"
-                "self.sliderBarLeftConstraint.constant = CGFloat(indexPath.item"
-                ") * self.frame.width / CGFloat(self.names.count)\n"
-                "self.layoutIfNeeded()\n}}, completion: nil)\n}}\n\n{}\n}}\n\n"
+                "SelectItemAt indexPath: IndexPath) {{\ncontroller."
+                "scrollToIndex(index: indexPath.item)\n}}\n\n{}\n}}\n\n"
                ).format(set_prop, cell_fill, utils.req_init())
   option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"
                  "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
