@@ -259,46 +259,46 @@ def add_methods(methods):
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_slider_view(comp):
+def gen_slider_options(comp):
   """
   Args:
-    comp (dict): info on SliderView component
+    comp (dict): info on SliderOptions component
 
   Returns (str): Custom SliderView and SliderOptionCell swift classes.
   """
-  items = comp["items"]
-  item = items[0]
+  options = comp["options"]
+  option = options[0]
   max_size = 0
   max_width = 0
   max_height = 0
-  if item.get("text") is not None:
+  if option.get("text") is not None:
     texts = []
-    for item in items:
-      text = '"' + item["text"]["textspan"][0]["contents"].decode('utf-8') + '"'
+    for option in options:
+      text = '"' + option["text"]["textspan"][0]["contents"].decode('utf-8') + '"'
       texts.append(text)
-      size = item["text"]["rwidth"]*item["text"]["rheight"]
+      size = option["text"]["rwidth"]*option["text"]["rheight"]
       if size > max_size:
         max_size = size
-        max_width = item["text"]["rwidth"]
-        max_height = item["text"]["rheight"]
+        max_width = option["text"]["rwidth"]
+        max_height = option["text"]["rheight"]
     arr = ("let text = [{}]\n").format(", ".join(texts))
-    font = item["text"]["font-family"]
-    size = item["text"]["font-size"]
+    font = option["text"]["font-family"]
+    size = option["text"]["font-size"]
     cell_gvar = ("let label: UILabel = {{\nlet lab = InsetLabel()\nlab.textAlig"
                  "nment = .center\nlab.numberOfLines = 0\nlab.lineBreakMode = "
                  ".byWordWrapping\nlab.font = {}\nreturn lab\n}}()\n\n"
                 ).format(utils.create_font(font, size))
     set_prop = "cell.label.text = text[indexPath.item]\n"
     subview = "label"
-  else: # item["img"] is not None
+  else: # option["img"] is not None
     paths = []
-    for item in items:
-      paths.append(utils.str_before_key(item["img"]["path"], "."))
-      size = item["img"]["rwidth"]*item["img"]["rheight"]
+    for option in options:
+      paths.append(utils.str_before_key(option["img"]["path"], "."))
+      size = option["img"]["rwidth"]*option["img"]["rheight"]
       if size > max_size:
         max_size = size
-        max_width = item["img"]["rwidth"]
-        max_height = item["img"]["rheight"]
+        max_width = option["img"]["rwidth"]
+        max_height = option["img"]["rheight"]
     arr = ("let images = [{}]\n").format(", ".join(paths))
     cell_gvar = "let imageView = UIImageView()\n"
     set_prop = "cell.imageView.image = UIImage(named: images[indexPath.item])\n"
@@ -309,14 +309,14 @@ def gen_slider_view(comp):
   else:
     cv_fill = ".clear"
 
-  if item["rect"].get("fill") is not None:
+  if option["rect"].get("fill") is not None:
     cell_fill = ("cell.backGroundColor = {}\n"
-                ).format(utils.create_uicolor(item["rect"]["fill"]))
+                ).format(utils.create_uicolor(option["rect"]["fill"]))
   else:
     cell_fill = ""
 
-  selected_item = items[comp["selected_index"]]
-  slider_fill = utils.create_uicolor(selected_item["rect"]["filter"]["fill"])
+  selected_option = options[comp["selected_index"]]
+  slider_fill = utils.create_uicolor(selected_option["rect"]["filter"]["fill"])
   constraint = ("{}.snp.updateConstraints{{ make in\n"
                 "make.size.equalTo(CGSize(width: {}, height: {}))\n"
                 "make.center.equalToSuperview()\n}}\n"
@@ -374,7 +374,7 @@ def gen_slider_view(comp):
                 "make in\nmake.left.equalTo(CGFloat(indexPath.item) * "
                 "(self.frame.width/{0}))}}\nself.layoutIfNeeded()\n}}, "
                 "completion: nil)\n}}\n{3}\n}}\n\n"
-               ).format(len(items), set_prop, cell_fill, utils.req_init())
+               ).format(len(options), set_prop, cell_fill, utils.req_init())
   option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"
                  "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
                  "layoutSubviews()\n}}\n\n"

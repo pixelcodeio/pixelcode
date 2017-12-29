@@ -75,6 +75,7 @@ class BaseLayer(object):
         "cells",
         "char-spacing",
         "components",
+        "content_cv", # collection view used for SliderViews
         "contents",
         "cx",
         "cy",
@@ -93,6 +94,7 @@ class BaseLayer(object):
         "line-spacing",
         "navbar-items",
         "opacity",
+        "options",
         "path",
         "progress_fill",
         "rect",
@@ -101,6 +103,7 @@ class BaseLayer(object):
         "search-icon",
         "selected_index",
         "separator",
+        "slider_options",
         "stroke-color",
         "stroke-width",
         "stroke-opacity",

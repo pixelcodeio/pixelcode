@@ -2,14 +2,15 @@ from layers.actionsheet import ActionSheet
 from layers.button import Button
 from layers.container import Container
 from layers.image import Image
-from layers.menubar import MenuBar
-from layers.menuitem import MenuItem
 from layers.navbar import NavBar
 from layers.rect import Rect
 from layers.searchbar import SearchBar
 from layers.segment import Segment
 from layers.segmentedcontrol import SegmentedControl
 from layers.slider import Slider
+from layers.slideroption import SliderOption
+from layers.slideroptions import SliderOptions
+from layers.sliderview import SliderView
 from layers.switch import Switch
 from layers.text import Text
 from layers.tabbar import TabBar
