@@ -103,14 +103,17 @@ class Interpreter(object):
             self.swift["InsetLabel"] = gen_inset_label()
           cf = ComponentFactory(comp, in_v)
         elif type_ == "SliderView":
+          # Generate custom SliderOptions class
           slider_opts_id = utils.uppercase(comp["slider_options"]["id"])
           self.swift[slider_opts_id] = gen_slider_options(comp, self.file_name)
+          # Generate Content CollectionView
           content_cf = ComponentFactory(comp["content"], in_v)
           comp["content_swift"] = content_cf.swift
           comp["content_methods"] = content_cf.methods["tc_methods"]
           self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
                                                    comp["content"])
           cf = ComponentFactory(comp, in_v)
+          # Generate SliderView CollectionViewCell
           content_id = comp["content"]["id"]
           cell = comp["content"]["cells"][0]
           curr_filename = self.file_name
