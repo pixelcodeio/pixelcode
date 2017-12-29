@@ -259,12 +259,12 @@ def add_methods(methods):
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_menu_bar(comp):
+def gen_slider_view(comp):
   """
   Args:
-    comp (dict): info on MenuBar component
+    comp (dict): info on SliderView component
 
-  Returns (str): Custom MenuBar and MenuCell swift classes.
+  Returns (str): Custom SliderView and SliderOptionCell swift classes.
   """
   items = comp["items"]
   item = items[0]
@@ -322,33 +322,33 @@ def gen_menu_bar(comp):
                 "make.center.equalToSuperview()\n}}\n"
                ).format(subview, max_width, max_height)
 
-  setup_slider = ("func setupSliderBar() {{\n"
-                  "sliderBar.backgroundColor = {}\n"
-                  "addSubview(sliderBar)\n\n"
-                  "sliderBar.snp.updateConstraints{{ make in\n"
-                  "make.size.equalTo(CGSize(width: 75, height: 3))\n"
-                  "make.left.equalToSuperview()\n"
-                  "make.bottom.equalToSuperview()\n}}\n}}\n\n"
-                 ).format(slider_fill)
-  menu_bar = ("import UIKit\nimport SnapKit\n\n"
-              "class MenuBar: UIView, UICollectionViewDataSource, UICollection"
-              "ViewDelegate, UICollectionViewDelegateFlowLayout {{\n\n"
-              "lazy var collectionView: UICollectionView = {{\n"
-              "let layout = UICollectionViewFlowLayout()\n"
-              "let cv = UICollectionView(frame: .zero, collectionViewLayout: "
-              "layout)\ncv.backgroundColor = {}\n"
-              "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n{}"
-              "let sliderBar = UIView()\n\n"
-              "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
-              "collectionView.register(MenuCell.self, forCellWithReuse"
-              'Identifier: "menuCellId")\n'
-              "addSubview(collectionView)\n"
-              "collectionView.snp.updateConstraints{{ make in\nmake."
-              "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
-              "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
-              "collectionView.selectItem(at: selectedIndexPath, animated: "
-              "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
-             ).format(cv_fill, arr, setup_slider)
+  setup_bar = ("func setupSliderBar() {{\n"
+               "sliderBar.backgroundColor = {}\n"
+               "addSubview(sliderBar)\n\n"
+               "sliderBar.snp.updateConstraints{{ make in\n"
+               "make.size.equalTo(CGSize(width: 75, height: 3))\n"
+               "make.left.equalToSuperview()\n"
+               "make.bottom.equalToSuperview()\n}}\n}}\n\n"
+              ).format(slider_fill)
+  slider_view = ("import UIKit\nimport SnapKit\n\n"
+                 "class SliderView: UIView, UICollectionViewDataSource, "
+                 "UICollectionViewDelegate, UICollectionViewDelegateFlowLayout "
+                 "{{\n\nlazy var collectionView: UICollectionView = {{\n"
+                 "let layout = UICollectionViewFlowLayout()\n"
+                 "let cv = UICollectionView(frame: .zero, collectionViewLayout:"
+                 " layout)\ncv.backgroundColor = {}\n"
+                 "cv.dataSource = self\ncv.delegate = self\nreturn cv\n}}()\n{}"
+                 "let sliderBar = UIView()\n\n"
+                 "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
+                 "collectionView.register(MenuCell.self, forCellWithReuse"
+                 'Identifier: "menuCellId")\n'
+                 "addSubview(collectionView)\n"
+                 "collectionView.snp.updateConstraints{{ make in\nmake."
+                 "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
+                 "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
+                 "collectionView.selectItem(at: selectedIndexPath, animated: "
+                 "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
+                ).format(cv_fill, arr, setup_bar)
   cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
                 "numberOfItemsInSection section: Int) -> Int "
                 "{{\nreturn {0}\n}}\n\n"
@@ -375,10 +375,10 @@ def gen_menu_bar(comp):
                 "(self.frame.width/{0}))}}\nself.layoutIfNeeded()\n}}, "
                 "completion: nil)\n}}\n{3}\n}}\n\n"
                ).format(len(items), set_prop, cell_fill, utils.req_init())
-  menu_cell = ("class MenuCell: UICollectionViewCell {{\n\n{}"
-               "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
-               "layoutSubviews()\n}}\n\n"
-               "override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
-               "addSubview({})\n{}\n}}\n\n{}\n}}\n"
-              ).format(cell_gvar, subview, constraint, utils.req_init())
-  return menu_bar + cv_methods + menu_cell
+  option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"
+                 "override init(frame: CGRect) {{\nsuper.init(frame: frame)\n"
+                 "layoutSubviews()\n}}\n\n"
+                 "override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
+                 "addSubview({})\n{}\n}}\n\n{}\n}}\n"
+                ).format(cell_gvar, subview, constraint, utils.req_init())
+  return slider_view + cv_methods + option_cell
