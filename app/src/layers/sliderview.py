@@ -25,18 +25,15 @@ class SliderView(BaseLayer):
       raise Exception("SliderView: No content in SliderView: " + elem["id"])
 
 
-    content_cv = content
-    content_cv["id"] = "sliderCollectionView"
-    content_cv["type"] = "UICollectionView"
-    content_cv["separator"] = [0]
-    content_cv["cells"] = [{"rect": content["rect"],
-                            "rwidth": content["rwidth"],
-                            "rheight": content["rheight"],
-                            "components": content["components"]}]
-    del content_cv["components"]
+    content["id"] = "sliderCollectionView"
+    content["type"] = "UICollectionView"
+    content["separator"] = [0]
+    content["cells"] = [{"rect": content["rect"], "rwidth": content["rwidth"],
+                         "rheight": content["rheight"],
+                         "components": content["components"]}]
+    del content["components"]
 
-    print(type(slider_options))
-    elem["content_cv"] = content_cv
+    elem["content"] = content
     elem["slider_options"] = slider_options
     elem["rect"] = rect
     return super().parse_elem(elem)

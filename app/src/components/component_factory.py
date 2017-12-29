@@ -84,6 +84,9 @@ class ComponentFactory(object):
       self.methods["tc_methods"] = component.tc_methods
     elif type_ == 'UILabel':
       swift += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
+    elif type_ == 'SliderView':
+      self.methods["slider_content_methods"] = component.content_methods
+      return swift
     elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
       if type_ == "UIActionSheet":
         # move UIActionSheet code to viewDidAppear function

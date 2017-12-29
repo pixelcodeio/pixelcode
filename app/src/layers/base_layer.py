@@ -75,8 +75,8 @@ class BaseLayer(object):
         "cells",
         "char-spacing",
         "components",
-        "content_cv", # collection view used for SliderViews
-        "contents",
+        "content", # content of a SliderView
+        "contents", # text of a label
         "cx",
         "cy",
         "fill",

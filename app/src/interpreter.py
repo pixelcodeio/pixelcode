@@ -67,12 +67,12 @@ class Interpreter(object):
 
       if tc_header is not None:
         # nested table/collection view
-        if self.setup_cell_header("header", tc_id, tc_header):
+        if self.contains_nested_tc("header", tc_id, tc_header):
           self.gen_file(True)
 
       tc_cell = tc_elem.get("cells")[0]
       # nested table/collection view
-      if self.setup_cell_header("cell", tc_id, tc_cell):
+      if self.contains_nested_tc("cell", tc_id, tc_cell):
         self.gen_file(True)
 
   def gen_comps(self, components, in_v):
@@ -101,16 +101,25 @@ class Interpreter(object):
         # generate tabbar viewcontroller file
         vc_name = utils.uppercase(comp["id"]) + "ViewController"
         self.swift[vc_name] = gen_tabbar_vc(vc_name, cf.swift, self.info)
-      elif type_ == "SliderView":
-        content_cf = ComponentFactory(comp["content_cv"], in_v)
-        comp["content_cv_swift"] = content_cf.swift
-        comp["content_cv_methods"] = content_cf.methods["tc_methods"]
-        cf = ComponentFactory(comp, in_v)
       else:
         if type_ == "UILabel":
           if self.swift.get("InsetLabel") is None: # generate custom UILabel
             self.swift["InsetLabel"] = gen_inset_label()
           cf = ComponentFactory(comp, in_v)
+        elif type_ == "SliderView":
+          if self.swift.get("SliderOptions") is None: # generate custom class
+            self.swift["SliderOptions"] = gen_slider_options(comp)
+          content_cf = ComponentFactory(comp["content"], in_v)
+          comp["content_swift"] = content_cf.swift
+          comp["content_methods"] = content_cf.methods["tc_methods"]
+          cf = ComponentFactory(comp, in_v)
+          content_id = comp["content"]["id"]
+          cell = comp["content"]["cells"][0]
+          curr_filename = self.file_name
+          self.file_name = "SliderCollectionViewCell"
+          if self.contains_nested_tc("cell", content_id, cell):
+            self.gen_file(True)
+          self.file_name = curr_filename
         else:
           cf = ComponentFactory(comp, in_v)
           if type_ == "UITableView" or type_ == "UICollectionView":
@@ -127,7 +136,7 @@ class Interpreter(object):
       self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
 
-  def setup_cell_header(self, type_, id_, info):
+  def contains_nested_tc(self, type_, id_, info):
     """
     Returns (bool):
       True if there is an nested (table/collection) view, False otherwise.
@@ -147,6 +156,7 @@ class Interpreter(object):
 
     if not tc_elem:
       self.swift[self.file_name] = C + "}"
+      print(self.swift[self.file_name])
       return False
 
     # inner table/collection view exists

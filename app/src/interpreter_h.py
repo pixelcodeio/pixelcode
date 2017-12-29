@@ -253,20 +253,21 @@ def add_methods(methods):
     elif key == "viewDidLayoutSubviews":
       C += ("override func viewDidLayoutSubviews() {{\n"
             "{}\n}}\n\n").format(value)
-    elif key == "tc_methods":
+    elif key in {"tc_methods", "slider_content_methods"}:
       C += value
     else:
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_slider_options(comp):
+def gen_slider_options(info):
   """
   Args:
-    comp (dict): info on SliderOptions component
+    info (dict): info on SliderView component
 
-  Returns (str): Custom SliderView and SliderOptionCell swift classes.
+  Returns (str): Custom SliderOptions and SliderOptionCell swift classes.
   """
-  options = comp["options"]
+  slider_options = info["slider_options"]
+  options = slider_options["options"]
   option = options[0]
   max_size = 0
   max_width = 0
@@ -304,8 +305,8 @@ def gen_slider_options(comp):
     set_prop = "cell.imageView.image = UIImage(named: names[indexPath.item])\n"
     subview = "imageView"
 
-  if comp["rect"].get("fill") is not None:
-    cv_fill = utils.create_uicolor(comp["rect"]["fill"])
+  if slider_options["rect"].get("fill") is not None:
+    cv_fill = utils.create_uicolor(slider_options["rect"]["fill"])
   else:
     cv_fill = ".clear"
 
@@ -315,7 +316,7 @@ def gen_slider_options(comp):
   else:
     cell_fill = ""
 
-  selected_option = options[comp["selected_index"]]
+  selected_option = options[slider_options["selected_index"]]
   slider_fill = utils.create_uicolor(selected_option["rect"]["filter"]["fill"])
   constraint = ("{}.snp.updateConstraints{{ make in\n"
                 "make.size.equalTo(CGSize(width: {}, height: {}))\n"
