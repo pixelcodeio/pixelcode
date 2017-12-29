@@ -151,6 +151,14 @@ class Parser(object):
           elem.name = "header"
         elif utils.word_in_str("listView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("sliderContent", elem["id"]):
+          elem.name = "slidercontent"
+        elif utils.word_in_str("sliderOptions", elem["id"]):
+          elem.name = "slideroptions"
+        elif utils.word_in_str("sliderOption", elem["id"]):
+          elem.name = "slideroption"
+        elif utils.word_in_str("sliderView", elem["id"]):
+          elem.name = "sliderview"
         elif utils.word_in_str("navBar", elem["id"]):
           elem.name = "navbar"
         elif utils.word_in_str("searchBar", elem["id"]):
@@ -193,6 +201,14 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name in {"image", "polygon", "path", "circle"}:
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "slidercontent":
+        parsed_elem = Container(elem, "SliderContent")
+      elif elem.name == "slideroption":
+        parsed_elem = SliderOption(elem, "SliderOption")
+      elif elem.name == "slideroptions":
+        parsed_elem = SliderOptions(elem, "SliderOptions")
+      elif elem.name == "sliderview":
+        parsed_elem = SliderView(elem, "SliderView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
       elif elem.name == "rect" or elem.name == "view":

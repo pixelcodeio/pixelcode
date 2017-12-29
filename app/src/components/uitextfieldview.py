@@ -52,4 +52,4 @@ class UITextFieldView(BaseComponent):
     """
     Returns: (str) The swift code to set font-family and size
     """
-    return ("{}.font = {}\n").format(self.id, super().create_font(font, size))
+    return ("{}.font = {}\n").format(self.id, utils.create_font(font, size))

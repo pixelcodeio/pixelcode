@@ -8,6 +8,9 @@ from layers.searchbar import SearchBar
 from layers.segment import Segment
 from layers.segmentedcontrol import SegmentedControl
 from layers.slider import Slider
+from layers.slideroption import SliderOption
+from layers.slideroptions import SliderOptions
+from layers.sliderview import SliderView
 from layers.switch import Switch
 from layers.text import Text
 from layers.tabbar import TabBar

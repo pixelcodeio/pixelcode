@@ -51,6 +51,8 @@ class ComponentFactory(object):
       self.setup_set_properties()
     elif type_ == 'UINavBar':
       self.setup_navbar_items()
+    elif type_ == 'SliderView':
+      self.setup_sliderview()
 
   def finish_creating_component(self, swift, component):
     """
@@ -59,7 +61,7 @@ class ComponentFactory(object):
     keys = ["id", "type", "rect", "filter"]
     id_, type_, rect, filter_ = utils.get_vals(keys, self.info)
 
-    if rect is not None:
+    if rect is not None and type_ != "SliderView":
       swift += utils.setup_rect(id_, type_, rect)
       if rect.get("filter") is not None and not self.in_view:
         # move code for shadows to viewDidLayoutSubviews function
@@ -84,6 +86,9 @@ class ComponentFactory(object):
       self.methods["tc_methods"] = component.tc_methods
     elif type_ == 'UILabel':
       swift += utils.set_bg(id_, [0, 0, 0, 0]) # set label to clear background
+    elif type_ == 'SliderView':
+      self.methods["slider_content_methods"] = component.content_methods
+      return swift
     elif type_ in {'UINavBar', 'UITabBar', 'UIActionSheet'}:
       if type_ == "UIActionSheet":
         # move UIActionSheet code to viewDidAppear function
@@ -176,7 +181,7 @@ class ComponentFactory(object):
       return ("{} = {}(frame: .zero, style: .grouped)\n").format(id_, type_)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
-    elif type_ in {"UINavBar", "UITabBar", "UIActionSheet"}:
+    elif type_ in {"UINavBar", "UITabBar", "UIActionSheet", "SliderView"}:
       return "" # cannot initialize these components
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label
@@ -276,3 +281,10 @@ class ComponentFactory(object):
       C += utils.set_frame(title)
       C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C
+
+  def setup_sliderview(self):
+    """
+    Returns (None): setups up code for slider view inside self.info
+    """
+    constraint = self.gen_constraints(self.info["slider_options"])
+    self.info["options_constraint"] = constraint
