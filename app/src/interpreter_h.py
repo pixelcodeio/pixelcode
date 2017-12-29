@@ -327,8 +327,8 @@ def gen_slider_options(info, file_name):
       size = option["text"]["rwidth"]*option["text"]["rheight"]
       if size > max_size:
         max_size = size
-        max_width = option["text"]["rwidth"]
-        max_height = option["text"]["rheight"]
+        max_width = option["text"]["width"]
+        max_height = option["text"]["height"]
     font = option["text"]["font-family"]
     size = option["text"]["font-size"]
     cell_gvar = ("let label: UILabel = {{\nlet lab = InsetLabel()\nlab.textAlig"
@@ -342,8 +342,8 @@ def gen_slider_options(info, file_name):
       size = option["img"]["rwidth"]*option["img"]["rheight"]
       if size > max_size:
         max_size = size
-        max_width = option["img"]["rwidth"]
-        max_height = option["img"]["rheight"]
+        max_width = option["img"]["width"]
+        max_height = option["img"]["height"]
     cell_gvar = "let imageView = UIImageView()\n"
     set_prop = "cell.imageView.image = UIImage(named: names[indexPath.item])\n"
     subview = "imageView"
@@ -363,24 +363,28 @@ def gen_slider_options(info, file_name):
   selected_option = options[selected_index]
   slider_fill = utils.create_uicolor(selected_option["rect"]["filter"]["fill"])
   constraint = ("{}.snp.updateConstraints{{ make in\n"
-                "make.size.equalTo(CGSize(width: {}, height: {}))\n"
+                "make.size.equalTo(CGSize(width: frame.width*{}, height: frame"
+                ".height*{}))\n"
                 "make.center.equalToSuperview()\n}}\n"
                ).format(subview, max_width, max_height)
 
-  bar_width = selected_option["rwidth"]
+  bar_width = selected_option["width"]
   bar_height = abs(float(selected_option["rect"]["filter"]["dy"]))
-  left_offset = selected_index * bar_width
   setup_bar = ("func setupSliderBar() {{\n"
                "sliderBar.backgroundColor = {}\n"
-               "addSubview(sliderBar)\n\n"
-               "sliderBar.snp.updateConstraints{{ make in\n"
-               "make.size.equalTo(CGSize(width: {}, height: {}))\n"
-               "make.bottom.equalToSuperview()\n}}\n"
-               "sliderBarLeftConstraint = sliderBar.leftAnchor.constraint(equal"
-               "To: self.leftAnchor, constant: {})\n"
-               "sliderBarLeftConstraint.isActive = true\n"
-               "}}\n\n"
-              ).format(slider_fill, bar_width, bar_height, left_offset)
+               "addSubview(sliderBar)\n"
+               "sliderBarLeftConstraint = sliderBar.leftAnchor.constraint"
+               "(equalTo: self.leftAnchor)\n"
+               "sliderBarLeftConstraint.isActive = true\n}}\n\n"
+              ).format(slider_fill)
+
+  layout_subviews = ("override func layoutSubviews() {{\n"
+                     "collectionView.snp.updateConstraints{{ make in\nmake.size"
+                     ".equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
+                     "sliderBar.snp.updateConstraints{{ make in\n"
+                     "make.size.equalTo(CGSize(width: frame.width*{}, height: "
+                     "{}))\nmake.bottom.equalToSuperview()\n}}\n}}\n\n"
+                    ).format(bar_width, bar_height)
 
   slider_opts_name = utils.uppercase(slider_options["id"])
   slider_opts = ("import UIKit\nimport SnapKit\n\n"
@@ -400,11 +404,10 @@ def gen_slider_options(info, file_name):
                  "collectionView.register(SliderOptionCell.self, forCellWith"
                  'ReuseIdentifier: "sliderOptionCellId")\n'
                  "addSubview(collectionView)\n"
-                 "collectionView.snp.updateConstraints{{ make in\nmake."
-                 "size.equalToSuperview()\nmake.center.equalToSuperview()\n}}\n"
                  "let selectedIndexPath = IndexPath(item: {3}, section: 0)\n"
                  "collectionView.selectItem(at: selectedIndexPath, animated: "
-                 "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{4}"
+                 "false, scrollPosition: [])\nsetupSliderBar()\n"
+                 "layoutSubviews()\n}}\n\n{4}"
                 ).format(slider_opts_name, cv_fill, file_name, selected_index,
                          setup_bar)
   cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
@@ -434,4 +437,4 @@ def gen_slider_options(info, file_name):
                  "override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
                  "addSubview({})\n{}\n}}\n\n{}\n}}\n"
                 ).format(cell_gvar, subview, constraint, utils.req_init())
-  return slider_opts + cv_methods + option_cell
+  return slider_opts + layout_subviews + cv_methods + option_cell
