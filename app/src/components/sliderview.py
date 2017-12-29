@@ -17,8 +17,9 @@ class SliderView(BaseComponent):
     Returns: swift code to setup SliderView.
     """
     self.content_methods = self.fix_content_methods()
+    self.info["content_swift"] = self.fix_content_swift()
     slider_options = self.info["slider_options"]
-    C = ("let {} = SliderOptions(frame: .zero, names: [{}])\n"
+    C = ("{} = SliderOptions(frame: .zero, names: [{}])\n"
          "view.addSubview(sliderOptions)\n\n"
          "sliderOptions.snp.updateConstraints{{ make in\n"
          "make.center.equalToSuperview()\n"
@@ -59,6 +60,15 @@ class SliderView(BaseComponent):
     case_number = ("case {}").format(slider_options["selected_index"])
     content_methods = content_methods.replace("case 0", case_number)
     return content_methods
+
+  def fix_content_swift(self):
+    """
+    Returns (str): swift code for content collection view with some additions.
+    """
+    content_swift = self.info["content_swift"]
+    index = content_swift.find("view.addSubview")
+    paging = ("{}.isPagingEnabled = true\n").format(self.info["content"]["id"])
+    return content_swift[:index] + paging + content_swift[index:]
 
   def gen_scrollview_func(self):
     """

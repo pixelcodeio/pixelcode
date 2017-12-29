@@ -381,8 +381,10 @@ def gen_slider_options(info):
                "sliderBarLeftConstraint.isActive = true\n"
                "}}\n\n"
               ).format(slider_fill, bar_width, bar_height, left_offset)
+
+  slider_opts_name = utils.uppercase(slider_options["id"])
   slider_opts = ("import UIKit\nimport SnapKit\n\n"
-                 "class SliderOptions: UIView, UICollectionViewDataSource, "
+                 "class {}: UIView, UICollectionViewDataSource, "
                  "UICollectionViewDelegate, UICollectionViewDelegateFlowLayout "
                  "{{\n\nlazy var collectionView: UICollectionView = {{\n"
                  "let layout = UICollectionViewFlowLayout()\n"
@@ -402,7 +404,7 @@ def gen_slider_options(info):
                  "let selectedIndexPath = IndexPath(item: 0, section: 0)\n"
                  "collectionView.selectItem(at: selectedIndexPath, animated: "
                  "false, scrollPosition: [])\nsetupSliderBar()\n}}\n\n{}"
-                ).format(cv_fill, setup_bar)
+                ).format(slider_opts_name, cv_fill, setup_bar)
   cv_methods = ("func collectionView(_ collectionView: UICollectionView, "
                 "numberOfItemsInSection section: Int) -> Int "
                 "{{\nreturn names.count\n}}\n\n"
@@ -424,9 +426,9 @@ def gen_slider_options(info):
                 "SelectItemAt indexPath: IndexPath) {{\n"
                 "UIView.animate(withDuration: 0.5, delay: 0, usingSpringWith"
                 "Damping: 1, initialSpringVelocity: 1, options: .curveEaseOut, "
-                "animations: {{\nself.sliderBar.snp.updateConstraints{{ "
-                "make in\nmake.left.equalTo(CGFloat(indexPath.item) * "
-                "self.frame.width / CGFloat(self.names.count))\n}}\n"
+                "animations: {{\n"
+                "self.sliderBarLeftConstraint.constant = CGFloat(indexPath.item"
+                ") * self.frame.width / CGFloat(self.names.count)\n"
                 "self.layoutIfNeeded()\n}}, completion: nil)\n}}\n\n{}\n}}\n\n"
                ).format(set_prop, cell_fill, utils.req_init())
   option_cell = ("class SliderOptionCell: UICollectionViewCell {{\n\n{}"

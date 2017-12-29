@@ -118,7 +118,7 @@ class Interpreter(object):
           content_id = comp["content"]["id"]
           cell = comp["content"]["cells"][0]
           curr_filename = self.file_name
-          self.file_name = "SliderCollectionViewCell"
+          self.file_name = utils.uppercase(comp["id"]) + "CollectionViewCell"
           if self.contains_nested_tc("cell", content_id, cell):
             self.gen_file(True)
           self.file_name = curr_filename
