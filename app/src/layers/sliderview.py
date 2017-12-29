@@ -30,7 +30,8 @@ class SliderView(BaseLayer):
     content["id"] = elem["id"] + "CollectionView"
     content["type"] = "UICollectionView"
     content["separator"] = [0]
-    content["cells"] = [{"rect": content["rect"], "width": content["width"],
+    content["cells"] = [{"rect": content["rect"],
+                         "width": content["width"],
                          "height": content["height"],
                          "components": content["components"]}]
     del content["components"]

@@ -31,9 +31,9 @@ class SliderView(BaseComponent):
     Returns (str): The names array containing all the text/paths.
     """
     options = self.info["slider_options"]["options"]
-    option = options[0]
+    first_option = options[0]
     names = []
-    if option.get("text") is not None:
+    if first_option.get("text") is not None:
       for option in options:
         text = option["text"]["textspan"][0]["contents"].decode('utf-8')
         text = ('"{}"').format(text)

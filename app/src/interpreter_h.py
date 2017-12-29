@@ -318,19 +318,18 @@ def gen_slider_options(info, file_name):
   """
   slider_options = info["slider_options"]
   options = slider_options["options"]
-  option = options[0]
-  max_size = 0
-  max_width = 0
-  max_height = 0
-  if option.get("text") is not None:
+  first_option = options[0]
+  max_size = max_width = max_height = 0
+
+  if first_option.get("text") is not None:
     for option in options:
-      size = option["text"]["rwidth"]*option["text"]["rheight"]
+      size = option["text"]["rwidth"] * option["text"]["rheight"]
       if size > max_size:
         max_size = size
         max_width = option["text"]["width"]
         max_height = option["text"]["height"]
-    font = option["text"]["font-family"]
-    size = option["text"]["font-size"]
+    font = first_option["text"]["font-family"]
+    size = first_option["text"]["font-size"]
     cell_gvar = ("let label: UILabel = {{\nlet lab = InsetLabel()\nlab.textAlig"
                  "nment = .center\nlab.numberOfLines = 0\nlab.lineBreakMode = "
                  ".byWordWrapping\nlab.font = {}\nreturn lab\n}}()\n\n"
@@ -339,7 +338,7 @@ def gen_slider_options(info, file_name):
     subview = "label"
   else: # option["img"] is not None
     for option in options:
-      size = option["img"]["rwidth"]*option["img"]["rheight"]
+      size = option["img"]["rwidth"] * option["img"]["rheight"]
       if size > max_size:
         max_size = size
         max_width = option["img"]["width"]
@@ -353,9 +352,9 @@ def gen_slider_options(info, file_name):
   else:
     cv_fill = ".clear"
 
-  if option["rect"].get("fill") is not None:
+  if first_option["rect"].get("fill") is not None:
     cell_fill = ("cell.backGroundColor = {}\n"
-                ).format(utils.create_uicolor(option["rect"]["fill"]))
+                ).format(utils.create_uicolor(first_option["rect"]["fill"]))
   else:
     cell_fill = ""
 

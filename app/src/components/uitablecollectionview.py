@@ -119,8 +119,7 @@ class UITableCollectionView(BaseComponent):
 
     Returns (str): swift code for heightForRowAt/sizeForItemAt
     """
-    width = cells[0]['width']
-    height = cells[0]['height']
+    width, height = cells[0]['width'], cells[0]['height']
 
     if self.info.get('type') == 'UITableView':
       return ("func tableView(_ tableView: UITableView, heightForRowAt "
@@ -183,8 +182,7 @@ class UITableCollectionView(BaseComponent):
     Returns (str): swift code for setting size of header
     """
     if header is not None:
-      width = header['width']
-      height = header['height']
+      width, height = header['width'], header['height']
 
     if self.info['type'] == 'UITableView':
       if header is None: # means tv_separate is True

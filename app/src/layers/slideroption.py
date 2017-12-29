@@ -5,9 +5,7 @@ class SliderOption(BaseLayer):
   Class representing an SliderOption layer in Sketch
   """
   def parse_elem(self, elem):
-    text = None
-    img = None
-    rect = None
+    text = img = rect = None
 
     for child in elem["children"]:
       if child["type"] == "UILabel":
