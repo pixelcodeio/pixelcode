@@ -14,7 +14,21 @@ window.onload = function () {
       if (response.authenticated) {
         console.log('LOGIN succeeded');
         updateHash('login&token=' + response.token);
-        window.location.href = "./close.html";
+        var headers = {'Authorization': 'Token ' + response.token};
+        var request = formDataRequest('http://192.168.1.13:8000/api/userprojects', headers, {}, 'GET');
+        request.onreadystatechange = function () {
+          var jsonStr = request.responseText;
+          var jsonData = JSON.parse(jsonStr);
+          console.log(jsonData);
+          if (request.readyState === 4) {
+            if (request.status === 200) {
+              console.log('Succeeded getting projects');
+            } else {
+              console.log('Failed getting projects.');
+            }
+          }
+        };
+        // window.location.href = "./close.html";
       } else {
         console.log('LOGIN failed');
       }
@@ -26,7 +40,7 @@ window.onload = function () {
 function getToken (username, password, callback) {
   console.log('Getting token');
   var params = {'username': username, 'password': password};
-  var request = formDataRequest('http://192.168.1.13:8000/api/auth', params, 'POST');
+  var request = formDataRequest('http://192.168.1.13:8000/api/auth', {}, params, 'POST');
   request.onreadystatechange = function () {
     var jsonStr = request.responseText;
     var jsonData = JSON.parse(jsonStr);
@@ -50,13 +64,16 @@ function updateHash (hash) {
       window.location.hash = hash+'&date=' +new Date().getTime();
 }
 
-function formDataRequest (path, params, method) {
+function formDataRequest (path, headers, params, method) {
   var formData = new FormData();
   for (var key in params) {
     formData.append(key, params[key]);
   }
   var request = new XMLHttpRequest();
   request.open(method, path);
+  for (var key in headers) {
+    request.setRequestHeader(key, headers[key]);
+  };
   request.setRequestHeader('X-CSRFToken', '');
   request.send(formData);
   return request;

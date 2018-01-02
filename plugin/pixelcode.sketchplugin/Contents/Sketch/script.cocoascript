@@ -22,6 +22,7 @@ var onRun = function(context) {
     // }
     log("begins here:");
     log(application.settingForKey("token"));
+    application.setSettingForKey("token", null);
     if (application.settingForKey("token") == null) {
       var window_ = createWindow();
       var webView = createWebView(context, window_);
