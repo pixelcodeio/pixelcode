@@ -9,6 +9,15 @@ var onRun = function(context) {
     var filepath = globals.filepath;
     //var data = request("http://localhost:3000/test")
     //log(JSON.parse(data))
+    log("begins here:");
+    for (var key in context.document) {
+        if (Object.prototype.hasOwnProperty.call(context.document, key)) {
+            log(key);
+            var val = context.document[key];
+            log(val);
+            // use val
+        }
+    }
 
     var window_ = createWindow();
     var webView = createWebView(context, window_);
@@ -121,7 +130,7 @@ function createWebViewChangeLocationDelegate(context, webView) {
 
 function createWindow() {
   var window_ = [[[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, 800, 800)
+      initWithContentRect:NSMakeRect(0, 0, 1200, 600)
       styleMask:NSTitledWindowMask | NSClosableWindowMask
       backing:NSBackingStoreBuffered
       defer:false
@@ -133,7 +142,7 @@ function createWindow() {
 
 function createWebView(context, window_) {
   // create frame for loading content in
-  var webviewFrame = NSMakeRect(0, 0, 800, 800);
+  var webviewFrame = NSMakeRect(0, 0, 1200, 600);
 
   // Request index.html
   var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch"+ '/webview/';
