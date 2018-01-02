@@ -1,5 +1,6 @@
 @import "globals.cocoascript";
-@import 'MochaJSDelegate.js'
+@import "MochaJSDelegate.js";
+@import "webview.cocoascript";
 
 var onRun = function(context) {
     var sketch = context.api();
@@ -9,194 +10,54 @@ var onRun = function(context) {
     var filepath = globals.filepath;
     //var data = request("http://localhost:3000/test")
     //log(JSON.parse(data))
-    log("begins here:");
-    for (var key in context.document) {
-        if (Object.prototype.hasOwnProperty.call(context.document, key)) {
-            log(key);
-            var val = context.document[key];
-            log(val);
-            // use val
-        }
-    }
+    var application = new sketch.Application(context);
 
-    var window_ = createWindow();
-    var webView = createWebView(context, window_);
-    // createWebViewRedirectDelegate(context, webView);
-    createWebViewChangeLocationDelegate(context, webView);
-
-    [NSApp run];
-
-    // if (layers.isEmpty) {
-    //     context.document.showMessage("PixelCode: No artboard selected.");
+    // for (var key in application.Application) {
+    //     if (Object.prototype.hasOwnProperty.call(application.Application, key)) {
+    //         log(key);
+    //         var val = application.Application[key];
+    //         log(val);
+    //         // use val
+    //     }
     // }
-    // else {
-    //     layers.iterate(function(layer) {
-    //         if (layer.isArtboard) {
-    //             output = exportJSON(layer, filepath);
-    //
-    //             var options = {
-    //                 "scales" : "1",
-    //                 "formats" : "svg",
-    //                 "overwriting" : "true",
-    //                 "output": filepath
-    //             };
-    //             layer.export(options);
-    //             layer.iterate(function(currentLayer) {
-    //                 renameLayers(currentLayer, output["originalNames"]);
-    //             });
-    //             context.document.showMessage("Pixelcode: Export finished!");
-    //         } else {
-    //             context.document.showMessage("Pixelcode: No artboard selected.");
-    //         }
-    //     });
-    // };
-};
+    log("begins here:");
+    log(application.settingForKey("token"));
+    if (application.settingForKey("token") == null) {
+      var window_ = createWindow();
+      var webView = createWebView(context, window_);
+      // createWebViewRedirectDelegate(application, context, webView);
+      createWebViewChangeLocationDelegate(application, context, webView);
 
-/**
- * Create Webview Redirect Delegate
- *
- * Creates a Cocoa delegate class, then registers a callback for the redirection event.
- */
-function createWebViewRedirectDelegate(context, webView) {
-    /**
-     * Create a Delegate class and register it
-     */
-    var className = 'MochaJSDelegate_DynamicClass_SymbolUI_WebviewRedirectDelegate' + NSUUID.UUID().UUIDString();
-    var delegateClassDesc = MOClassDescription.allocateDescriptionForClassWithName_superclass_(className, NSObject);
-    delegateClassDesc.registerClass();
-
-    /**
-     * Register the "event" to respond to and specify the callback function
-     */
-    var redirectEventSelector = NSSelectorFromString('webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:');
-    delegateClassDesc.addInstanceMethodWithSelector_function_(
-      // The "event" - the WebView is about to redirect soon
-      NSSelectorFromString('webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:'),
-
-      // The "listener" - a callback function to fire
-      function(sender, URL) {
-        // Ensure its the URL we want to respond to.
-        // You can also fire different methods based on the URL if you have multiple events.
-        if ('https://localhost:8080/symbolexport' != URL) {
-          return;
-        }
-        // A special method to export symbols - we haven't created it yet
-        context.document.showMessage("Exported symbols!");
-      }
-    );
-
-    // Associate the new delegate to the WebView we already created
-    webView.setFrameLoadDelegate_(
-      NSClassFromString(className).new()
-    );
-
-};
-
-function createWebViewChangeLocationDelegate(context, webView) {
-    /**
-     * Create a Delegate class and register it
-     */
-    var className = 'MochaJSDelegate_DynamicClass_SymbolUI_WebviewRedirectDelegate' + NSUUID.UUID().UUIDString();
-    var delegateClassDesc = MOClassDescription.allocateDescriptionForClassWithName_superclass_(className, NSObject);
-    delegateClassDesc.registerClass();
-
-    /**
-     * Register the "event" to respond to and specify the callback function
-     */
-    var windowObject = webView.windowScriptObject();
-    var changeLocationEventSelector = NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:');
-    delegateClassDesc.addInstanceMethodWithSelector_function_(
-      // The "event" - the WebView is about to redirect soon
-      NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:'),
-
-      // The "listener" - a callback function to fire
-      function(webView, webFrame) {
-        var locationHash = windowObject.evaluateWebScript("window.location.hash");
-        //The hash object exposes commands and parameters
-        //In example, if you send updateHash('add','artboardName','Mark')
-        //You’ll be able to use hash.artboardName to return 'Mark'
-        var hash = parseHash(locationHash);
-        log(hash);
-      }
-    );
-
-    // Associate the new delegate to the WebView we already created
-    webView.setFrameLoadDelegate_(
-      NSClassFromString(className).new()
-    );
-
-};
-
-
-function createWindow() {
-  var window_ = [[[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, 1200, 600)
-      styleMask:NSTitledWindowMask | NSClosableWindowMask
-      backing:NSBackingStoreBuffered
-      defer:false
-    ] autorelease];
-  window_.center();
-  window_.makeKeyAndOrderFront_(window_);
-  return window_;
-}
-
-function createWebView(context, window_) {
-  // create frame for loading content in
-  var webviewFrame = NSMakeRect(0, 0, 1200, 600);
-
-  // Request index.html
-  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch"+ '/webview/';
-  var webviewHtmlFile = webviewFolder + 'index.html';
-  log(webviewHtmlFile);
-  var requestUrl      = [NSURL fileURLWithPath:webviewHtmlFile];
-  var urlRequest      = [NSMutableURLRequest requestWithURL:requestUrl];
-
-  // Create the WebView, frame, and set content
-  var webView = WebView.new();
-  webView.initWithFrame(webviewFrame);
-  webView.mainFrame().loadRequest(urlRequest);
-  window_.contentView().addSubview(webView);
-
-  return webView;
-}
-
-function parseHash(aURL) {
-  aURL = aURL;
-  var vars = {};
-  var hashes = aURL.slice(aURL.indexOf('#') + 1).split('&');
-
-    for(var i = 0; i < hashes.length; i++) {
-       var hash = hashes[i].split('=');
-
-       if(hash.length > 1) {
-         vars[hash[0].toString()] = hash[1];
-       } else {
-        vars[hash[0].toString()] = null;
-       }
+      [NSApp run];
+      return;
     }
 
-    return vars;
-}
+    log("Exporting now:")
+    if (layers.isEmpty) {
+        context.document.showMessage("PixelCode: No artboard selected.");
+    }
+    else {
+        layers.iterate(function(layer) {
+            if (layer.isArtboard) {
+                output = exportJSON(layer, filepath);
 
-
-function request(queryURL) {
-   var request = NSMutableURLRequest.new();
-   [request setHTTPMethod:@"POST"];
-   [request setURL:[NSURL URLWithString:queryURL]];
-
-   var session = NSURLSession.sharedSession();
-   var task = session.dataTaskWithRequest(request);
-   task.resume()
-
-   var error = NSError.new();
-   var responseCode = null;
-
-   var oResponseData = [NSURLConnection sendSynchronousRequest:request returningResponse:responseCode error:error];
-
-   var dataString = [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding];
-
-   return dataString;
-}
+                var options = {
+                    "scales" : "1",
+                    "formats" : "svg",
+                    "overwriting" : "true",
+                    "output": filepath
+                };
+                layer.export(options);
+                layer.iterate(function(currentLayer) {
+                    renameLayers(currentLayer, output["originalNames"]);
+                });
+                context.document.showMessage("Pixelcode: Export finished!");
+            } else {
+                context.document.showMessage("Pixelcode: No artboard selected.");
+            }
+        });
+    };
+};
 
 function renameLayers(layer, originalNames) {
   layer.name = originalNames[layer.id];

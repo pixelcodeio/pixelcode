@@ -1,103 +1,43 @@
 <!doctype html>
 <html>
   <head>
-        <style> html { width: 100%; height: 100%; background: cornflowerblue; }
-    </style>
+        <link rel="stylesheet" href="./style.css">
   </head>
   <body>
-        Hello there!
-        <!-- Header -->
-        <h1>Export All Symbols as Assets</h1>
-        <button id="export">Export Now</button>
-
         <!-- Login Form -->
-        <div class="container">
-          <label><b>Username</b></label>
-          <input id = "username" type="text" placeholder="Enter Username" name="uname" required>
+        <div class = "parent container">
+          <h1>Welcome Back!</h1>
 
-          <label><b>Password</b></label>
-          <input id = "password" type="password" placeholder="Enter Password" name="psw" required>
+          <div class="child">
+            <div class="username">
+              <label>USERNAME</label>
+            </div>
+            <div>
+              <input id="username" type="text" placeholder="johnsmith" name="uname" required>
+            </div>
+          </div>
 
-          <button id="login" type="submit">Login</button>
-          <input type="checkbox" checked="checked"> Remember me
+          <div class="child">
+            <div class = "password">
+              <label>PASSWORD</label>
+            </div>
+            <div>
+              <input id="password" type="password" placeholder="********" name="psw" required>
+            </div>
+          </div>
+
+          <div class="child">
+            <div class = "login">
+              <button id="loginBtn" type="submit">Login</button>
+            </div>
+          </div>
+
+          <div class="child">
+            <p style="color: rgb(146, 145, 153); font-size: 14px; text-align: center;">
+              Don't have an account?<a href="https://pixelcode.io/" style="color: rgb(87, 79, 183); font-weight: 400;">&nbsp;Create a free one!</a>
+          </div>
         </div>
 
-        <button id="post">Send POST Request</button>
-
-        <script>
-          window.location.href = 'https://pixelcode.io/';
-          /**
-           * Export assets when button is clicked
-           */
-          var exportBtn = document.getElementById('export');
-          exportBtn.onclick = function() {
-              //window.location.href = 'https://localhost:8080/symbolexport';
-              window.location.href = 'https://pixelcode.io/';
-          }
-
-          var loginBtn = document.getElementById('login');
-          loginBtn.onclick = function() {
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
-            updateHash('login&username=' + username + '&password=' + password);
-          }
-
-          var postBtn = document.getElementById('post');
-          postBtn.onclick = function() {
-            formDataRequest('http://localhost:3000/test', {}, "POST");
-          }
-
-          function updateHash(hash) {
-          		//We can send a simple command or a command with a parameter and value
-          		//You can extend this function to send multiple values. script.js will parse
-          		//all the values and expose them in the hash object so you can use them
-          		//new Date is there just to make sure the url is alwasy different
-          			window.location.hash = hash+'&date=' +new Date().getTime();
-          }
-
-          function formDataRequest(path, params, method) {
-            var formData = new FormData();
-            for (var key in params) {
-              formData.append(key, params[key]);
-            }
-            var request = new XMLHttpRequest();
-            request.open(method, path);
-            request.send(formData);
-            request.onreadystatechange = function() {
-              if (request.readyState == 4) {
-                if (request.status == 200) {
-                  var json_data = request.responseText;
-                  console.log(json_data);
-                }
-              }
-            }
-          }
-
-          // Use this to send post request and display result on webview
-          function post(path, params, method) {
-              method = method || "post"; // Set method to post by default if not specified.
-
-              // The rest of this code assumes you are not using a library.
-              // It can be made less wordy if you use one.
-              var form = document.createElement("form");
-              form.setAttribute("method", method);
-              form.setAttribute("action", path);
-
-              for(var key in params) {
-                  //if(params.hasOwnProperty(key)) {
-                    var hiddenField = document.createElement("input");
-                    hiddenField.setAttribute("type", "hidden");
-                    hiddenField.setAttribute("name", key);
-                    hiddenField.setAttribute("value", params[key]);
-
-                    form.appendChild(hiddenField);
-                  //}
-              }
-
-              document.body.appendChild(form);
-              form.submit();
-          }
-
-        </script>
+        <script src="./script.js"></script>
   </body>
 </html>
