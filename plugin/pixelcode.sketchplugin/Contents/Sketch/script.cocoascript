@@ -8,8 +8,6 @@ var onRun = function(context) {
     var layers = sketch.selectedDocument.selectedLayers;
     //var filepath = "/Users/Young/Documents/pixelcode/app/tests/";
     var filepath = globals.filepath;
-    //var data = request("http://localhost:3000/test")
-    //log(JSON.parse(data))
     var application = new sketch.Application(context);
 
     // for (var key in application.Application) {
@@ -24,8 +22,8 @@ var onRun = function(context) {
     log(application.settingForKey("token"));
     // application.setSettingForKey("token", null);
     if (application.settingForKey("token") == null) {
-      var window_ = createWindow();
-      var webView = createWebView(context, window_, 'index.html');
+      var window_ = createWindow(520, 496);
+      var webView = createWebView(context, window_, 'index.html', 520, 496);
       // createWebViewRedirectDelegate(application, context, webView);
       createWebViewChangeLocationDelegate(application, context, webView);
 
@@ -42,8 +40,8 @@ var onRun = function(context) {
       // createProjectsJSFile(projects);
       // log(projects);
       // log("created projects.js");
-      var window_ = createWindow();
-      var webView = createWebView(context, window_, 'export.html');
+      var window_ = createWindow(560, 496);
+      var webView = createWebView(context, window_, 'export.html', 560, 496);
       [NSApp run];
       return;
     }

@@ -16,7 +16,7 @@ function loggedIn (response) {
   if (response.authenticated) {
     console.log('LOGIN succeeded');
     updateHash('login&token=' + response.token);
-    window.location.href = './close.html';
+    window.location.href = '../html/close.html';
   } else {
     console.log('LOGIN failed');
   }

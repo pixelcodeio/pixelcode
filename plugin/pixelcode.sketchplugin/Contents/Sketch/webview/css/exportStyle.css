@@ -11,18 +11,13 @@ header {
   display: flex;
   flex-direction: column;
   border-bottom-width:1px;
-  border-bottom-color: #574FB7;
+  border-bottom-color: #DBDBDB;
   border-bottom-style: solid;
 }
 
 #headline {
-  margin-top: 15px;
-}
-
-#error {
-  color: red;
-  font-size: 12px;
-  margin-bottom: 15px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .hidden {
@@ -58,7 +53,6 @@ header label {
 
 img {
   max-width: 99px;
-  max-height: 99px;
 }
 
 .project {
@@ -67,12 +61,12 @@ img {
   margin-top: 10px;
 }
 
-/* .project:hover {
-  background: #F6F6F6;
-} */
+.project:hover {
+  background: #F4F4F4;
+}
 
 .active {
-  background: #F6F6F6;
+  background: #FAFAFA;
 }
 
 .info {
@@ -112,14 +106,15 @@ img {
 }
 
 #cancel, #export {
-  margin: 10px;
+  margin: 12px;
 }
 
 #cancel {
-  background: #F6F6F6;
+  color: #222;
+  background: #EBEBEB;
 }
 
 #export {
   background: #574FB7;
-  color: white;
+  color: #847FCA;
 }

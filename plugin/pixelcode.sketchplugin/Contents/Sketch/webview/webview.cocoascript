@@ -76,9 +76,9 @@ function createWebViewChangeLocationDelegate(application, context, webView) {
 };
 
 
-function createWindow() {
+function createWindow(width, height) {
   var window_ = [[[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, 750, 600)
+      initWithContentRect:NSMakeRect(0, 0, width, height)
       styleMask:NSTitledWindowMask | NSClosableWindowMask
       backing:NSBackingStoreBuffered
       defer:false
@@ -94,12 +94,12 @@ function createProjectsJSFile(projects) {
   [file writeToFile:filePath+"projects.json" atomically:true encoding:NSUTF8StringEncoding error:null];
 }
 
-function createWebView(context, window_, htmlFile) {
+function createWebView(context, window_, htmlFile, width, height) {
   // create frame for loading content in
-  var webviewFrame = NSMakeRect(0, 0, 750, 600);
+  var webviewFrame = NSMakeRect(0, 0, width, height);
 
   // Request index.html
-  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/";
+  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/html/";
   var webviewHtmlFile = webviewFolder + htmlFile;
   log(webviewHtmlFile);
   var requestUrl      = [NSURL fileURLWithPath:webviewHtmlFile];
