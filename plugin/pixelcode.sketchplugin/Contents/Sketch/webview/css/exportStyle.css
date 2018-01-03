@@ -85,6 +85,26 @@ img {
   font-size: 12px;
 }
 
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.replaceScreens {
+  display: flex;
+  flex-direction: row;
+  margin-top: 8px;
+  magrgin-bottom: 16px;
+  font-size: 13px;
+  padding:10px;
+}
+
+#replace {
+  margin-top:2px;
+  margin-left: 4px;
+}
+
 .buttons {
   display: flex;
   flex-direction: row;
