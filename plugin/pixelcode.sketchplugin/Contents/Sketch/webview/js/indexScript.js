@@ -24,24 +24,6 @@ function loggedIn (response) {
 
 function getToken (username, password, callback) {
   console.log('Getting token');
-  // var headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
-  // var body = JSON.stringify({'username': username, 'password': password});
-  // var options = {'method': 'POST', 'body': body};
-  // console.log(options);
-  // fetch('http://192.168.1.13:8000/api/auth', options)
-  //   .then(response => {
-  //     if (response.ok) {
-  //       console.log('response ok');
-  //       var json = response.json();
-  //       console.log('Got token');
-  //       console.log(json);
-  //       return callback({'authenticated': true, 'token': json.token});
-  //     } else {
-  //       return callback({'authenticated': false});
-  //     }
-  //   }).catch(error => {
-  //     console.log(error);
-  //   });
   var params = {'username': username, 'password': password};
   var request = formDataRequest('http://192.168.1.13:8000/api/auth', {}, params, 'POST');
   request.onreadystatechange = function () {
@@ -61,10 +43,10 @@ function getToken (username, password, callback) {
 }
 
 function updateHash (hash) {
-    //We can send a simple command or a command with a parameter and value
-    //You can extend this function to send multiple values. script.js will parse
-    //all the values and expose them in the hash object so you can use them
-    //new Date is there just to make sure the url is alwasy different
+    // We can send a simple command or a command with a parameter and value
+    // You can extend this function to send multiple values. script.js will parse
+    // all the values and expose them in the hash object so you can use them
+    // new Date is there just to make sure the url is alwasy different
       window.location.hash = hash+'&date=' +new Date().getTime();
 }
 
