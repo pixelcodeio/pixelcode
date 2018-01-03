@@ -90,10 +90,10 @@ class Interpreter(object):
       if comp["id"] in navbar_item_ids:
         continue # navbar items already generated with navbar
       elif type_ == "UITabBar":
-        gen_tabbar(self, comp, in_v)
+        gen_tabbar_file(self, comp, in_v)
       else:
         if type_ == "SliderView":
-          gen_slider_view_components(self, comp, in_v)
+          gen_slider_view_pieces(self, comp, in_v)
         else:
           if type_ == "UITableView" or type_ == "UICollectionView":
             tc_elem = comp

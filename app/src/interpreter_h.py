@@ -276,7 +276,7 @@ def add_methods(methods):
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
 
-def gen_tabbar(interpreter, comp, in_v):
+def gen_tabbar_file(interpreter, comp, in_v):
   """
   Returns (None): Generates tabbar file in interpreter's swift dictionary.
   """
@@ -291,8 +291,9 @@ def gen_tabbar(interpreter, comp, in_v):
   interpreter.swift[vc_name] = C
   info["methods"] = concat_dicts(info["methods"], cf.methods)
 
-def gen_slider_view_components(interpreter, comp, in_v):
+def gen_slider_view_pieces(interpreter, comp, in_v):
   """
+  Returns (None): Generates slider view pieces in interpreter's swift dict.
   """
   # Generate custom SliderOptions class
   slider_opts_id = utils.uppercase(comp["slider_options"]["id"])
