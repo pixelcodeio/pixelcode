@@ -1,13 +1,27 @@
 $(document).ready(function () {
   var options = {'method': 'GET'};
+  var selectedIndex = -1;
+  var projects = {};
   fetch('./projects.json', options)
-  .then(response => response.json())
-  .then(json => {
-    displayProjects(json);
-    $('.project').click(function () {
-      $('.project').removeClass('active');
-      $(this).addClass('active');
+    .then(response => response.json())
+    .then(json => {
+      projects = json;
+      displayProjects(json);
+      $('.project').click(function () {
+        $('#error').addClass('hidden');
+        $('.project').removeClass('active');
+        $(this).addClass('active');
+        selectedIndex = $(this).attr('index');
+        console.log(selectedIndex);
+      });
     });
+  $('#export').click(function () {
+    if (selectedIndex > -1) {
+      $('#error').addClass('hidden');
+      console.log(projects[selectedIndex]);
+    } else {
+      $('#error').removeClass('hidden');
+    }
   });
 });
 
@@ -33,7 +47,7 @@ function generateProjectHTML (project, index) {
   } else {
     imageHTML = '<img src = "' + image + '">\n';
   }
-  var html = '<div class = "project" id = project' + index + '>\n' +
+  var html = '<div class = "project" index = ' + index + '>\n' +
              '<div class = "image">\n' +
              imageHTML +
              '</div>\n' +
