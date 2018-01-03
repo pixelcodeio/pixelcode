@@ -153,6 +153,8 @@ class Parser(object):
           elem.name = "header"
         elif utils.word_in_str("listView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("section", elem["id"]):
+          elem.name = "section"
         elif utils.word_in_str("sliderContent", elem["id"]):
           elem.name = "slidercontent"
         elif utils.word_in_str("sliderOptions", elem["id"]):
