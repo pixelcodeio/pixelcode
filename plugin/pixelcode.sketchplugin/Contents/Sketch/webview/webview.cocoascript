@@ -65,7 +65,6 @@ function createWebViewChangeLocationDelegate(application, context, webView) {
         log(hash);
         var token = hash["token"];
         application.setSettingForKey("token", token);
-        webView.close();
       }
     );
 
@@ -89,13 +88,19 @@ function createWindow() {
   return window_;
 }
 
-function createWebView(context, window_) {
+function createProjectsJSFile(projects) {
+  var filePath = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/";
+  var file = NSString.stringWithString(JSON.stringify(projects, null, "\t"));
+  [file writeToFile:filePath+"projects.json" atomically:true encoding:NSUTF8StringEncoding error:null];
+}
+
+function createWebView(context, window_, htmlFile) {
   // create frame for loading content in
   var webviewFrame = NSMakeRect(0, 0, 1200, 600);
 
   // Request index.html
-  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch"+ '/webview/';
-  var webviewHtmlFile = webviewFolder + 'index.html';
+  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/";
+  var webviewHtmlFile = webviewFolder + htmlFile;
   log(webviewHtmlFile);
   var requestUrl      = [NSURL fileURLWithPath:webviewHtmlFile];
   var urlRequest      = [NSMutableURLRequest requestWithURL:requestUrl];
@@ -127,11 +132,21 @@ function parseHash(aURL) {
     return vars;
 }
 
+function getProjects(token) {
+  var headers = {'Authorization': 'Token ' + token};
+  var data = request('http://192.168.1.13:8000/api/userprojects', headers, 'GET');
+  var json = JSON.parse(data);
+  return json;
+}
 
-function request(queryURL) {
+function request(queryURL, headers, method) {
    var request = NSMutableURLRequest.new();
-   [request setHTTPMethod:@"POST"];
+   [request setHTTPMethod:method];
    [request setURL:[NSURL URLWithString:queryURL]];
+
+   for (var key in headers) {
+      [request addValue:headers[key] forHTTPHeaderField:key];
+   };
 
    var session = NSURLSession.sharedSession();
    var task = session.dataTaskWithRequest(request);

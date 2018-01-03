@@ -1,49 +1,53 @@
 window.onload = function () {
-  console.log('In script');
+  console.log('In index script');
   var loginBtn = document.getElementById('loginBtn');
   console.log(loginBtn);
   loginBtn.onclick = function () {
     console.log('Login button clicked');
-    // var username = document.getElementById('username').value;
-    // var password = document.getElementById('password').value;
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
     // updateHash('login&username=' + username + '&password=' + password);
-    var loggedIn = function (response) {
-      console.log(response);
-      if (response.authenticated) {
-        console.log('LOGIN succeeded');
-        updateHash('login&token=' + response.token);
-        var headers = {'Authorization': 'Token ' + response.token};
-        var request = formDataRequest('http://192.168.1.13:8000/api/userprojects', headers, {}, 'GET');
-        request.onreadystatechange = function () {
-          var jsonStr = request.responseText;
-          var jsonData = JSON.parse(jsonStr);
-          console.log(jsonData);
-          if (request.readyState === 4) {
-            if (request.status === 200) {
-              console.log('Succeeded getting projects');
-            } else {
-              console.log('Failed getting projects.');
-            }
-          }
-        };
-        // window.location.href = "./close.html";
-      } else {
-        console.log('LOGIN failed');
-      }
-    };
     getToken(username, password, loggedIn);
   };
 };
 
+function loggedIn (response) {
+  console.log(response);
+  if (response.authenticated) {
+    console.log('LOGIN succeeded');
+    updateHash('login&token=' + response.token);
+    window.location.href = './close.html';
+  } else {
+    console.log('LOGIN failed');
+  }
+}
+
 function getToken (username, password, callback) {
   console.log('Getting token');
+  // var headers = {'Accept': 'application/json', 'Content-Type': 'application/json'};
+  // var body = JSON.stringify({'username': username, 'password': password});
+  // var options = {'method': 'POST', 'body': body};
+  // console.log(options);
+  // fetch('http://192.168.1.13:8000/api/auth', options)
+  //   .then(response => {
+  //     if (response.ok) {
+  //       console.log('response ok');
+  //       var json = response.json();
+  //       console.log('Got token');
+  //       console.log(json);
+  //       return callback({'authenticated': true, 'token': json.token});
+  //     } else {
+  //       return callback({'authenticated': false});
+  //     }
+  //   }).catch(error => {
+  //     console.log(error);
+  //   });
   var params = {'username': username, 'password': password};
   var request = formDataRequest('http://192.168.1.13:8000/api/auth', {}, params, 'POST');
   request.onreadystatechange = function () {
     var jsonStr = request.responseText;
     var jsonData = JSON.parse(jsonStr);
+    console.log(jsonData);
     if (request.readyState === 4) {
       if (request.status === 200) {
         callback({'authenticated': true, 'token': jsonData.token});
@@ -65,6 +69,7 @@ function updateHash (hash) {
 }
 
 function formDataRequest (path, headers, params, method) {
+  console.log('making request');
   var formData = new FormData();
   for (var key in params) {
     formData.append(key, params[key]);
