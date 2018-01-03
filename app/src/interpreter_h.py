@@ -1,4 +1,6 @@
 import utils
+from components.component_factory import ComponentFactory
+
 
 def add_navbar_items(components):
   """
@@ -178,18 +180,6 @@ def gen_viewcontroller_header(view_controller, info, declare_vars):
   info["components"] = adjust_components(info["components"])
   return header
 
-def gen_tabbar_vc(view_controller, swift, info):
-  """
-  Args:
-    swift (str): code generated for the tabbar
-
-  Returns (str): code to generate tabbar view controller.
-  """
-  C = gen_viewcontroller_header(view_controller, info, False)
-  C = C.replace(': UIViewController', ': UITabBarController')
-  C += ("{}}}\n}}\n").format(swift)
-  return C
-
 def move_collection_view(swift, info):
   """
   Returns (str):
@@ -252,29 +242,6 @@ def subclass_tc(swift, tc_elem):
 
   return swift
 
-def gen_inset_label():
-  """
-  Returns (str): swift code of our custom UILabel
-  """
-  return ("import UIKit\n\n"
-          "class InsetLabel: UILabel {\n"
-          "let topInset = CGFloat(-10)\n"
-          "let bottomInset = CGFloat(-10)\n"
-          "let leftInset = CGFloat(0)\n"
-          "let rightInset = CGFloat(0)\n\n"
-          "override func drawText(in rect: CGRect) {\n"
-          "let insets: UIEdgeInsets = UIEdgeInsets(top: topInset, left: "
-          "leftInset, bottom: bottomInset, right: rightInset)\n"
-          "super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))\n"
-          "}\n\n"
-          "override public var intrinsicContentSize: CGSize {\n"
-          "var intrinsicSuperViewContentSize = super.intrinsicContentSize\n"
-          "intrinsicSuperViewContentSize.height += topInset + bottomInset\n"
-          "intrinsicSuperViewContentSize.width += leftInset + rightInset\n"
-          "return intrinsicSuperViewContentSize\n"
-          "}\n"
-          "}\n")
-
 def concat_dicts(d1, d2):
   """
   Args:
@@ -308,6 +275,79 @@ def add_methods(methods):
     else:
       raise Exception("Interpreter_h: Unexpected key in add_methods: " + key)
   return C
+
+def gen_tabbar(interpreter, comp, in_v):
+  """
+  Returns (None): Generates tabbar file in interpreter's swift dictionary.
+  """
+  comp["active_vc"] = interpreter.file_name # name of active view controller
+  cf = ComponentFactory(comp, in_v)
+  # generate tabbar viewcontroller file
+  info = interpreter.info
+  vc_name = utils.uppercase(comp["id"]) + "ViewController"
+  C = gen_viewcontroller_header(vc_name, info, False)
+  C = C.replace(': UIViewController', ': UITabBarController')
+  C += ("{}}}\n}}\n").format(cf.swift)
+  interpreter.swift[vc_name] = C
+  info["methods"] = concat_dicts(info["methods"], cf.methods)
+
+def gen_slider_view_components(interpreter, comp, in_v):
+  """
+  """
+  # Generate custom SliderOptions class
+  slider_opts_id = utils.uppercase(comp["slider_options"]["id"])
+  file_name = interpreter.file_name
+  interpreter.swift[slider_opts_id] = gen_slider_options(comp, file_name)
+  # Generate Content CollectionView
+  content_cf = ComponentFactory(comp["content"], in_v)
+  comp["content_swift"] = content_cf.swift
+  comp["content_methods"] = content_cf.methods["tc_methods"]
+  interpreter.swift[file_name] = subclass_tc(interpreter.swift[file_name],
+                                             comp["content"])
+  # Generate SliderView CollectionViewCell
+  content_id = comp["content"]["id"]
+  cell = comp["content"]["cells"][0]
+  interpreter.file_name = utils.uppercase(comp["id"]) + "CollectionViewCell"
+  if interpreter.contains_nested_tc("cell", content_id, cell):
+    interpreter.gen_file(True)
+  interpreter.file_name = file_name
+
+def gen_inset_label():
+  """
+  Returns (str): swift code of our custom UILabel
+  """
+  return ("import UIKit\n\n"
+          "class InsetLabel: UILabel {\n"
+          "let topInset = CGFloat(-10)\n"
+          "let bottomInset = CGFloat(-10)\n"
+          "let leftInset = CGFloat(0)\n"
+          "let rightInset = CGFloat(0)\n\n"
+          "override func drawText(in rect: CGRect) {\n"
+          "let insets: UIEdgeInsets = UIEdgeInsets(top: topInset, left: "
+          "leftInset, bottom: bottomInset, right: rightInset)\n"
+          "super.drawText(in: UIEdgeInsetsInsetRect(rect, insets))\n"
+          "}\n\n"
+          "override public var intrinsicContentSize: CGSize {\n"
+          "var intrinsicSuperViewContentSize = super.intrinsicContentSize\n"
+          "intrinsicSuperViewContentSize.height += topInset + bottomInset\n"
+          "intrinsicSuperViewContentSize.width += leftInset + rightInset\n"
+          "return intrinsicSuperViewContentSize\n"
+          "}\n"
+          "}\n")
+
+def get_navbar_item_ids(info):
+  """
+  Returns (list): ids of all components inside the given navbar.
+  """
+  items = info["navbar-items"]
+  navbar_item_ids = []
+  navbar_item_ids.extend([i["id"] for i in items["left-buttons"]])
+  navbar_item_ids.extend([i["id"] for i in items["right-buttons"]])
+  if items.get("title") is not None:
+    title = items["title"]
+    navbar_item_ids.append(title["id"])
+    navbar_item_ids.extend(c["id"] for c in title["components"])
+  return navbar_item_ids
 
 def gen_slider_options(info, file_name):
   """
