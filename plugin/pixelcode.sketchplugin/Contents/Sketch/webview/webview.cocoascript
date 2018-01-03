@@ -78,7 +78,7 @@ function createWebViewChangeLocationDelegate(application, context, webView) {
 
 function createWindow() {
   var window_ = [[[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, 1200, 600)
+      initWithContentRect:NSMakeRect(0, 0, 750, 600)
       styleMask:NSTitledWindowMask | NSClosableWindowMask
       backing:NSBackingStoreBuffered
       defer:false
@@ -96,7 +96,7 @@ function createProjectsJSFile(projects) {
 
 function createWebView(context, window_, htmlFile) {
   // create frame for loading content in
-  var webviewFrame = NSMakeRect(0, 0, 1200, 600);
+  var webviewFrame = NSMakeRect(0, 0, 750, 600);
 
   // Request index.html
   var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/";
