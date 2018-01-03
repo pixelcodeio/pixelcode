@@ -101,6 +101,7 @@ class BaseLayer(object):
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "search-icon",
+        "sections",
         "selected_index",
         "separator",
         "slider_options",

@@ -205,6 +205,8 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name in {"image", "polygon", "path", "circle"}:
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "section":
+        parsed_elem = Section(elem, "Section")
       elif elem.name == "slidercontent":
         parsed_elem = Container(elem, "SliderContent")
       elif elem.name == "slideroption":

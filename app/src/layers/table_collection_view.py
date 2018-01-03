@@ -9,34 +9,43 @@ class TableCollectionView(BaseLayer):
   """
   def parse_elem(self, elem):
     rect = None
-    header = None
-    cells = []
+    sections = []
+
     for child in elem["children"]:
-      if utils.word_in_str("bound", child["id"]):
+      if child["type"] == "Section":
+        sections.append(child)
+      elif utils.word_in_str("bound", child["id"]):
         if rect:
-          raise Exception("TableCollectionView: Only one wash allowed in "
-                          + elem["id"])
+          raise Exception("TableCollectionView: Only one bound allowed")
         else:
           rect = child
-      elif child["type"] == "Cell":
-        cells.append(child)
-      elif child["type"] == "Header":
-        if header:
-          raise Exception("TableCollectionView: Only one header allowed "
-                          + elem["id"])
-        else:
-          header = child
-      else:
-        raise Exception("TableCollectionView: Unsupported elem type in "
-                        + elem["id"])
 
-    if not cells:
-      raise Exception("TableCollectionView: No cells in " + elem["id"])
+    if not sections:
+      raise Exception("TableCollectionView: No sections in " + elem["id"])
+    elif rect is None:
+      raise Exception("TableCollectionView: Missing bound in " + elem["id"])
 
+    sections = sorted(sections, key=lambda s: s['y']) # sort by y
+    type_ = elem["type"]
+    sections = [calculate_separator(section, type_) for section in sections]
+
+    separator = [] # separator between sections
+    if len(sections) >= 2:
+      separator = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
+
+    elem["rect"] = rect
+    elem["sections"] = sections
+    elem["separator"] = separator
+    return super().parse_elem(elem)
+
+  def calculate_separator(self, section, type_):
+    """
+    Returns (dict): Section dictionary with separator key added.
+    """
+    cells = section["cells"]
     separator = []
     if len(cells) >= 2:
-      cells = sorted(cells, key=lambda c: c['y']) # sort by y
-      if elem['type'] == 'UITableView':
+      if type_ == 'UITableView':
         vert_sep = cells[1]['y'] - cells[0]['y'] - cells[0]['rheight']
         separator = [vert_sep]
       else:
@@ -46,10 +55,5 @@ class TableCollectionView(BaseLayer):
         if len(cells) > npr: # more than one row exists
           vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
           separator.append(vert_sep)
-
-    elem["rect"] = rect
-    elem["header"] = header
-    elem["cells"] = cells
-    elem["separator"] = separator
-
-    return super().parse_elem(elem)
+    section["separator"] = separator
+    return section

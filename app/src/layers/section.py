@@ -28,6 +28,8 @@ class Section(BaseLayer):
     elif rect is None:
       raise Exception("Section: Missing bound in " + elem["id"])
 
+    cells = sorted(cells, key=lambda c: c['y']) # sort by y
+
     elem["rect"] = rect
     elem["header"] = header
     elem["cells"] = cells
