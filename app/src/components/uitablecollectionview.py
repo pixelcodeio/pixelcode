@@ -124,16 +124,38 @@ class UITableCollectionView(BaseComponent):
     width, height = cells[0]['width'], cells[0]['height']
 
     if self.info['type'] == 'UITableView':
-      return ("func tableView(_ tableView: UITableView, heightForRowAt "
-              "indexPath: IndexPath) -> CGFloat {{\n"
-              "return {}.frame.height * {}\n}}\n\n"
-             ).format(self.id, height)
+      C = ("func tableView(_ tableView: UITableView, heightForRowAt "
+           "indexPath: IndexPath) -> CGFloat {{\n")
+           # "return {}.frame.height * {}\n"
+    else:
+      C = ("func collectionView(_ collectionView: UICollectionView, layout "
+           "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
+           "indexPath: IndexPath) -> CGSize {{\n")
+           #"return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height*{2})\n}}\n"
+           #).format(self.id, width, height)
+    C += "switch indexPath.section {{\n"
 
-    return ("func collectionView(_ collectionView: UICollectionView, layout "
-            "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
-            "indexPath: IndexPath) -> CGSize {{\nreturn CGSize"
-            "(width: {0}.frame.width*{1}, height: {0}.frame.height*{2})\n}}\n"
-           ).format(self.id, width, height)
+    for section_index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(section_index)
+      if section["table_separate"]:
+        C += ("if (indexPath.row % 2 == 1) {{\n"
+              "return {}\n}}\n").format(section["separator"][0])
+      C += "switch indexPath.row {{\n"
+      for cell_index, cell in enumerate(section["cells"]):
+        index = cell_index * 2 if section["table_separate"] else cell_index
+        C += ("case {}:\n").format(index)
+        width = section["width"] * cell["width"]
+        height = section["height"] * cell["height"]
+        if self.info["type"] == "UITableView":
+          C += ("return {}.frame.height * {}\n").format(self.id, height)
+        else:
+          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
+                "height*{2})\n").format(self.id, width, height)
+      C += ("default:\nreturn 0\n}}\n")
+    C += ("default:\nreturn 0\n}}\n}}\n\n")
+
+    return C
+
 
   def view_for_header(self, header):
     """
