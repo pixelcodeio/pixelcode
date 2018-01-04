@@ -20,6 +20,7 @@ class Section(BaseLayer):
         cells.append(child)
         index = utils.index_of(child["id"], "cell")
         cell_name = utils.uppercase(child["id"][:index + 4])
+        child["cell_name"] = cell_name
         if custom_cells.get(cell_name) is None:
           custom_cells[cell_name] = child
       elif utils.word_in_str("bound", child["id"]):

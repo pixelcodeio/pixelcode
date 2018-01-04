@@ -147,7 +147,7 @@ def gen_header_header(type_, header): # TODO: Rename this function.
   Returns (str): swift code for generating the header of a header
   """
   class_ = utils.uppercase(header["id"])
-  C = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
+  C = ("import UIKit\nimport SnapKit\n\nclass {}: "
        "UITableViewHeaderFooterView {{\n\n{}"
        "\noverride init(reuseIdentifier: String?) {{\n"
        "super.init(reuseIdentifier: reuseIdentifier)\n"

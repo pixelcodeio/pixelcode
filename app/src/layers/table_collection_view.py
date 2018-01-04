@@ -39,6 +39,7 @@ class TableCollectionView(BaseLayer):
         header = section["header"]
         index = utils.index_of(header["id"], "header")
         header_name = utils.uppercase(header["id"][:index + 6])
+        header["header_name"] = header_name
         if custom_headers.get(header_name) is None:
           custom_headers[header_name] = header
 

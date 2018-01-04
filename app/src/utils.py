@@ -25,7 +25,7 @@ def lowercase(string):
     string with the first letter lowercased. if string is the empty string, the
     empty string is returned.
   """
-  return string[:1].lower() + string[1:] if s else ''
+  return string[:1].lower() + string[1:] if string else ''
 
 def word_in_str(word, string):
   """

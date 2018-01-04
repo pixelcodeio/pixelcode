@@ -197,7 +197,7 @@ class ComponentFactory(object):
       the info instance variable.
     """
     # Set properties for headers' components
-    C = "switch section {{\n"
+    C = "switch section {\n"
     for index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(index)
       if section.get('header') is not None:
@@ -208,15 +208,16 @@ class ComponentFactory(object):
           path = ""
         else:
           path = ", for: indexPath"
+        header_name = header["header_name"]
         C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
-              ' "{}ID"{}) as! {}\n!'
-             ).format(self.info["id"], header['id'], path,
-                      utils.uppercase(header['id']))
+              ' "{}ID"{}) as! {}\n'
+             ).format(self.info["id"], utils.lowercase(header_name), path,
+                      header_name)
         C += self.gen_subcomponents_properties("header", components, ids)
         C += "return header\n"
       else:
         C += "return UIView()\n"
-    C += "default:\nreturn UIView()\n}}\n"
+    C += "default:\nreturn UIView()\n}\n"
     self.info["header_set_prop"] = C
 
     # fst_section = self.info["sections"][0]
@@ -230,7 +231,8 @@ class ComponentFactory(object):
     #   self.info["header_set_prop"] = C
 
     # Set properties for cells' components
-    C = "switch indexPath.section {{\n"
+    default = "default:\nreturn UITableViewCell()\n"
+    C = "switch indexPath.section {\n"
     for section_index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(section_index)
       table_separate = (self.info["type"] == "UITableView" and \
@@ -238,29 +240,28 @@ class ComponentFactory(object):
                         section["separator"][0] == 0))
       section["table_separate"] = table_separate
       if table_separate:
-        C += ("if (indexPath.row % 2 == 1) {{\n"
+        C += ("if (indexPath.row % 2 == 1) {\n"
               "let cell = UITableViewCell()\n"
               "cell.backgroundColor = .clear\n"
               "cell.selectionStyle = .none\n"
               "return cell\n}}\n")
-      C += "switch indexPath.row {{\n"
+      C += "switch indexPath.row {\n"
       for cell_index, cell in enumerate(section["cells"]):
         index = cell_index * 2 if table_separate else cell_index
+        cell_name = cell["cell_name"]
         C += ("case {}:\n"
               "let cell = tableView.dequeueReusableCell(withIdentifier: "
               '"{}ID") as! {}\n'
               "cell.selectionStyle = .none\n"
-             ).format(index, cell["id"], utils.uppercase(cell["id"]))
+             ).format(index, utils.lowercase(cell_name), cell_name)
         # Get ids of components in correct custom cell class
-        name_index = utils.index_of(cell["id"], "cell")
-        cell_name = utils.uppercase(cell["id"][:name_index + 4])
         for name, custom_cell in section["custom_cells"].items():
-          if name == cell_name:
+          if name == cell["cell_name"]:
             ids = [comp["id"] for comp in custom_cell["components"]]
         C += self.gen_subcomponents_properties("cell", cell["components"], ids)
         C += "return cell\n"
-      default = "default:\nreturn UITableViewCell()\n"
-      C += ("{0}}}{0}}}\n").format(default)
+      C += ("{}}}\n").format(default)
+    C += ("{0}}}\n").format(default)
     self.info["cell_set_prop"] = C
 
     # cells = self.info['cells']

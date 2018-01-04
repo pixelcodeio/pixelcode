@@ -7,8 +7,6 @@ class UITableCollectionView(BaseComponent):
     table_separate (bool): whether type is UITableView and cells are separated
   """
   def generate_swift(self):
-    keys = ["cells", "header"]
-
     methods = self.cell_for_row_item()
     methods += self.number_in_section()
     methods += self.size_for_row_item()
@@ -47,7 +45,7 @@ class UITableCollectionView(BaseComponent):
     Returns (str): The swift code for the cellFor(Row/Item)At
     """
     C = ('func tableView(_ tableView: UITableView, cellForRowAt '
-         'indexPath: IndexPath) -> UITableViewCell {{\n')
+         'indexPath: IndexPath) -> UITableViewCell {\n')
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace("table", "collection")
@@ -61,7 +59,7 @@ class UITableCollectionView(BaseComponent):
       C = C.replace("cell.selectionStyle = .none\n", '')
       C = utils.ins_after_key(C, 'ID"', ', for: indexPath')
 
-    C += "}}\n\n"
+    C += "}\n\n"
     return C
 
   def number_in_section(self):
@@ -74,8 +72,8 @@ class UITableCollectionView(BaseComponent):
       C = ("func collectionView(_ collectionView: UICollectionView, "
            "numberOfItems")
 
-    C += ("InSection section: Int) -> Int {{\n"
-          "switch section {{\n")
+    C += ("InSection section: Int) -> Int {\n"
+          "switch section {\n")
     for index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(index)
       num_cells = len(section["cells"])
@@ -84,7 +82,7 @@ class UITableCollectionView(BaseComponent):
       else:
         C += ("return {}\n").format(num_cells)
 
-    C += "default:\nreturn 0\n}}\n}}\n\n"
+    C += "default:\nreturn 0\n}\n}\n\n"
     return C
 
     # if self.info["table_separate"]:
@@ -110,22 +108,22 @@ class UITableCollectionView(BaseComponent):
 
     if self.info['type'] == 'UITableView':
       C = ("func tableView(_ tableView: UITableView, heightForRowAt "
-           "indexPath: IndexPath) -> CGFloat {{\n")
+           "indexPath: IndexPath) -> CGFloat {\n")
            # "return {}.frame.height * {}\n"
     else:
       C = ("func collectionView(_ collectionView: UICollectionView, layout "
            "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
-           "indexPath: IndexPath) -> CGSize {{\n")
+           "indexPath: IndexPath) -> CGSize {\n")
            #"return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height*{2})\n}}\n"
            #).format(self.id, width, height)
-    C += "switch indexPath.section {{\n"
+    C += "switch indexPath.section {\n"
 
     for section_index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(section_index)
       if section["table_separate"]:
         C += ("if (indexPath.row % 2 == 1) {{\n"
               "return {}\n}}\n").format(section["separator"][0])
-      C += "switch indexPath.row {{\n"
+      C += "switch indexPath.row {\n"
       for cell_index, cell in enumerate(section["cells"]):
         index = cell_index * 2 if section["table_separate"] else cell_index
         C += ("case {}:\n").format(index)
@@ -136,8 +134,8 @@ class UITableCollectionView(BaseComponent):
         else:
           C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
                 "height*{2})\n").format(self.id, width, height)
-      C += ("default:\nreturn 0\n}}\n")
-    C += ("default:\nreturn 0\n}}\n}}\n\n")
+      C += ("default:\nreturn 0\n}\n")
+    C += ("default:\nreturn 0\n}\n}\n\n")
 
     return C
 
@@ -165,7 +163,7 @@ class UITableCollectionView(BaseComponent):
 
     C = ("{} {{\n").format(func)
     C += self.info["header_set_prop"]
-    C += "}}\n"
+    C += "}\n\n"
 
     if self.info['type'] == "UICollectionView":
       C = C.replace("switch section", "switch indexPath.section")
@@ -202,13 +200,13 @@ class UITableCollectionView(BaseComponent):
     """
     if self.info["type"] == "UITableView":
       C = ("func tableView(_ tableView: UITableView, heightForHeaderIn"
-           "Section section: Int) -> CGFloat {{\n")
+           "Section section: Int) -> CGFloat {\n")
     else:
       C = ("func collectionView(_ collectionView: UICollectionView, layout "
            "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
-           "HeaderInSection section: Int) -> CGSize {{\n")
+           "HeaderInSection section: Int) -> CGSize {\n")
 
-    C += "switch section {{\n"
+    C += "switch section {\n"
     for index, section in enumerate(self.info["sections"]):
       if section.get("header") is not None:
         C += ("case {}:\n").format(index)
@@ -220,7 +218,7 @@ class UITableCollectionView(BaseComponent):
           C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
                 "height*{2})\n").format(self.id, width, height)
 
-    C += "default:\nreturn 0\n}}\n}}\n\n"
+    C += "default:\nreturn 0\n}\n}\n\n"
     return C
 
 
@@ -304,4 +302,4 @@ class UITableCollectionView(BaseComponent):
     Returns (str): swift code to set height of sections for UITableView
     """
     return ("func numberOfSections(in tableView: UITableView) -> Int {{\n"
-            "return {}\n}}\n").format(len(self.info["sections"]))
+            "return {}\n}}\n\n").format(len(self.info["sections"]))

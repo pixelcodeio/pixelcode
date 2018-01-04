@@ -50,7 +50,7 @@ class Interpreter(object):
     Returns: Fills in the swift instance variable with generated file.
     """
     swift, tc_elem = self.gen_comps(self.info["components"], in_v)
-    self.swift[self.file_name] += swift + "}\n" + \
+    self.swift[self.file_name] += swift + "}\n\n" + \
                                   add_methods(self.info["methods"])
     self.info["methods"] = {}
 
@@ -70,12 +70,12 @@ class Interpreter(object):
     """
     Returns (None): Generates the necessary (table/collection)view files.
     """
-    for section in tc_elem["sections"]:
-      for name, header in section["custom_headers"].items():
-        nested_tc = self.nested_table_collection_view(name, header, tc_elem)
-        if nested_tc is not None:
-          self.gen_table_collection_view_files(nested_tc)
+    for name, header in tc_elem["custom_headers"].items():
+      nested_tc = self.nested_table_collection_view(name, header, tc_elem)
+      if nested_tc is not None:
+        self.gen_table_collection_view_files(nested_tc)
 
+    for section in tc_elem["sections"]:
       for name, cell in section["custom_cells"].items():
         nested_tc = self.nested_table_collection_view(name, cell, tc_elem)
         if nested_tc is not None:
