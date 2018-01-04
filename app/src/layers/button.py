@@ -15,7 +15,7 @@ class Button(BaseLayer):
         if utils.word_in_str('bound', child["id"]):
           rect = child
         else:
-          child['path'] = child['id'] # add path key
+          child['path'] = child['id'] + '.png' # add path key
           bg_img = child
       elif child["type"] == "UILabel":
         text = child

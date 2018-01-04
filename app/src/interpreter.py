@@ -1,4 +1,3 @@
-from components.component_factory import ComponentFactory
 from interpreter_h import *
 
 class Interpreter(object):
@@ -38,8 +37,8 @@ class Interpreter(object):
     self.info["components"] = components
     artboard = utils.uppercase(self.globals["artboard"])
     view_controller = "{}ViewController".format(artboard)
-    C = gen_viewcontroller_header(view_controller, self.info, True) \
-        + utils.set_bg("view", self.globals["background_color"])
+    C = gen_viewcontroller_header(view_controller, self.info, True)
+    C += utils.set_bg("view", self.globals["background_color"])
 
     self.file_name = view_controller
     self.swift[view_controller] = C
@@ -97,52 +96,22 @@ class Interpreter(object):
     for comp in components:
       type_ = comp["type"]
       if comp["id"] in navbar_item_ids:
-        # navbar items already generated with navbar
-        continue
+        continue # navbar items already generated with navbar
       elif type_ == "UITabBar":
-        comp["active_vc"] = self.file_name # name of active view controller
-        cf = ComponentFactory(comp, in_v)
-        # generate tabbar viewcontroller file
-        vc_name = utils.uppercase(comp["id"]) + "ViewController"
-        self.swift[vc_name] = gen_tabbar_vc(vc_name, cf.swift, self.info)
+        gen_tabbar_file(self, comp, in_v)
       else:
-        if type_ == "UILabel":
-          if self.swift.get("InsetLabel") is None: # generate custom UILabel
-            self.swift["InsetLabel"] = gen_inset_label()
-          cf = ComponentFactory(comp, in_v)
-        elif type_ == "SliderView":
-          # Generate custom SliderOptions class
-          slider_opts_id = utils.uppercase(comp["slider_options"]["id"])
-          self.swift[slider_opts_id] = gen_slider_options(comp, self.file_name)
-          # Generate Content CollectionView
-          content_cf = ComponentFactory(comp["content"], in_v)
-          comp["content_swift"] = content_cf.swift
-          comp["content_methods"] = content_cf.methods["tc_methods"]
-          self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
-                                                   comp["content"])
-          cf = ComponentFactory(comp, in_v)
-          # Generate SliderView CollectionViewCell
-          content_id = comp["content"]["id"]
-          cell = comp["content"]["cells"][0]
-          curr_filename = self.file_name
-          self.file_name = utils.uppercase(comp["id"]) + "CollectionViewCell"
-          if self.contains_nested_tc("cell", content_id, cell):
-            self.gen_file(True)
-          self.file_name = curr_filename
+        if type_ == "SliderView":
+          gen_slider_view_pieces(self, comp, in_v)
         else:
-          cf = ComponentFactory(comp, in_v)
           if type_ == "UITableView" or type_ == "UICollectionView":
             tc_elem = comp
           elif type_ == "UINavBar":
-            items = comp["navbar-items"]
-            navbar_item_ids.extend([i["id"] for i in items["left-buttons"]])
-            navbar_item_ids.extend([i["id"] for i in items["right-buttons"]])
-            if items.get("title") is not None:
-              title = items["title"]
-              navbar_item_ids.append(title["id"])
-              navbar_item_ids.extend(c["id"] for c in title["components"])
+            navbar_item_ids.extend(get_navbar_item_ids(comp))
+          elif type_ == "UILabel":
+            self.swift["InsetLabel"] = gen_inset_label() # generate custom Label
+        cf = ComponentFactory(comp, in_v)
         C += cf.swift
-      self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
+        self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
 
   def contains_nested_tc(self, type_, id_, info):
