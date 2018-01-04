@@ -202,8 +202,6 @@ class ComponentFactory(object):
       C += ("case {}:\n").format(index)
       if section.get('header') is not None:
         header = section['header']
-        components = header['components']
-        ids = [comp['id'] for comp in components]
         if self.info["type"] == "UITableView":
           path = ""
         else:
@@ -213,22 +211,15 @@ class ComponentFactory(object):
               ' "{}ID"{}) as! {}\n'
              ).format(self.info["id"], utils.lowercase(header_name), path,
                       header_name)
+        components = header['components']
+        custom_header = self.info["custom_headers"][header_name]
+        ids = [c["id"] for c in custom_header["components"]]
         C += self.gen_subcomponents_properties("header", components, ids)
         C += "return header\n"
       else:
         C += "return UIView()\n"
     C += "default:\nreturn UIView()\n}\n"
     self.info["header_set_prop"] = C
-
-    # fst_section = self.info["sections"][0]
-    # if fst_section.get('header') is not None:
-    #   # set properties for components in header
-    #   ids = []
-    #   C = "case 0:\n"
-    #   components = fst_section['header']['components']
-    #   ids = [comp['id'] for comp in components]
-    #   C += self.gen_subcomponents_properties("header", components, ids)
-    #   self.info["header_set_prop"] = C
 
     # Set properties for cells' components
     default = "default:\nreturn UITableViewCell()\n"
@@ -263,23 +254,6 @@ class ComponentFactory(object):
       C += ("{}}}\n").format(default)
     C += ("{0}}}\n").format(default)
     self.info["cell_set_prop"] = C
-
-    # cells = self.info['cells']
-    # fst_cell_comps = cells[0].get('components')
-    # ids = [comp['id'] for comp in fst_cell_comps]
-    #
-    # C = ""
-    # case = 0
-    # for cell in cells:
-    #   components = cell.get('components')
-    #   if len(components) != len(fst_cell_comps):
-    #     continue
-    #   C += '\ncase {}:\n'.format(case)
-    #   C += self.gen_subcomponents_properties("cell", components, ids)
-    #   C += 'return cell'
-    #   case += 1
-    #
-    # self.info["cell_set_prop"] = C
 
   def gen_subcomponents(self, parent, components, add_constraints):
     """

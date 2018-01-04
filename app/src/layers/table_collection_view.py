@@ -31,7 +31,8 @@ class TableCollectionView(BaseLayer):
 
     separator = [] # separator between sections
     if len(sections) >= 2:
-      separator = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
+      section_sep = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
+      separator.append(section_sep)
 
     custom_headers = {}
     for section in sections:

@@ -35,8 +35,12 @@ class UITableCollectionView(BaseComponent):
     if self.info['type'] == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
     else: # type is UITableView
+      if self.info["separator"]:
+        footer_height = self.info["separator"][0]
+      else:
+        footer_height = 0
       C += ('{0}.sectionHeaderHeight = 0\n'
-            '{0}.sectionFooterHeight = 0\n').format(self.id)
+            '{0}.sectionFooterHeight = {1}\n').format(self.id, footer_height)
 
     return C
 
@@ -85,18 +89,6 @@ class UITableCollectionView(BaseComponent):
     C += "default:\nreturn 0\n}\n}\n\n"
     return C
 
-    # if self.info["table_separate"]:
-    #   return ("{}InSection section: Int) -> Int {{\n"
-    #           "return 1 \n"
-    #           "}}\n\n"
-    #          ).format(func)
-    #
-    # num_cells = self.get_number_cells(cells)
-    # return ("{}InSection section: Int) -> Int {{\n"
-    #         "return {} \n"
-    #         "}}\n\n"
-    #        ).format(func, num_cells)
-
   def size_for_row_item(self):
     """
     Args:
@@ -104,18 +96,13 @@ class UITableCollectionView(BaseComponent):
 
     Returns (str): swift code for heightForRowAt/sizeForItemAt
     """
-    # width, height = cells[0]['width'], cells[0]['height']
-
     if self.info['type'] == 'UITableView':
       C = ("func tableView(_ tableView: UITableView, heightForRowAt "
            "indexPath: IndexPath) -> CGFloat {\n")
-           # "return {}.frame.height * {}\n"
     else:
       C = ("func collectionView(_ collectionView: UICollectionView, layout "
            "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
            "indexPath: IndexPath) -> CGSize {\n")
-           #"return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height*{2})\n}}\n"
-           #).format(self.id, width, height)
     C += "switch indexPath.section {\n"
 
     for section_index, section in enumerate(self.info["sections"]):
@@ -138,7 +125,6 @@ class UITableCollectionView(BaseComponent):
     C += ("default:\nreturn 0\n}\n}\n\n")
 
     return C
-
 
   def view_for_header(self):
     """
@@ -171,25 +157,6 @@ class UITableCollectionView(BaseComponent):
       C = C.replace("dequeueReusableHeaderFooterView(withIdentifier", deq)
 
     return C
-    # C = ("{} {{\n").format(func)
-    # if header is not None:
-    #   C += ('let header = {0}.{1}: "{0}Header"{2}) as! {3}HeaderView\n'
-    #         'switch {4} {{\n'
-    #        ).format(self.id, deq, path, utils.uppercase(self.id), section)
-    #
-    #   C += self.info.get('header_set_prop')
-    #   C += ('return header'
-    #         '\ndefault:\n')
-    #
-    # if self.info["table_separate"]:
-    #   C += ("let view = UIView()\n"
-    #         "view.backgroundColor = .clear\n"
-    #         "return view\n")
-    # else:
-    #   C += "return header\n"
-
-    # C += '}\n\n' if header is None else '}\n}\n\n'
-    # return C
 
   def size_for_header(self):
     """
@@ -221,30 +188,6 @@ class UITableCollectionView(BaseComponent):
     C += "default:\nreturn 0\n}\n}\n\n"
     return C
 
-
-    # if header is not None:
-    #   width, height = header['width'], header['height']
-    #
-    # if self.info['type'] == 'UITableView':
-    #   if header is None: # means table_separate is True
-    #     body = ("return {}\n").format(self.info["separator"][0])
-    #   else:
-    #     body = ("return {}.frame.height * {}\n").format(self.id, height)
-    #     if self.info["table_separate"]:
-    #       body = ("switch section {{\n"
-    #               "case 0:\n{}\n"
-    #               "default:\nreturn {}\n}}"
-    #              ).format(body, self.info['separator'][0])
-    #   return ("func tableView(_ tableView: UITableView, heightForHeaderIn"
-    #           "Section section: Int) -> CGFloat {{\n"
-    #           "{}}}\n\n").format(body)
-    #
-    # return ("func collectionView(_ collectionView: UICollectionView, layout "
-    #         "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
-    #         "HeaderInSection section: Int) -> CGSize {{\n"
-    #         "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height"
-    #         "*{2})\n}}\n").format(self.id, width, height)
-
   def register_headers(self):
     """
     Returns (str): Swift code to register headers
@@ -275,7 +218,6 @@ class UITableCollectionView(BaseComponent):
         C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
              ).format(self.id, cell_name, utils.lowercase(cell_name))
     return C
-
 
   def gen_spacing(self):
     """
