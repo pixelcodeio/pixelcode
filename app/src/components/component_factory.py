@@ -210,7 +210,7 @@ class ComponentFactory(object):
           path = ", for: indexPath"
         C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
               ' "{}ID"{}) as! {}\n!'
-             ).format(self.info["id"], header['id'], path
+             ).format(self.info["id"], header['id'], path,
                       utils.uppercase(header['id']))
         C += self.gen_subcomponents_properties("header", components, ids)
         C += "return header\n"

@@ -10,16 +10,16 @@ class UITableCollectionView(BaseComponent):
     keys = ["cells", "header"]
     cells, header = utils.get_vals(keys, self.info)
 
-    methods = self.cell_for_row_item(cells)
-    methods += self.number_in_section(cells)
-    methods += self.size_for_row_item(cells)
+    methods = self.cell_for_row_item()
+    methods += self.number_in_section()
+    methods += self.size_for_row_item()
+    methods += self.number_of_sections()
 
-    if header is not None or self.info["table_separate"]:
-      methods += self.view_for_header(header)
-      methods += self.size_for_header(header)
-
-    if self.info["table_separate"]:
-      methods += self.number_of_sections(cells)
+    headers = [section.get("header") for section in self.info["sections"] \
+               if section.get("header") is not None]
+    if len(headers) > 0:
+      methods += self.view_for_header()
+      methods += self.size_for_header()
 
     self.tc_methods = methods
     return self.setup_component()
@@ -51,11 +51,8 @@ class UITableCollectionView(BaseComponent):
 
     return C
 
-  def cell_for_row_item(self, cells):
+  def cell_for_row_item(self):
     """
-    Args:
-      cells (dict list): contains info on cells
-
     Returns (str): The swift code for the cellFor(Row/Item)At
     """
     C = ('func tableView(_ tableView: UITableView, cellForRowAt '
@@ -76,11 +73,8 @@ class UITableCollectionView(BaseComponent):
     C += "}}\n\n"
     return C
 
-  def number_in_section(self, cells):
+  def number_in_section(self):
     """
-    Args:
-      cells (dict list): contains info on cells
-
     Returns (str): swift code for numberOf(Rows/Items)InSection
     """
     if self.info['type'] == 'UITableView':
@@ -114,14 +108,14 @@ class UITableCollectionView(BaseComponent):
     #         "}}\n\n"
     #        ).format(func, num_cells)
 
-  def size_for_row_item(self, cells):
+  def size_for_row_item(self):
     """
     Args:
       cells (dict list): contains info on cells
 
     Returns (str): swift code for heightForRowAt/sizeForItemAt
     """
-    width, height = cells[0]['width'], cells[0]['height']
+    # width, height = cells[0]['width'], cells[0]['height']
 
     if self.info['type'] == 'UITableView':
       C = ("func tableView(_ tableView: UITableView, heightForRowAt "
@@ -157,7 +151,7 @@ class UITableCollectionView(BaseComponent):
     return C
 
 
-  def view_for_header(self, header):
+  def view_for_header(selfhhh):
     """
     Args:
       header: (dict) contains info about the header
@@ -208,13 +202,26 @@ class UITableCollectionView(BaseComponent):
     # C += '}\n\n' if header is None else '}\n}\n\n'
     # return C
 
-  def size_for_header(self, header):
+  def size_for_header(self):
     """
     Args:
       header (dict): contains info about header
 
     Returns (str): swift code for setting size of header
     """
+    if self.info["type"] == "UITableView":
+      C = ("func tableView(_ tableView: UITableView, heightForHeaderIn"
+           "Section section: Int) -> CGFloat {{\n")
+    else:
+      C = ("func collectionView(_ collectionView: UICollectionView, layout "
+           "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
+           "HeaderInSection section: Int) -> CGSize {{\n")
+
+    C += "switch section {{\n"
+    for index, section in enumerate(self.info["sections"]):
+      if
+
+
     if header is not None:
       width, height = header['width'], header['height']
 
