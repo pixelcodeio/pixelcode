@@ -291,7 +291,7 @@ class UITableCollectionView(BaseComponent):
       return ""
 
     C = ""
-    sep = self.info['separator']
+    sep = self.info['sections'][0]['separator'] # Use separator of first section
     if sep:
       C = "layout.minimumInteritemSpacing = {}\n".format(sep[0])
       scroll = ("layout.scrollDirection = .horizontal\n"
