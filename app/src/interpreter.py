@@ -49,7 +49,7 @@ class Interpreter(object):
     """
     Returns: Fills in the swift instance variable with generated file.
     """
-    swift, cell_types = self.gen_comps(self.info["components"], in_v)
+    swift, tc_elem = self.gen_comps(self.info["components"], in_v)
     self.swift[self.file_name] += swift + "}\n" + \
                                   add_methods(self.info["methods"])
     self.info["methods"] = {}
@@ -64,19 +64,22 @@ class Interpreter(object):
       self.swift[self.file_name] = subclass_tc(self.swift[self.file_name],
                                                tc_elem)
       self.swift[self.file_name] += "}"
+      self.gen_table_collection_view_files(tc_elem)
 
-      tc_id = tc_elem["id"]
-      tc_header = tc_elem.get("header")
+  def gen_table_collection_view_files(self, tc_elem):
+    """
+    Returns (None): Generates the necessary (table/collection)view files.
+    """
+    tc_header = tc_elem.get("header")
+    if tc_header is not None:
+      nested_tc = self.nested_table_collection_view(tc_header, tc_elem)
+      if nested_tc is not None:
+        self.gen_table_collection_view_files(nested_tc)
 
-      if tc_header is not None:
-        # nested table/collection view
-        if self.contains_nested_tc("header", tc_id, tc_header):
-          self.gen_file(True)
-
-      tc_cell = tc_elem.get("cells")[0]
-      # nested table/collection view
-      if self.contains_nested_tc("cell", tc_id, tc_cell):
-        self.gen_file(True)
+    for cell_type in tc_elem["cell_types"]:
+      nested_tc = self.nested_table_collection_view(cell_type, tc_elem)
+      if nested_tc is not None:
+        self.gen_table_collection_view_files(nested_tc)
 
   def gen_comps(self, components, in_v):
     """
@@ -90,7 +93,7 @@ class Interpreter(object):
     # Clear (table/collection) view methods
     self.info["methods"]["tc_methods"] = ""
     navbar_item_ids = [] # holds ids of navbar items
-    cell_types = []
+    tc_elem = None
     C = ""
 
     for comp in components:
@@ -104,7 +107,7 @@ class Interpreter(object):
           gen_slider_view_pieces(self, comp, in_v)
         else:
           if type_ == "UITableView" or type_ == "UICollectionView":
-            cell_types = comp["cell_types"]
+            tc_elem = comp
           elif type_ == "UINavBar":
             navbar_item_ids.extend(get_navbar_item_ids(comp))
           elif type_ == "UILabel":
@@ -112,41 +115,35 @@ class Interpreter(object):
         cf = ComponentFactory(comp, in_v)
         C += cf.swift
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
-    return C, cell_types
+    return C, tc_elem
 
-  def contains_nested_tc(self, type_, id_, info):
+  def nested_table_collection_view(self, info, parent):
     """
-    Returns (bool):
-      True if there is an nested (table/collection) view, False otherwise.
-      NOTE: also sets up (table/collection)view header/cell file.
+    Returns (dict):
+      Sets up (table/collection)view (header/cell) file and then returns the
+      nested (table/collection)view, if there is one. Otherwise, returns None.
     """
-    if type_ == "cell":
-      self.file_name = utils.uppercase(id_) + "Cell"
-      C = gen_cell_header(id_, info)
-      C += utils.setup_rect(id_, type_, info.get("rect"), tc_cell=True)
+    self.file_name = utils.uppercase(info["id"])
+    type_ = info["type"]
+    if type_ == "Cell":
+      C = gen_cell_header(parent["type"], info)
+      C += utils.setup_rect(parent["id"], type_, info.get("rect"), cell=True)
     else: # type_ is header
-      self.file_name = utils.uppercase(id_) + "HeaderView"
-      C = gen_header_header(id_, info)
-      C += utils.setup_rect(id_, type_, info.get("rect"), tc_header=True)
+      C = gen_header_header(parent["type"], info)
+      C += utils.setup_rect(parent["id"], type_, info.get("rect"), header=True)
 
     swift, tc_elem = self.gen_comps(info.get("components"), True)
     C += "{}}}\n\n{}\n\n".format(swift, utils.req_init())
 
     if not tc_elem:
       self.swift[self.file_name] = C + "}"
-      return False
+      return None
 
     # inner table/collection view exists
     if tc_elem["type"] == "UICollectionView":
-      C = move_collection_view(C, self.info)
+      C = move_collection_view(C, tc_elem)
     # add parent classes for table/collection view
     C = subclass_tc(C, tc_elem)
     C += "\n{}\n}}".format(self.info["methods"]["tc_methods"])
     self.swift[self.file_name] = C
-    id_ = tc_elem["id"]
-    cell = tc_elem.get("cells")[0]
-    self.file_name = utils.uppercase(id_) + "Cell"
-    self.swift[self.file_name] = gen_cell_header(id_, cell)
-    # get components of first cell
-    self.info["components"] = tc_elem.get("cells")[0].get("components")
-    return True
+    return tc_elem

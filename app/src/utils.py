@@ -120,7 +120,7 @@ def add_shadow(id_, type_, filter_):
     C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
   return C
 
-def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
+def setup_rect(cid, type_, rect, header=False, cell=False):
   """
   Args:
     cid: (str) id of component
@@ -136,11 +136,11 @@ def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
     str_c = None
     str_w = None
     border_r = None
-  if tc_cell or tc_header:
+  if cell or header:
     cid = None
 
   if fill is not None:
-    if tc_header:
+    if header:
       C += set_bg('backgroundView?', fill)
     elif cid is not None and word_in_str('tabBar', cid):
       C += set_bg('tabBar', fill)
