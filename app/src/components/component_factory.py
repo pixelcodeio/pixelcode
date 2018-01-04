@@ -204,9 +204,14 @@ class ComponentFactory(object):
         header = section['header']
         components = header['components']
         ids = [comp['id'] for comp in components]
+        if self.info["type"] == "UITableView":
+          path = ""
+        else:
+          path = ", for: indexPath"
         C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
-              ' "{}ID") as! {}\n!').format(self.info["id"], header['id'],
-                                           utils.uppercase(header['id']))
+              ' "{}ID"{}) as! {}\n!'
+             ).format(self.info["id"], header['id'], path
+                      utils.uppercase(header['id']))
         C += self.gen_subcomponents_properties("header", components, ids)
         C += "return header\n"
       else:
@@ -236,6 +241,7 @@ class ComponentFactory(object):
         C += ("if (indexPath.row % 2 == 1) {{\n"
               "let cell = UITableViewCell()\n"
               "cell.backgroundColor = .clear\n"
+              "cell.selectionStyle = .none\n"
               "return cell\n}}\n")
       C += "switch indexPath.row {{\n"
       for cell_index, cell in enumerate(section["cells"]):
@@ -243,6 +249,7 @@ class ComponentFactory(object):
         C += ("case {}:\n"
               "let cell = tableView.dequeueReusableCell(withIdentifier: "
               '"{}ID") as! {}\n'
+              "cell.selectionStyle = .none\n"
              ).format(index, cell["id"], utils.uppercase(cell["id"]))
         # Get ids of components in correct custom cell class
         for custom_cell in section["custom_cells"]:
@@ -251,7 +258,7 @@ class ComponentFactory(object):
         C += self.gen_subcomponents_properties("cell", cell["components"], ids)
         C += "return cell\n"
       default = "default:\nreturn UITableViewCell()\n"
-      C += ("{0}}}{0}}}").format(default)
+      C += ("{0}}}{0}}}\n").format(default)
     self.info["cell_set_prop"] = C
 
     # cells = self.info['cells']

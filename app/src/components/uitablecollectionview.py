@@ -35,7 +35,7 @@ class UITableCollectionView(BaseComponent):
     if header is not None:
       C += self.reg_header()
 
-    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}CellID")\n'
+    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}ID")\n'
           '{0}.delegate = self\n'
           '{0}.dataSource = self\n'
           '{0}.showsVerticalScrollIndicator = false\n'
@@ -59,25 +59,21 @@ class UITableCollectionView(BaseComponent):
     Returns (str): The swift code for the cellFor(Row/Item)At
     """
     C = ('func tableView(_ tableView: UITableView, cellForRowAt '
-         'indexPath: IndexPath) -> UITableViewCell {{\n'
-         'let cell = tableView.dequeueReusableCell(withIdentifier: "{}CellID")'
-         ' as! {}Cell\n'
-         'cell.selectionStyle = .none\n'
-         "switch indexPath.row {{"
-        ).format(self.id, utils.uppercase(self.id))
+         'indexPath: IndexPath) -> UITableViewCell {{\n')
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace("table", "collection")
       C = C.replace("Table", "Collection")
       C = C.replace("Row", "Item")
+
+    C += self.info['cell_set_prop']
+
+    if self.info['type'] == 'UICollectionView':
       C = C.replace("withIdentifier", "withReuseIdentifier")
       C = C.replace("cell.selectionStyle = .none\n", '')
-      C = utils.ins_after_key(C, 'CellID"', ', for: indexPath')
-    elif self.info["table_separate"]:
-      C = C.replace("indexPath.row", "indexPath.section")
+      C = utils.ins_after_key(C, 'ID"', ', for: indexPath')
 
-    C += self.info.get('cell_set_prop')
-    C += '\ndefault: return cell\n}\n}\n\n'
+    C += "}}\n\n"
     return C
 
   def number_in_section(self, cells):
@@ -88,22 +84,35 @@ class UITableCollectionView(BaseComponent):
     Returns (str): swift code for numberOf(Rows/Items)InSection
     """
     if self.info['type'] == 'UITableView':
-      func = "func tableView(_ tableView: UITableView, numberOfRows"
+      C = "func tableView(_ tableView: UITableView, numberOfRows"
     else:
-      func = ("func collectionView(_ collectionView: UICollectionView, "
-              "numberOfItems")
+      C = ("func collectionView(_ collectionView: UICollectionView, "
+           "numberOfItems")
 
-    if self.info["table_separate"]:
-      return ("{}InSection section: Int) -> Int {{\n"
-              "return 1 \n"
-              "}}\n\n"
-             ).format(func)
+    C += ("InSection section: Int) -> Int {{\n"
+          "switch section {{\n")
+    for index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(index)
+      num_cells = len(section["cells"])
+      if section["table_separate"]:
+        C += ("return {}\n").format(num_cells * 2 - 1)
+      else:
+        C += ("return {}\n").format(num_cells)
 
-    num_cells = self.get_number_cells(cells)
-    return ("{}InSection section: Int) -> Int {{\n"
-            "return {} \n"
-            "}}\n\n"
-           ).format(func, num_cells)
+    C += "default:\nreturn 0\n}}\n}}\n\n"
+    return C
+
+    # if self.info["table_separate"]:
+    #   return ("{}InSection section: Int) -> Int {{\n"
+    #           "return 1 \n"
+    #           "}}\n\n"
+    #          ).format(func)
+    #
+    # num_cells = self.get_number_cells(cells)
+    # return ("{}InSection section: Int) -> Int {{\n"
+    #         "return {} \n"
+    #         "}}\n\n"
+    #        ).format(func, num_cells)
 
   def size_for_row_item(self, cells):
     """
@@ -148,24 +157,34 @@ class UITableCollectionView(BaseComponent):
       section = "indexPath.section"
 
     C = ("{} {{\n").format(func)
-    if header is not None:
-      C += ('let header = {0}.{1}: "{0}Header"{2}) as! {3}HeaderView\n'
-            'switch {4} {{\n'
-           ).format(self.id, deq, path, utils.uppercase(self.id), section)
+    C += self.info["header_set_prop"]
+    C += "}}\n"
 
-      C += self.info.get('header_set_prop')
-      C += ('return header'
-            '\ndefault:\n')
+    if self.info['type'] == "UICollectionView":
+      C = C.replace("switch section", "switch indexPath.section")
+      deq = "dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier"
+      C = C.replace("dequeueReusableHeaderFooterView(withIdentifier", deq)
 
-    if self.info["table_separate"]:
-      C += ("let view = UIView()\n"
-            "view.backgroundColor = .clear\n"
-            "return view\n")
-    else:
-      C += "return header\n"
-
-    C += '}\n\n' if header is None else '}\n}\n\n'
     return C
+    # C = ("{} {{\n").format(func)
+    # if header is not None:
+    #   C += ('let header = {0}.{1}: "{0}Header"{2}) as! {3}HeaderView\n'
+    #         'switch {4} {{\n'
+    #        ).format(self.id, deq, path, utils.uppercase(self.id), section)
+    #
+    #   C += self.info.get('header_set_prop')
+    #   C += ('return header'
+    #         '\ndefault:\n')
+    #
+    # if self.info["table_separate"]:
+    #   C += ("let view = UIView()\n"
+    #         "view.backgroundColor = .clear\n"
+    #         "return view\n")
+    # else:
+    #   C += "return header\n"
+
+    # C += '}\n\n' if header is None else '}\n}\n\n'
+    # return C
 
   def size_for_header(self, header):
     """
