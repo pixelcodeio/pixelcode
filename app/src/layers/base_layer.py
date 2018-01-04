@@ -73,11 +73,11 @@ class BaseLayer(object):
         "bookmark-icon",
         "border-radius",
         "cells",
-        "cell_types",
         "char-spacing",
         "components",
         "content", # content of a SliderView
         "contents", # text of a label
+        "custom_cells",
         "cx",
         "cy",
         "fill",

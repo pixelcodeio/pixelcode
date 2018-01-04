@@ -50,7 +50,7 @@ class UITableCollectionView(BaseComponent):
           '{0}.clipsToBounds = false\n'
          ).format(id_, utils.uppercase(id_))
 
-    if self.info.get('type') == 'UICollectionView':
+    if self.info['type'] == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
     else: # type is UITableView
       C += ('{0}.sectionHeaderHeight = 0\n'
@@ -94,7 +94,7 @@ class UITableCollectionView(BaseComponent):
 
     Returns (str): swift code for numberOf(Rows/Items)InSection
     """
-    if self.info.get('type') == 'UITableView':
+    if self.info['type'] == 'UITableView':
       func = "func tableView(_ tableView: UITableView, numberOfRows"
     else:
       func = ("func collectionView(_ collectionView: UICollectionView, "
@@ -121,7 +121,7 @@ class UITableCollectionView(BaseComponent):
     """
     width, height = cells[0]['width'], cells[0]['height']
 
-    if self.info.get('type') == 'UITableView':
+    if self.info['type'] == 'UITableView':
       return ("func tableView(_ tableView: UITableView, heightForRowAt "
               "indexPath: IndexPath) -> CGFloat {{\n"
               "return {}.frame.height * {}\n}}\n\n"
@@ -140,7 +140,7 @@ class UITableCollectionView(BaseComponent):
 
     Returns: (str) swift code for the viewForHeaderInSection
     """
-    if self.info.get('type') == 'UITableView':
+    if self.info['type'] == 'UITableView':
       func = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
               "section: Int) -> UIView?")
       deq = "dequeueReusableHeaderFooterView(withIdentifier"
@@ -209,7 +209,7 @@ class UITableCollectionView(BaseComponent):
     Returns (str): swift code to register header view class
     """
     id_ = self.id
-    type_ = self.info.get('type')
+    type_ = self.info['type']
     C = ('{0}.register({1}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
          ' "{0}Header")\n').format(id_, utils.uppercase(id_))
 
@@ -224,7 +224,7 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (str): swift code to set cell spacing
     """
-    if self.info.get('type') != 'UICollectionView':
+    if self.info['type'] != 'UICollectionView':
       return ""
 
     C = ""

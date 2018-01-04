@@ -7,6 +7,8 @@ class Section(BaseLayer):
   def parse_elem(self, elem):
     rect = None
     header = None
+    custom_cells = []
+    custom_cell_ids = []
     cells = []
 
     for child in elem["children"]:
@@ -17,6 +19,9 @@ class Section(BaseLayer):
           header = child
       elif child["type"] == "Cell":
         cells.append(child)
+        if child["id"] not in custom_cell_ids:
+          custom_cell_ids.append(child["id"])
+          custom_cells.append(child)
       elif utils.word_in_str("bound", child["id"]):
         if rect:
           raise Exception("Section: Only one bound allowed per section")
@@ -32,5 +37,6 @@ class Section(BaseLayer):
 
     elem["rect"] = rect
     elem["header"] = header
+    elem["custom_cells"] = custom_cells
     elem["cells"] = cells
     return super().parse_elem(elem)

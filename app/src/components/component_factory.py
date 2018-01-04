@@ -202,14 +202,14 @@ class ComponentFactory(object):
       ids = []
       C = "case 0:\n"
       components = fst_section['header']['components']
-      ids = [comp.get('id') for comp in components]
+      ids = [comp['id'] for comp in components]
       C += self.gen_subcomponents_properties("header", components, ids)
       self.info["header_set_prop"] = C
 
     # set properties for components in cells
     cells = self.info['cells']
     fst_cell_comps = cells[0].get('components')
-    ids = [comp.get('id') for comp in fst_cell_comps]
+    ids = [comp['id'] for comp in fst_cell_comps]
 
     C = ""
     case = 0
@@ -231,8 +231,8 @@ class ComponentFactory(object):
     C = ""
 
     for comp in components:
-      type_ = comp.get('type')
-      id_ = comp.get('id')
+      type_ = comp['type']
+      id_ = comp['id']
       C += self.init_comp(type_, id_)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
@@ -256,7 +256,7 @@ class ComponentFactory(object):
     components = [c for c in components if c['type'] != "UICollectionView"]
 
     for j, comp in enumerate(components):
-      type_ = comp.get('type')
+      type_ = comp['type']
       id_ = "{}.{}".format(c_or_h, ids[j])
       env = {"set_prop": True}
 

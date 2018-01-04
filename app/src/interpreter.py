@@ -70,16 +70,17 @@ class Interpreter(object):
     """
     Returns (None): Generates the necessary (table/collection)view files.
     """
-    tc_header = tc_elem.get("header")
-    if tc_header is not None:
-      nested_tc = self.nested_table_collection_view(tc_header, tc_elem)
-      if nested_tc is not None:
-        self.gen_table_collection_view_files(nested_tc)
+    for section in tc_elem["sections"]:
+      header = section.get("header")
+      if header is not None:
+        nested_tc = self.nested_table_collection_view(header, tc_elem)
+        if nested_tc is not None:
+          self.gen_table_collection_view_files(nested_tc)
 
-    for cell_type in tc_elem["cell_types"]:
-      nested_tc = self.nested_table_collection_view(cell_type, tc_elem)
-      if nested_tc is not None:
-        self.gen_table_collection_view_files(nested_tc)
+      for cell in section["custom_cells"]:
+        nested_tc = self.nested_table_collection_view(cell, tc_elem)
+        if nested_tc is not None:
+          self.gen_table_collection_view_files(nested_tc)
 
   def gen_comps(self, components, in_v):
     """
