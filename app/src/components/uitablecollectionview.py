@@ -4,15 +4,8 @@ class UITableCollectionView(BaseComponent):
   """
   Class representing a UI(Table/Collection)View in swift
     tc_methods (str): swift code of necessary (table/collection)view methods
-    tv_separate (bool): whether type is UITableView and cells are separated
+    table_separate (bool): whether type is UITableView and cells are separated
   """
-  def __init__(self, id_, info, env):
-    keys = ["type", "separator"]
-    type_, separator = utils.get_vals(keys, info)
-    self.tv_separate = (type_ == 'UITableView' and len(separator) == 1)
-    super().__init__(id_, info, env)
-
-
   def generate_swift(self):
     keys = ["cells", "header"]
     cells, header = utils.get_vals(keys, self.info)
@@ -21,11 +14,11 @@ class UITableCollectionView(BaseComponent):
     methods += self.number_in_section(cells)
     methods += self.size_for_row_item(cells)
 
-    if header is not None or self.tv_separate:
+    if header is not None or self.info["table_separate"]:
       methods += self.view_for_header(header)
       methods += self.size_for_header(header)
 
-    if self.tv_separate:
+    if self.info["table_separate"]:
       methods += self.number_of_sections(cells)
 
     self.tc_methods = methods
@@ -80,7 +73,7 @@ class UITableCollectionView(BaseComponent):
       C = C.replace("withIdentifier", "withReuseIdentifier")
       C = C.replace("cell.selectionStyle = .none\n", '')
       C = utils.ins_after_key(C, 'CellID"', ', for: indexPath')
-    elif self.tv_separate:
+    elif self.info["table_separate"]:
       C = C.replace("indexPath.row", "indexPath.section")
 
     C += self.info.get('cell_set_prop')
@@ -100,7 +93,7 @@ class UITableCollectionView(BaseComponent):
       func = ("func collectionView(_ collectionView: UICollectionView, "
               "numberOfItems")
 
-    if self.tv_separate:
+    if self.info["table_separate"]:
       return ("{}InSection section: Int) -> Int {{\n"
               "return 1 \n"
               "}}\n\n"
@@ -164,7 +157,7 @@ class UITableCollectionView(BaseComponent):
       C += ('return header'
             '\ndefault:\n')
 
-    if self.tv_separate:
+    if self.info["table_separate"]:
       C += ("let view = UIView()\n"
             "view.backgroundColor = .clear\n"
             "return view\n")
@@ -185,11 +178,11 @@ class UITableCollectionView(BaseComponent):
       width, height = header['width'], header['height']
 
     if self.info['type'] == 'UITableView':
-      if header is None: # means tv_separate is True
+      if header is None: # means table_separate is True
         body = ("return {}\n").format(self.info["separator"][0])
       else:
         body = ("return {}.frame.height * {}\n").format(self.id, height)
-        if self.tv_separate:
+        if self.info["table_separate"]:
           body = ("switch section {{\n"
                   "case 0:\n{}\n"
                   "default:\nreturn {}\n}}"

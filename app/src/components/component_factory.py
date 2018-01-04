@@ -196,33 +196,80 @@ class ComponentFactory(object):
       Adds code for setting properties of all cells/headers' subcomponents to
       the info instance variable.
     """
-    fst_section = self.info["sections"][0]
-    if fst_section.get('header') is not None:
-      # set properties for components in header
-      ids = []
-      C = "case 0:\n"
-      components = fst_section['header']['components']
-      ids = [comp['id'] for comp in components]
-      C += self.gen_subcomponents_properties("header", components, ids)
-      self.info["header_set_prop"] = C
+    # Set properties for headers' components
+    C = "switch section {{\n"
+    for index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(index)
+      if section.get('header') is not None:
+        header = section['header']
+        components = header['components']
+        ids = [comp['id'] for comp in components]
+        C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
+              ' "{}ID") as! {}\n!').format(self.info["id"], header['id'],
+                                           utils.uppercase(header['id']))
+        C += self.gen_subcomponents_properties("header", components, ids)
+        C += "return header\n"
+      else:
+        C += "return UIView()\n"
+    C += "default:\nreturn UIView()\n}}\n"
+    self.info["header_set_prop"] = C
 
-    # set properties for components in cells
-    cells = self.info['cells']
-    fst_cell_comps = cells[0].get('components')
-    ids = [comp['id'] for comp in fst_cell_comps]
+    # fst_section = self.info["sections"][0]
+    # if fst_section.get('header') is not None:
+    #   # set properties for components in header
+    #   ids = []
+    #   C = "case 0:\n"
+    #   components = fst_section['header']['components']
+    #   ids = [comp['id'] for comp in components]
+    #   C += self.gen_subcomponents_properties("header", components, ids)
+    #   self.info["header_set_prop"] = C
 
-    C = ""
-    case = 0
-    for cell in cells:
-      components = cell.get('components')
-      if len(components) != len(fst_cell_comps):
-        continue
-      C += '\ncase {}:\n'.format(case)
-      C += self.gen_subcomponents_properties("cell", components, ids)
-      C += 'return cell'
-      case += 1
-
+    # Set properties for cells' components
+    C = "switch indexPath.section {{\n"
+    for section_index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(section_index)
+      table_separate = (self.info["type"] == "UITableView" and \
+                       (len(section["separator"]) == 0 or \
+                        section["separator"][0] == 0))
+      section["table_separate"] = table_separate
+      if table_separate:
+        C += ("if (indexPath.row % 2 == 1) {{\n"
+              "let cell = UITableViewCell()\n"
+              "cell.backgroundColor = .clear\n"
+              "return cell\n}}\n")
+      C += "switch indexPath.row {{\n"
+      for cell_index, cell in enumerate(section["cells"]):
+        index = cell_index * 2 if table_separate else cell_index
+        C += ("case {}:\n"
+              "let cell = tableView.dequeueReusableCell(withIdentifier: "
+              '"{}ID") as! {}\n'
+             ).format(index, cell["id"], utils.uppercase(cell["id"]))
+        # Get ids of components in correct custom cell class
+        for custom_cell in section["custom_cells"]:
+          if custom_cell["id"] == cell["id"]:
+            ids = [comp["id"] for comp in custom_cell["components"]]
+        C += self.gen_subcomponents_properties("cell", cell["components"], ids)
+        C += "return cell\n"
+      default = "default:\nreturn UITableViewCell()\n"
+      C += ("{0}}}{0}}}").format(default)
     self.info["cell_set_prop"] = C
+
+    # cells = self.info['cells']
+    # fst_cell_comps = cells[0].get('components')
+    # ids = [comp['id'] for comp in fst_cell_comps]
+    #
+    # C = ""
+    # case = 0
+    # for cell in cells:
+    #   components = cell.get('components')
+    #   if len(components) != len(fst_cell_comps):
+    #     continue
+    #   C += '\ncase {}:\n'.format(case)
+    #   C += self.gen_subcomponents_properties("cell", components, ids)
+    #   C += 'return cell'
+    #   case += 1
+    #
+    # self.info["cell_set_prop"] = C
 
   def gen_subcomponents(self, parent, components, add_constraints):
     """
