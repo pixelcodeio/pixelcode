@@ -252,8 +252,10 @@ class ComponentFactory(object):
               "cell.selectionStyle = .none\n"
              ).format(index, cell["id"], utils.uppercase(cell["id"]))
         # Get ids of components in correct custom cell class
-        for custom_cell in section["custom_cells"]:
-          if custom_cell["id"] == cell["id"]:
+        name_index = utils.index_of(cell["id"], "cell")
+        cell_name = utils.uppercase(cell["id"][:name_index + 4])
+        for name, custom_cell in section["custom_cells"].items():
+          if name == cell_name:
             ids = [comp["id"] for comp in custom_cell["components"]]
         C += self.gen_subcomponents_properties("cell", cell["components"], ids)
         C += "return cell\n"

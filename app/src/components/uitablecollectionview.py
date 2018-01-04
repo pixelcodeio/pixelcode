@@ -14,9 +14,7 @@ class UITableCollectionView(BaseComponent):
     methods += self.size_for_row_item()
     methods += self.number_of_sections()
 
-    headers = [section.get("header") for section in self.info["sections"] \
-               if section.get("header") is not None]
-    if len(headers) > 0:
+    if len(self.info["custom_headers"]) > 0:
       methods += self.view_for_header()
       methods += self.size_for_header()
 
@@ -253,16 +251,14 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (str): Swift code to register headers
     """
-    headers = [section.get("header") for section in self.info["sections"] \
-               if section.get("header") is not None]
-    if len(headers) == 0:
+    if len(self.info["custom_headers"]) == 0:
       return ""
 
-    ids_ = set([header["id"] for header in headers]) # Avoid duplicate headers
+    header_names = self.info["custom_headers"].keys()
     C = ""
-    for id_ in ids_:
+    for name in header_names:
       C += ('{}.register({}.self, forHeaderFooterViewReuseIdentifier: "{}ID")\n'
-           ).format(self.id, utils.uppercase(id_), id_)
+           ).format(self.id, name, utils.lowercase(name))
 
     if self.info['type'] == 'UICollectionView':
       for_ = ("forSupplementaryViewOfKind: UICollectionElementKindSectionHeader"
@@ -277,10 +273,9 @@ class UITableCollectionView(BaseComponent):
     """
     C = ""
     for section in self.info["sections"]:
-      for custom_cell in section["custom_cells"]:
-        cell_id = custom_cell["id"]
+      for cell_name in section["custom_cells"]:
         C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
-             ).format(self.id, utils.uppercase(cell_id), cell_id)
+             ).format(self.id, cell_name, utils.lowercase(cell_name))
     return C
 
 

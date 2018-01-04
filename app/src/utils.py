@@ -19,6 +19,14 @@ def uppercase(string):
   """
   return string if not string else string[0].upper() + string[1:]
 
+def lowercase(string):
+  """
+  Returns (str):
+    string with the first letter lowercased. if string is the empty string, the
+    empty string is returned.
+  """
+  return string[:1].lower() + string[1:] if s else ''
+
 def word_in_str(word, string):
   """
   Returns (bool): whether string contains word or capitalized version of word
