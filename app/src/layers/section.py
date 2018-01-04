@@ -7,8 +7,7 @@ class Section(BaseLayer):
   def parse_elem(self, elem):
     rect = None
     header = None
-    custom_cells = []
-    custom_cell_ids = []
+    custom_cells = {}
     cells = []
 
     for child in elem["children"]:
@@ -19,9 +18,10 @@ class Section(BaseLayer):
           header = child
       elif child["type"] == "Cell":
         cells.append(child)
-        if child["id"] not in custom_cell_ids:
-          custom_cell_ids.append(child["id"])
-          custom_cells.append(child)
+        index = utils.index_of(child["id"], "cell")
+        cell_name = utils.uppercase(child["id"][:index + 4])
+        if custom_cells.get(cell_name) is None:
+          custom_cells[cell_name] = child
       elif utils.word_in_str("bound", child["id"]):
         if rect:
           raise Exception("Section: Only one bound allowed per section")

@@ -78,6 +78,7 @@ class BaseLayer(object):
         "content", # content of a SliderView
         "contents", # text of a label
         "custom_cells",
+        "custom_headers",
         "cx",
         "cy",
         "fill",

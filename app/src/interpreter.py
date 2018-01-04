@@ -71,14 +71,13 @@ class Interpreter(object):
     Returns (None): Generates the necessary (table/collection)view files.
     """
     for section in tc_elem["sections"]:
-      header = section.get("header")
-      if header is not None:
-        nested_tc = self.nested_table_collection_view(header, tc_elem)
+      for name, header in section["custom_headers"].items():
+        nested_tc = self.nested_table_collection_view(name, header, tc_elem)
         if nested_tc is not None:
           self.gen_table_collection_view_files(nested_tc)
 
-      for cell in section["custom_cells"]:
-        nested_tc = self.nested_table_collection_view(cell, tc_elem)
+      for name, cell in section["custom_cells"].items():
+        nested_tc = self.nested_table_collection_view(name, cell, tc_elem)
         if nested_tc is not None:
           self.gen_table_collection_view_files(nested_tc)
 
@@ -118,13 +117,13 @@ class Interpreter(object):
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
 
-  def nested_table_collection_view(self, info, parent):
+  def nested_table_collection_view(self, file_name, info, parent):
     """
     Returns (dict):
       Sets up (table/collection)view (header/cell) file and then returns the
       nested (table/collection)view, if there is one. Otherwise, returns None.
     """
-    self.file_name = utils.uppercase(info["id"])
+    self.file_name = file_name
     type_ = info["type"]
     if type_ == "Cell":
       C = gen_cell_header(parent["type"], info)

@@ -9,7 +9,6 @@ class TableCollectionView(BaseLayer):
   """
   def parse_elem(self, elem):
     rect = None
-    # cell_types = []
     sections = []
 
     for child in elem["children"]:
@@ -30,20 +29,23 @@ class TableCollectionView(BaseLayer):
     type_ = elem["type"]
     sections = [self.calculate_separator(sect, type_) for sect in sections]
 
-    # # Get all different cells.
-    # for section in sections:
-    #   for cell in section["cells"]:
-    #     if cell["id"] not in cell_types:
-    #       cell_types.append(cell)
-
     separator = [] # separator between sections
     if len(sections) >= 2:
       separator = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
 
+    custom_headers = {}
+    for section in sections:
+      if section.get("header") is not None:
+        header = section["header"]
+        index = utils.index_of(header["id"], "header")
+        header_name = utils.uppercase(header["id"][:index + 6])
+        if custom_headers.get(header_name) is None:
+          custom_headers[header_name] = header
+
     elem["rect"] = rect
-    # elem["cell_types"] = cell_types
     elem["sections"] = sections
     elem["separator"] = separator
+    elem["custom_headers"] = custom_headers
     return super().parse_elem(elem)
 
   def calculate_separator(self, section, type_):

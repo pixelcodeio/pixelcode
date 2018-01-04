@@ -171,6 +171,12 @@ def req_init():
   return ("required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}')
 
+def index_of(str_, key):
+  """
+  Returns: Maximum of indices of key and capitalized key in str
+  """
+  return max(str_.find(key), str_.find(uppercase(key)))
+
 def ins_after_key(s, k, ins):
   """
   Args:
