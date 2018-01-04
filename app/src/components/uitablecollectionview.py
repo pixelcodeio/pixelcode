@@ -44,18 +44,6 @@ class UITableCollectionView(BaseComponent):
 
     return C
 
-  def reg_custom_cells(self):
-    """
-    Returns (str): Swift code to register custom cell classes.
-    """
-    C = ""
-    for section in self.info["sections"]:
-      for custom_cell in section["custom_cells"]:
-        cell_id = custom_cell["id"]
-        C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
-             ).format(self.id, utils.uppercase(cell_id), cell_id)
-    return C
-
   def cell_for_row_item(self):
     """
     Returns (str): The swift code for the cellFor(Row/Item)At
@@ -283,6 +271,19 @@ class UITableCollectionView(BaseComponent):
 
     return C
 
+  def register_custom_cells(self):
+    """
+    Returns (str): Swift code to register custom cell classes.
+    """
+    C = ""
+    for section in self.info["sections"]:
+      for custom_cell in section["custom_cells"]:
+        cell_id = custom_cell["id"]
+        C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
+             ).format(self.id, utils.uppercase(cell_id), cell_id)
+    return C
+
+
   def gen_spacing(self):
     """
     Returns (str): swift code to set cell spacing
@@ -303,21 +304,9 @@ class UITableCollectionView(BaseComponent):
       C += scroll
     return C
 
-  def number_of_sections(self, cells):
+  def number_of_sections(self):
     """
     Returns (str): swift code to set height of sections for UITableView
     """
     return ("func numberOfSections(in tableView: UITableView) -> Int {{\n"
-            "return {}\n}}\n").format(self.get_number_cells(cells))
-
-  def get_number_cells(self, cells):
-    """
-    Returns (int): number of cells
-    """
-    fst_cell_comps = cells[0]['components']
-    num_cells = 0
-    for cell in cells:
-      components = cell['components']
-      if len(components) == len(fst_cell_comps): # all components are present
-        num_cells += 1
-    return num_cells
+            "return {}\n}}\n").format(len(self.info["sections"]))

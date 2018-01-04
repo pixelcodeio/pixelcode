@@ -89,6 +89,9 @@ def add_shadow(id_, type_, filter_):
   """
   Returns (str): swift code to add shadow to id_.
   """
+  print(id_)
+  print(type_)
+  print(filter_)
   keys = ["fill", "radius", "dx", "dy", "d_size", "is_outer"]
   fill, radius, dx, dy, d_size, is_outer = get_vals(keys, filter_)
   C = ("{0}.layer.shadowColor = {1}.cgColor\n"
@@ -102,7 +105,7 @@ def add_shadow(id_, type_, filter_):
           "{1}, dy: -{1})).cgPath\n").format(id_, d_size)
 
   if not is_outer:
-    C = C.replace(id_ + ".layer", "innerShadowLayer")
+    C = C.replace("{}.layer".format(id_), "innerShadowLayer")
     C = ("let innerShadowLayer = CALayer()\n"
          "innerShadowLayer.frame = {}.bounds\n"
          "innerShadowLayer.masksToBounds = true\n{}").format(id_, C)
