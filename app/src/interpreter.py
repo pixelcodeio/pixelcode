@@ -49,7 +49,7 @@ class Interpreter(object):
     """
     Returns: Fills in the swift instance variable with generated file.
     """
-    swift, tc_elem = self.gen_comps(self.info["components"], in_v)
+    swift, cell_types = self.gen_comps(self.info["components"], in_v)
     self.swift[self.file_name] += swift + "}\n" + \
                                   add_methods(self.info["methods"])
     self.info["methods"] = {}
@@ -90,7 +90,7 @@ class Interpreter(object):
     # Clear (table/collection) view methods
     self.info["methods"]["tc_methods"] = ""
     navbar_item_ids = [] # holds ids of navbar items
-    tc_elem = None
+    cell_types = []
     C = ""
 
     for comp in components:
@@ -104,7 +104,7 @@ class Interpreter(object):
           gen_slider_view_pieces(self, comp, in_v)
         else:
           if type_ == "UITableView" or type_ == "UICollectionView":
-            tc_elem = comp
+            cell_types = comp["cell_types"]
           elif type_ == "UINavBar":
             navbar_item_ids.extend(get_navbar_item_ids(comp))
           elif type_ == "UILabel":
@@ -112,7 +112,7 @@ class Interpreter(object):
         cf = ComponentFactory(comp, in_v)
         C += cf.swift
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
-    return C, tc_elem
+    return C, cell_types
 
   def contains_nested_tc(self, type_, id_, info):
     """
