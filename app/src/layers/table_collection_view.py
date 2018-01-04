@@ -27,7 +27,7 @@ class TableCollectionView(BaseLayer):
 
     sections = sorted(sections, key=lambda s: s['y']) # sort by y
     type_ = elem["type"]
-    sections = [calculate_separator(section, type_) for section in sections]
+    sections = [self.calculate_separator(sect, type_) for sect in sections]
 
     separator = [] # separator between sections
     if len(sections) >= 2:

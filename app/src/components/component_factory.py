@@ -196,11 +196,12 @@ class ComponentFactory(object):
       Adds code for setting properties of all cells/headers' subcomponents to
       the info instance variable.
     """
-    if self.info.get('header') is not None:
+    fst_section = self.info["sections"][0]
+    if fst_section.get('header') is not None:
       # set properties for components in header
       ids = []
       C = "case 0:\n"
-      components = self.info['header']['components']
+      components = fst_section['header']['components']
       ids = [comp.get('id') for comp in components]
       C += self.gen_subcomponents_properties("header", components, ids)
       self.info["header_set_prop"] = C
