@@ -8,7 +8,6 @@ class UITableCollectionView(BaseComponent):
   """
   def generate_swift(self):
     keys = ["cells", "header"]
-    cells, header = utils.get_vals(keys, self.info)
 
     methods = self.cell_for_row_item()
     methods += self.number_in_section()
@@ -29,26 +28,32 @@ class UITableCollectionView(BaseComponent):
     Returns: (str) The swift code to setup a UITableView
     """
     C = self.gen_spacing()
-    header = self.info.get('header')
-    id_ = self.id
-
-    if header is not None:
-      C += self.reg_header()
-
-    C += ('{0}.register({1}Cell.self, forCellReuseIdentifier: "{0}ID")\n'
-          '{0}.delegate = self\n'
+    C += ('{0}.delegate = self\n'
           '{0}.dataSource = self\n'
           '{0}.showsVerticalScrollIndicator = false\n'
           '{0}.showsHorizontalScrollIndicator = false\n'
-          '{0}.clipsToBounds = false\n'
-         ).format(id_, utils.uppercase(id_))
+          '{0}.clipsToBounds = false\n').format(self.id)
+    C += self.register_headers()
+    C += self.register_custom_cells()
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
     else: # type is UITableView
       C += ('{0}.sectionHeaderHeight = 0\n'
-            '{0}.sectionFooterHeight = 0\n').format(id_)
+            '{0}.sectionFooterHeight = 0\n').format(self.id)
 
+    return C
+
+  def reg_custom_cells(self):
+    """
+    Returns (str): Swift code to register custom cell classes.
+    """
+    C = ""
+    for section in self.info["sections"]:
+      for custom_cell in section["custom_cells"]:
+        cell_id = custom_cell["id"]
+        C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
+             ).format(self.id, utils.uppercase(cell_id), cell_id)
     return C
 
   def cell_for_row_item(self):
@@ -151,7 +156,7 @@ class UITableCollectionView(BaseComponent):
     return C
 
 
-  def view_for_header(selfhhh):
+  def view_for_header(self):
     """
     Args:
       header: (dict) contains info about the header
@@ -219,45 +224,62 @@ class UITableCollectionView(BaseComponent):
 
     C += "switch section {{\n"
     for index, section in enumerate(self.info["sections"]):
-      if
+      if section.get("header") is not None:
+        C += ("case {}:\n").format(index)
+        width = section["width"] * section["header"]["width"]
+        height = section["height"] * section["header"]["height"]
+        if self.info["type"] == "UITableView":
+          C += ("return {}.frame.height * {}\n").format(self.id, height)
+        else:
+          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
+                "height*{2})\n").format(self.id, width, height)
+
+    C += "default:\nreturn 0\n}}\n}}\n\n"
+    return C
 
 
-    if header is not None:
-      width, height = header['width'], header['height']
+    # if header is not None:
+    #   width, height = header['width'], header['height']
+    #
+    # if self.info['type'] == 'UITableView':
+    #   if header is None: # means table_separate is True
+    #     body = ("return {}\n").format(self.info["separator"][0])
+    #   else:
+    #     body = ("return {}.frame.height * {}\n").format(self.id, height)
+    #     if self.info["table_separate"]:
+    #       body = ("switch section {{\n"
+    #               "case 0:\n{}\n"
+    #               "default:\nreturn {}\n}}"
+    #              ).format(body, self.info['separator'][0])
+    #   return ("func tableView(_ tableView: UITableView, heightForHeaderIn"
+    #           "Section section: Int) -> CGFloat {{\n"
+    #           "{}}}\n\n").format(body)
+    #
+    # return ("func collectionView(_ collectionView: UICollectionView, layout "
+    #         "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
+    #         "HeaderInSection section: Int) -> CGSize {{\n"
+    #         "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height"
+    #         "*{2})\n}}\n").format(self.id, width, height)
 
-    if self.info['type'] == 'UITableView':
-      if header is None: # means table_separate is True
-        body = ("return {}\n").format(self.info["separator"][0])
-      else:
-        body = ("return {}.frame.height * {}\n").format(self.id, height)
-        if self.info["table_separate"]:
-          body = ("switch section {{\n"
-                  "case 0:\n{}\n"
-                  "default:\nreturn {}\n}}"
-                 ).format(body, self.info['separator'][0])
-      return ("func tableView(_ tableView: UITableView, heightForHeaderIn"
-              "Section section: Int) -> CGFloat {{\n"
-              "{}}}\n\n").format(body)
-
-    return ("func collectionView(_ collectionView: UICollectionView, layout "
-            "collectionViewLayout: UICollectionViewLayout, referenceSizeFor"
-            "HeaderInSection section: Int) -> CGSize {{\n"
-            "return CGSize(width: {0}.frame.width*{1}, height: {0}.frame.height"
-            "*{2})\n}}\n").format(self.id, width, height)
-
-  def reg_header(self):
+  def register_headers(self):
     """
-    Returns (str): swift code to register header view class
+    Returns (str): Swift code to register headers
     """
-    id_ = self.id
-    type_ = self.info['type']
-    C = ('{0}.register({1}HeaderView.self, forHeaderFooterViewReuseIdentifier:'
-         ' "{0}Header")\n').format(id_, utils.uppercase(id_))
+    headers = [section.get("header") for section in self.info["sections"] \
+               if section.get("header") is not None]
+    if len(headers) == 0:
+      return ""
 
-    if type_ == 'UICollectionView':
-      ins = ("forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,"
-             " withReuseIdentifier")
-      C = C.replace("forHeaderFooterViewReuseIdentifier", ins)
+    ids_ = set([header["id"] for header in headers]) # Avoid duplicate headers
+    C = ""
+    for id_ in ids_:
+      C += ('{}.register({}.self, forHeaderFooterViewReuseIdentifier: "{}ID")\n'
+           ).format(self.id, utils.uppercase(id_), id_)
+
+    if self.info['type'] == 'UICollectionView':
+      for_ = ("forSupplementaryViewOfKind: UICollectionElementKindSectionHeader"
+              ", withReuseIdentifier")
+      C = C.replace("forHeaderFooterViewReuseIdentifier", for_)
 
     return C
 
