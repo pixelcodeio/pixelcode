@@ -97,9 +97,6 @@ def add_shadow(id_, type_, filter_):
   """
   Returns (str): swift code to add shadow to id_.
   """
-  print(id_)
-  print(type_)
-  print(filter_)
   keys = ["fill", "radius", "dx", "dy", "d_size", "is_outer"]
   fill, radius, dx, dy, d_size, is_outer = get_vals(keys, filter_)
   C = ("{0}.layer.shadowColor = {1}.cgColor\n"
@@ -141,7 +138,6 @@ def setup_rect(cid, type_, rect, header=False, cell=False):
   """
   keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
   fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
-
   C = ""
   if word_in_str("navBar", cid): # only set background color for UINavBar
     str_c = None
@@ -149,13 +145,12 @@ def setup_rect(cid, type_, rect, header=False, cell=False):
     border_r = None
   if cell or header:
     cid = None
-
   if fill is not None:
     if header:
       C += set_bg('backgroundView?', fill)
     elif cid is not None and word_in_str('tabBar', cid):
       C += set_bg('tabBar', fill)
-    elif cid is not None and not word_in_str("switch", cid):
+    elif cid is not None and word_in_str("switch", cid):
       C += ""
     else:
       C += set_bg(cid, fill)

@@ -25,14 +25,14 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    for comp in components:
-      if comp["type"] == "UITableView":
-        for section in comp["sections"]:
-          print(section["cells"][0]["width"])
-          print(section["cells"][0]["height"])
-          print(section["cells"][0]["rwidth"])
-          print(section["cells"][0]["rheight"])
-          print('\n')
+    # for comp in components:
+    #   if comp["type"] == "UITableView":
+    #     for section in comp["sections"]:
+    #       print(section["cells"][0]["width"])
+    #       print(section["cells"][0]["height"])
+    #       print(section["cells"][0]["rwidth"])
+    #       print(section["cells"][0]["rheight"])
+    #       print('\n')
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals["artboard"])
