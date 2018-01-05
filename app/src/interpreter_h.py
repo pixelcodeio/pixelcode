@@ -290,27 +290,6 @@ def gen_tabbar_file(interpreter, comp, in_v):
   interpreter.swift[vc_name] = C
   info["methods"] = concat_dicts(info["methods"], cf.methods)
 
-def adjust_content_methods(comp, methods):
-  """
-  Returns (str): Adjusted collection view methods for a SliderView's content
-  """
-  beg = methods.find("cellForItemAt")
-  end = methods.find("func", beg)
-  mid = methods[beg:end]
-  case = ("switch indexPath.row {{\ncase {}"
-         ).format(comp["slider_options"]["selected_index"])
-  mid = mid.replace("switch indexPath.row {\ncase 0", case)
-  methods = methods[:beg] + mid + methods[end:]
-
-  beg = methods.find("sizeForItemAt")
-  end = methods.find("func", beg)
-  mid = methods[beg:end]
-  case = ("switch indexPath.row {{\ncase (0...{})"
-         ).format(len(comp["slider_options"]["options"]) - 1)
-  mid = mid.replace("switch indexPath.row {\ncase 0", case)
-  methods = methods[:beg] + mid + methods[end:]
-  return methods
-
 def gen_slider_view_pieces(interpreter, comp, in_v):
   """
   Returns (None): Generates slider view pieces in interpreter's swift dict.
@@ -322,18 +301,11 @@ def gen_slider_view_pieces(interpreter, comp, in_v):
   # Generate Content CollectionView
   content_cf = ComponentFactory(comp["content"], in_v)
   comp["content_swift"] = content_cf.swift
-  methods = content_cf.methods["tc_methods"]
-  comp["content_methods"] = adjust_content_methods(comp, methods)
-  print(comp["content_methods"])
+  comp["content_methods"] = content_cf.methods["tc_methods"]
   interpreter.swift[file_name] = subclass_tc(interpreter.swift[file_name],
                                              comp["content"])
   # Generate SliderView CollectionViewCell class
   interpreter.gen_table_collection_view_files(comp["content"])
-  # content_id = comp["content"]["id"]
-  # cell = comp["content"]["cells"][0]
-  # interpreter.file_name = utils.uppercase(comp["id"]) + "CollectionViewCell"
-  # if interpreter.contains_nested_tc("cell", content_id, cell):
-  #   interpreter.gen_file(True)
   interpreter.file_name = file_name
 
 def gen_inset_label():
