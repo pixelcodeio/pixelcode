@@ -25,15 +25,18 @@ class TableCollectionView(BaseLayer):
     elif rect is None:
       raise Exception("TableCollectionView: Missing bound in " + elem["id"])
 
+    # Calculate cell spacing for all sections
     sections = sorted(sections, key=lambda s: s['y']) # sort by y
     type_ = elem["type"]
     sections = [self.calculate_separator(sect, type_) for sect in sections]
 
-    separator = [] # separator between sections
+    # Calculate spacing between sections
+    separator = []
     if len(sections) >= 2:
       section_sep = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
       separator.append(section_sep)
 
+    # Get all the custom headers
     custom_headers = {}
     for section in sections:
       if section.get("header") is not None:

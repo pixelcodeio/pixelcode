@@ -25,14 +25,6 @@ class Interpreter(object):
 
     Returns: Fills in the swift instance var with generated code for artboard.
     """
-    # for comp in components:
-    #   if comp["type"] == "UITableView":
-    #     for section in comp["sections"]:
-    #       print(section["cells"][0]["width"])
-    #       print(section["cells"][0]["height"])
-    #       print(section["cells"][0]["rwidth"])
-    #       print(section["cells"][0]["rheight"])
-    #       print('\n')
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals["artboard"])
@@ -65,21 +57,6 @@ class Interpreter(object):
                                                tc_elem)
       self.swift[self.file_name] += "}"
       self.gen_table_collection_view_files(tc_elem)
-
-  def gen_table_collection_view_files(self, tc_elem):
-    """
-    Returns (None): Generates the necessary (table/collection)view files.
-    """
-    for name, header in tc_elem["custom_headers"].items():
-      nested_tc = self.nested_table_collection_view(name, header, tc_elem)
-      if nested_tc is not None:
-        self.gen_table_collection_view_files(nested_tc)
-
-    for section in tc_elem["sections"]:
-      for name, cell in section["custom_cells"].items():
-        nested_tc = self.nested_table_collection_view(name, cell, tc_elem)
-        if nested_tc is not None:
-          self.gen_table_collection_view_files(nested_tc)
 
   def gen_comps(self, components, in_v):
     """
@@ -117,9 +94,28 @@ class Interpreter(object):
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
 
-  def nested_table_collection_view(self, file_name, info, parent):
+  def gen_table_collection_view_files(self, tc_elem):
     """
-    Returns (dict):
+    Returns (None): Generates the necessary (table/collection)view files.
+    """
+    for name, header in tc_elem["custom_headers"].items():
+      # Generate Header file and check for nested table/collection view
+      nested_tc = self.gen_cell_header_file(name, header, tc_elem)
+      if nested_tc is not None:
+        self.gen_table_collection_view_files(nested_tc)
+
+    # Loop through each section
+    for section in tc_elem["sections"]:
+      # Generate custom cells of this section
+      for name, cell in section["custom_cells"].items():
+        # Generate Cell file and check for nested table/collection view
+        nested_tc = self.gen_cell_header_file(name, cell, tc_elem)
+        if nested_tc is not None:
+          self.gen_table_collection_view_files(nested_tc)
+
+  def gen_cell_header_file(self, file_name, info, parent):
+    """
+    Returns (optional dict):
       Sets up (table/collection)view (header/cell) file and then returns the
       nested (table/collection)view, if there is one. Otherwise, returns None.
     """
