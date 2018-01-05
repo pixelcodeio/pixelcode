@@ -29,11 +29,23 @@ class SliderView(BaseLayer):
 
     content["id"] = elem["id"] + "CollectionView"
     content["type"] = "UICollectionView"
-    content["separator"] = [0]
-    content["cells"] = [{"rect": content["rect"],
-                         "width": content["width"],
-                         "height": content["height"],
-                         "components": content["components"]}]
+    cell_name = utils.uppercase(content["id"]) + "Cell"
+    cell = {"cell_name": cell_name,
+            "components": content["components"],
+            "height": content["height"],
+            "id": utils.lowercase(cell_name),
+            "rect": content["rect"],
+            "width": content["width"],}
+    section = {"cells": [cell],
+               "custom_cells": {cell_name: cell},
+               "height": content["height"],
+               "rect": content["rect"],
+               "separator": [0],
+               "table_separate": False,
+               "width": content["width"]}
+    content.update({"custom_headers": {},
+                    "sections": [section],
+                    "separator": [0]})
     del content["components"]
 
     elem["content"] = content
