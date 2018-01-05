@@ -237,11 +237,7 @@ class ComponentFactory(object):
     for section_index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(section_index)
       # Check if this is a UITableView and cells have spacing in this section
-      table_separate = (self.info["type"] == "UITableView" and \
-                        len(section["separator"]) > 0 and \
-                        section["separator"][0] > 0)
-      section["table_separate"] = table_separate
-      if table_separate:
+      if section["table_separate"]:
         C += ("if (indexPath.row % 2 == 1) {\n"
               "let cell = UITableViewCell()\n"
               "cell.backgroundColor = .clear\n"
@@ -251,7 +247,7 @@ class ComponentFactory(object):
 
       # Loop through each cell in this section
       for cell_index, cell in enumerate(section["cells"]):
-        index = cell_index * 2 if table_separate else cell_index
+        index = cell_index * 2 if section["table_separate"] else cell_index
         # Initialize cell variable
         cell_name = cell["cell_name"]
         C += ("case {}:\n"

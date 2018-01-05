@@ -113,6 +113,7 @@ class BaseLayer(object):
         "stroke-width",
         "stroke-opacity",
         "tabbar-buttons",
+        "table_separate",
         "text",
         "textspan",
         "text-align",

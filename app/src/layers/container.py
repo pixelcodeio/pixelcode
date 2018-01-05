@@ -11,6 +11,7 @@ class Container(BaseLayer):
     """
     rect = None
     components = []
+
     for child in elem["children"]:
       if child["type"] == "UIView" and utils.word_in_str('bound', child["id"]):
         if rect is None:
@@ -23,6 +24,6 @@ class Container(BaseLayer):
     if rect is None:
       raise Exception("Container: No bound field in " + elem["id"])
 
-    elem["rect"] = rect
     elem["components"] = components
+    elem["rect"] = rect
     return super().parse_elem(elem)

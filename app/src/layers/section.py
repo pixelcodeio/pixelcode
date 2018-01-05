@@ -5,8 +5,7 @@ class Section(BaseLayer):
   Class representing a Section in Sketch
   """
   def parse_elem(self, elem):
-    rect = None
-    header = None
+    rect = header = None
     custom_cells = {}
     cells = []
 
@@ -36,8 +35,8 @@ class Section(BaseLayer):
 
     cells = sorted(cells, key=lambda c: c['y']) # sort by y
 
-    elem["rect"] = rect
-    elem["header"] = header
-    elem["custom_cells"] = custom_cells
     elem["cells"] = cells
+    elem["custom_cells"] = custom_cells
+    elem["header"] = header
+    elem["rect"] = rect
     return super().parse_elem(elem)

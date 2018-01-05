@@ -37,6 +37,6 @@ class SliderView(BaseLayer):
     del content["components"]
 
     elem["content"] = content
-    elem["slider_options"] = slider_options
     elem["rect"] = rect
+    elem["slider_options"] = slider_options
     return super().parse_elem(elem)

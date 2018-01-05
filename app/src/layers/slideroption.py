@@ -23,7 +23,7 @@ class SliderOption(BaseLayer):
     elif rect is None:
       raise Exception("SliderOption: No bound in SliderOption: " + elem["id"])
 
-    elem["text"] = text
     elem["img"] = img
     elem["rect"] = rect
+    elem["text"] = text
     return super().parse_elem(elem)

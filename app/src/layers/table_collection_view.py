@@ -47,15 +47,15 @@ class TableCollectionView(BaseLayer):
         if custom_headers.get(header_name) is None:
           custom_headers[header_name] = header
 
+    elem["custom_headers"] = custom_headers
     elem["rect"] = rect
     elem["sections"] = sections
     elem["separator"] = separator
-    elem["custom_headers"] = custom_headers
     return super().parse_elem(elem)
 
   def calculate_separator(self, section, type_):
     """
-    Returns (dict): Section dictionary with separator key added.
+    Returns (dict): Section dict with "separator" and "table_separate" key added
     """
     cells = section["cells"]
     separator = []
@@ -71,4 +71,7 @@ class TableCollectionView(BaseLayer):
           vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
           separator.append(vert_sep)
     section["separator"] = separator
+    section["table_separate"] = (type_ == "UITableView" and \
+                                 len(separator) > 0 and \
+                                 separator[0] > 0)
     return section

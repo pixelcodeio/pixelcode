@@ -30,6 +30,6 @@ class SegmentedControl(BaseLayer):
     items = sorted(items, key=lambda i: i['x'])
     items = [i["title"] for i in items]
     elem["items"] = items
-    elem["tint_fill"] = tint_fill
     elem["selected_index"] = selected_index
+    elem["tint_fill"] = tint_fill
     return super().parse_elem(elem)
