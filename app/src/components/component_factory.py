@@ -238,15 +238,15 @@ class ComponentFactory(object):
       C += ("case {}:\n").format(section_index)
       # Check if this is a UITableView and cells have spacing in this section
       table_separate = (self.info["type"] == "UITableView" and \
-                       (len(section["separator"]) == 0 or \
-                        section["separator"][0] == 0))
+                        len(section["separator"]) > 0 and \
+                        section["separator"][0] > 0)
       section["table_separate"] = table_separate
       if table_separate:
         C += ("if (indexPath.row % 2 == 1) {\n"
               "let cell = UITableViewCell()\n"
               "cell.backgroundColor = .clear\n"
               "cell.selectionStyle = .none\n"
-              "return cell\n}}\n")
+              "return cell\n}\n")
       C += "switch indexPath.row {\n"
 
       # Loop through each cell in this section
