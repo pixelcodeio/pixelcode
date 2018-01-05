@@ -198,19 +198,26 @@ class ComponentFactory(object):
     """
     # Set properties for headers' components
     C = "switch section {\n"
+
+    # Looping through the headers of each section
     for index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(index)
+
       if section.get('header') is not None:
         header = section['header']
+
         if self.info["type"] == "UITableView":
           path = ""
         else:
           path = ", for: indexPath"
+
+        # Initialize header variable
         header_name = header["header_name"]
         C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
               ' "{}ID"{}) as! {}\n'
              ).format(self.info["id"], utils.lowercase(header_name), path,
                       header_name)
+        # Generating header's components
         components = header['components']
         custom_header = self.info["custom_headers"][header_name]
         ids = [c["id"] for c in custom_header["components"]]
@@ -218,14 +225,18 @@ class ComponentFactory(object):
         C += "return header\n"
       else:
         C += "return UIView()\n"
+
     C += "default:\nreturn UIView()\n}\n"
     self.info["header_set_prop"] = C
 
     # Set properties for cells' components
     default = "default:\nreturn UITableViewCell()\n"
     C = "switch indexPath.section {\n"
+
+    # Loop through each section
     for section_index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(section_index)
+      # Check if this is a UITableView and cells have spacing in this section
       table_separate = (self.info["type"] == "UITableView" and \
                        (len(section["separator"]) == 0 or \
                         section["separator"][0] == 0))
@@ -237,18 +248,24 @@ class ComponentFactory(object):
               "cell.selectionStyle = .none\n"
               "return cell\n}}\n")
       C += "switch indexPath.row {\n"
+
+      # Loop through each cell in this section
       for cell_index, cell in enumerate(section["cells"]):
         index = cell_index * 2 if table_separate else cell_index
+        # Initialize cell variable
         cell_name = cell["cell_name"]
         C += ("case {}:\n"
               "let cell = tableView.dequeueReusableCell(withIdentifier: "
               '"{}ID") as! {}\n'
               "cell.selectionStyle = .none\n"
              ).format(index, utils.lowercase(cell_name), cell_name)
+
         # Get ids of components in correct custom cell class
         for name, custom_cell in section["custom_cells"].items():
           if name == cell["cell_name"]:
             ids = [comp["id"] for comp in custom_cell["components"]]
+
+        # Generate cell's components
         C += self.gen_subcomponents_properties("cell", cell["components"], ids)
         C += "return cell\n"
       C += ("{}}}\n").format(default)
