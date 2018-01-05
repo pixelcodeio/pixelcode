@@ -25,8 +25,7 @@ class Button(BaseLayer):
     if text is None and bg_img is None:
       raise Exception("Button: Nothing in button in " + elem["id"])
 
+    elem["bg_img"] = bg_img
     elem["rect"] = rect
     elem["text"] = text
-    elem["bg_img"] = bg_img
-
     return super().parse_elem(elem)

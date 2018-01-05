@@ -29,7 +29,7 @@ class SliderOptions(BaseLayer):
     if options[selected_index]["rect"].get("filter") is None:
       raise Exception("SliderOptions: Selected option missing inner shadow.")
 
-    elem["selected_index"] = selected_index
     elem["options"] = options
     elem["rect"] = rect
+    elem["selected_index"] = selected_index
     return super().parse_elem(elem)

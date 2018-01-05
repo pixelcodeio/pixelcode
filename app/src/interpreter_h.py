@@ -1,7 +1,6 @@
 import utils
 from components.component_factory import ComponentFactory
 
-
 def add_navbar_items(components):
   """
   Returns (list): components with navbar items added.
@@ -111,16 +110,16 @@ def gen_global_colors(global_fills, swift):
   swift["UIColorExtension"] = C + "}\n"
   return swift
 
-def gen_cell_header(tc_id, cell):
+def gen_cell_header(type_, cell):
   """
   Args:
-    tc_id (str): id of the parent (table/collection)view
+    type_ (str): type of the parent (table/collection)view
     cell (dict): info of cell being generated
 
   Returns (str): swift code to generate the header of a cell
   """
-  tc_id = utils.uppercase(tc_id)
-  C = ("import UIKit\nimport SnapKit\n\nclass {}Cell: UITableViewCell "
+  class_ = utils.uppercase(cell["id"])
+  C = ("import UIKit\nimport SnapKit\n\nclass {}: UITableViewCell "
        "{{\n\n{}"
        "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
        "String?) {{\n"
@@ -128,9 +127,9 @@ def gen_cell_header(tc_id, cell):
        "layoutSubviews()\n}}\n\n"
        "override func layoutSubviews() {{\n"
        "super.layoutSubviews()\n\n"
-      ).format(tc_id, init_g_vars(cell.get('components')))
+      ).format(class_, init_g_vars(cell.get('components')))
 
-  if utils.word_in_str('collection', tc_id):
+  if type_ == "UICollectionView":
     C = C.replace('style: UITableViewCellStyle, reuseIdentifier: String?',
                   'frame: CGRect')
     C = C.replace('style: style, reuseIdentifier: reuseIdentifier',
@@ -139,25 +138,25 @@ def gen_cell_header(tc_id, cell):
 
   return C
 
-def gen_header_header(tc_id, header): # TODO: Rename this function.
+def gen_header_header(type_, header): # TODO: Rename this function.
   """
   Args:
-    tc_id (str): id of the parent (table/collection)view
+    type_ (str): type of the parent (table/collection)view
     header: (dict) info of header being generated
 
   Returns (str): swift code for generating the header of a header
   """
-  tc_id = utils.uppercase(tc_id)
-  C = ("import UIKit\nimport SnapKit\n\nclass {}HeaderView: "
+  class_ = utils.uppercase(header["id"])
+  C = ("import UIKit\nimport SnapKit\n\nclass {}: "
        "UITableViewHeaderFooterView {{\n\n{}"
        "\noverride init(reuseIdentifier: String?) {{\n"
        "super.init(reuseIdentifier: reuseIdentifier)\n"
        "layoutSubviews()\n}}\n\n"
        "override func layoutSubviews() {{"
        "\nsuper.layoutSubviews()\n\n"
-      ).format(tc_id, init_g_vars(header.get('components')))
+      ).format(class_, init_g_vars(header.get('components')))
 
-  if utils.word_in_str('collection', tc_id):
+  if type_ == "UICollectionView":
     C = C.replace('reuseIdentifier: String?', 'frame: CGRect')
     C = C.replace('reuseIdentifier: reuseIdentifier', 'frame: frame')
     C = C.replace('UITableViewHeaderFooterView', 'UICollectionReusableView')
@@ -192,7 +191,7 @@ def move_collection_view(swift, info):
   cv = ("let layout = UICollectionViewFlowLayout()\n"
         "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
         "{}\n"
-       ).format(info['tc_elem']['id'], 'UICollectionView', swift[beg:end])
+       ).format(info['id'], 'UICollectionView', swift[beg:end])
   swift = swift[:beg] + swift[end:]
 
   if 'reuseIdentifier)\n' in swift:
@@ -305,12 +304,8 @@ def gen_slider_view_pieces(interpreter, comp, in_v):
   comp["content_methods"] = content_cf.methods["tc_methods"]
   interpreter.swift[file_name] = subclass_tc(interpreter.swift[file_name],
                                              comp["content"])
-  # Generate SliderView CollectionViewCell
-  content_id = comp["content"]["id"]
-  cell = comp["content"]["cells"][0]
-  interpreter.file_name = utils.uppercase(comp["id"]) + "CollectionViewCell"
-  if interpreter.contains_nested_tc("cell", content_id, cell):
-    interpreter.gen_file(True)
+  # Generate SliderView CollectionViewCell class
+  interpreter.gen_table_collection_view_files(comp["content"])
   interpreter.file_name = file_name
 
 def gen_inset_label():

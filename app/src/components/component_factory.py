@@ -196,31 +196,78 @@ class ComponentFactory(object):
       Adds code for setting properties of all cells/headers' subcomponents to
       the info instance variable.
     """
-    if self.info.get('header') is not None:
-      # set properties for components in header
-      ids = []
-      C = "case 0:\n"
-      components = self.info['header']['components']
-      ids = [comp.get('id') for comp in components]
-      C += self.gen_subcomponents_properties("header", components, ids)
-      self.info["header_set_prop"] = C
+    # Set properties for headers' components
+    C = "switch section {\n"
 
-    # set properties for components in cells
-    cells = self.info['cells']
-    fst_cell_comps = cells[0].get('components')
-    ids = [comp.get('id') for comp in fst_cell_comps]
+    # Looping through the headers of each section
+    for index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(index)
 
-    C = ""
-    case = 0
-    for cell in cells:
-      components = cell.get('components')
-      if len(components) != len(fst_cell_comps):
-        continue
-      C += '\ncase {}:\n'.format(case)
-      C += self.gen_subcomponents_properties("cell", components, ids)
-      C += 'return cell'
-      case += 1
+      if section.get('header') is not None:
+        header = section['header']
 
+        if self.info["type"] == "UITableView":
+          path = ""
+        else:
+          path = ", for: indexPath"
+
+        # Initialize header variable
+        header_name = header["header_name"]
+        C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
+              ' "{}ID"{}) as! {}\n'
+             ).format(self.info["id"], utils.lowercase(header_name), path,
+                      header_name)
+        # Generating header's components
+        components = header['components']
+        custom_header = self.info["custom_headers"][header_name]
+        ids = [c["id"] for c in custom_header["components"]]
+        C += self.gen_subcomponents_properties("header", components, ids)
+        C += "return header\n"
+      else:
+        C += "return UIView()\n"
+
+    C += "default:\nreturn UIView()\n}\n"
+    self.info["header_set_prop"] = C
+
+    # Set properties for cells' components
+    default = "default:\nreturn UITableViewCell()\n"
+    C = "switch indexPath.section {\n"
+
+    # Loop through each section
+    for section_index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(section_index)
+      # Check if this is a UITableView and cells have spacing in this section
+      if section["table_separate"]:
+        C += ("if (indexPath.row % 2 == 1) {\n"
+              "let cell = UITableViewCell()\n"
+              "cell.backgroundColor = .clear\n"
+              "cell.selectionStyle = .none\n"
+              "return cell\n}\n")
+      C += "switch indexPath.row {\n"
+
+      # Loop through each cell in this section
+      for cell_index, cell in enumerate(section["cells"]):
+        index = cell_index * 2 if section["table_separate"] else cell_index
+        # Initialize cell variable
+        cell_name = cell["cell_name"]
+        C += ("case {}:\n"
+              "let cell = {}.dequeueReusableCell(withIdentifier: "
+              '"{}ID") as! {}\n'
+              "cell.selectionStyle = .none\n"
+             ).format(index, self.info["id"], utils.lowercase(cell_name),
+                      cell_name)
+
+        # Get ids of components in correct custom cell class
+        for name, custom_cell in section["custom_cells"].items():
+          if name == cell_name:
+            ids = [comp["id"] for comp in custom_cell["components"]]
+            break
+
+        # Generate cell's components
+        C += self.gen_subcomponents_properties("cell", cell["components"], ids)
+        C += "return cell\n"
+      C += ("{}}}\n").format(default)
+    C += ("{0}}}\n").format(default)
     self.info["cell_set_prop"] = C
 
   def gen_subcomponents(self, parent, components, add_constraints):
@@ -230,8 +277,8 @@ class ComponentFactory(object):
     C = ""
 
     for comp in components:
-      type_ = comp.get('type')
-      id_ = comp.get('id')
+      type_ = comp['type']
+      id_ = comp['id']
       C += self.init_comp(type_, id_)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
@@ -255,7 +302,7 @@ class ComponentFactory(object):
     components = [c for c in components if c['type'] != "UICollectionView"]
 
     for j, comp in enumerate(components):
-      type_ = comp.get('type')
+      type_ = comp['type']
       id_ = "{}.{}".format(c_or_h, ids[j])
       env = {"set_prop": True}
 

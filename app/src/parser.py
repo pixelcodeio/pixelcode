@@ -76,8 +76,10 @@ class Parser(object):
       bg_color = utils.convert_hex_to_rgb(bg_hex) + (1.0,)
     else:
       bg_color = (255, 255, 255, 1.0)
-    height = svg["height"][:-2]
-    width = svg["width"][:-2]
+    width = float(svg["width"][:-2])
+    height = {320: 568, 375: 667, 414: 736}.get(width)
+    if height is None:
+      raise Exception("Parser: Artboard has invalid width size.")
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
@@ -101,8 +103,8 @@ class Parser(object):
       filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
                       "d_size": d_size, "is_outer": is_outer}
     return {"background_color": bg_color,
-            "width": float(width),
-            "height": float(height),
+            "width": width,
+            "height": height,
             "pagename": pagename,
             "artboard": artboard,
             "info": info,
@@ -149,8 +151,10 @@ class Parser(object):
           elem.name = "collectionview"
         elif utils.word_in_str("header", elem["id"]):
           elem.name = "header"
-        elif utils.word_in_str("listView", elem["id"]):
+        elif utils.word_in_str("tableView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("section", elem["id"]):
+          elem.name = "section"
         elif utils.word_in_str("sliderContent", elem["id"]):
           elem.name = "slidercontent"
         elif utils.word_in_str("sliderOptions", elem["id"]):
@@ -201,6 +205,8 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name in {"image", "polygon", "path", "circle"}:
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "section":
+        parsed_elem = Section(elem, "Section")
       elif elem.name == "slidercontent":
         parsed_elem = Container(elem, "SliderContent")
       elif elem.name == "slideroption":

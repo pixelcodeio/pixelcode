@@ -22,8 +22,7 @@ class TextField(BaseLayer):
     elif rect is None:
       raise Exception("TextField: Rect is empty in " + elem["id"])
 
+    elem["left-inset"] = float(text["x"]) - float(rect["x"])
     elem["rect"] = rect
     elem["text"] = text
-    elem["left-inset"] = float(text["x"]) - float(rect["x"])
-
     return super().parse_elem(elem)
