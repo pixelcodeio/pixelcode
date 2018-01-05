@@ -251,15 +251,17 @@ class ComponentFactory(object):
         # Initialize cell variable
         cell_name = cell["cell_name"]
         C += ("case {}:\n"
-              "let cell = tableView.dequeueReusableCell(withIdentifier: "
+              "let cell = {}.dequeueReusableCell(withIdentifier: "
               '"{}ID") as! {}\n'
               "cell.selectionStyle = .none\n"
-             ).format(index, utils.lowercase(cell_name), cell_name)
+             ).format(index, self.info["id"], utils.lowercase(cell_name),
+                      cell_name)
 
         # Get ids of components in correct custom cell class
         for name, custom_cell in section["custom_cells"].items():
-          if name == cell["cell_name"]:
+          if name == cell_name:
             ids = [comp["id"] for comp in custom_cell["components"]]
+            break
 
         # Generate cell's components
         C += self.gen_subcomponents_properties("cell", cell["components"], ids)

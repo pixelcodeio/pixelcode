@@ -62,6 +62,9 @@ class UITableCollectionView(BaseComponent):
     if self.info['type'] == 'UICollectionView':
       C = C.replace("withIdentifier", "withReuseIdentifier")
       C = C.replace("cell.selectionStyle = .none\n", '')
+      empty = ('let cell = {}.dequeueReusableCell(withReuseIdentifier: "cell", '
+               'for: indexPath)\nreturn cell\n').format(self.id)
+      C = C.replace("return UITableViewCell()", empty)
       C = utils.ins_after_key(C, 'ID"', ', for: indexPath')
 
     C += "}\n\n"
@@ -103,10 +106,12 @@ class UITableCollectionView(BaseComponent):
     if self.info['type'] == 'UITableView':
       C = ("func tableView(_ tableView: UITableView, heightForRowAt "
            "indexPath: IndexPath) -> CGFloat {\n")
+      default = "default:\nreturn 0\n"
     else:
       C = ("func collectionView(_ collectionView: UICollectionView, layout "
            "collectionViewLayout: UICollectionViewLayout, sizeForItemAt "
            "indexPath: IndexPath) -> CGSize {\n")
+      default = "default:\nreturn CGSize.zero\n"
     C += "switch indexPath.section {\n"
 
     # Loop through each section
@@ -134,8 +139,8 @@ class UITableCollectionView(BaseComponent):
           C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
                 "height*{2})\n").format(self.id, width, height)
 
-      C += ("default:\nreturn 0\n}\n")
-    C += ("default:\nreturn 0\n}\n}\n\n")
+      C += ("{}}}\n").format(default)
+    C += ("{}}}\n}}\n\n").format(default)
 
     return C
 
@@ -225,7 +230,8 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (str): Swift code to register custom cell classes.
     """
-    C = ""
+    C = ('{}.register(UICollectionViewCell.self, forCellWithReuse'
+         'Identifier: "cell")\n').format(self.id)
 
     # Loop through each section
     for section in self.info["sections"]:
