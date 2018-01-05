@@ -4,7 +4,6 @@ class UITableCollectionView(BaseComponent):
   """
   Class representing a UI(Table/Collection)View in swift
     tc_methods (str): swift code of necessary (table/collection)view methods
-    table_separate (bool): whether type is UITableView and cells are separated
   """
   def generate_swift(self):
     methods = self.cell_for_row_item()
@@ -30,7 +29,7 @@ class UITableCollectionView(BaseComponent):
           '{0}.showsHorizontalScrollIndicator = false\n'
           '{0}.clipsToBounds = false\n').format(self.id)
     C += self.register_headers()
-    C += self.register_custom_cells()
+    C += self.register_cells()
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace('CellReuse', 'CellWithReuse')
@@ -80,8 +79,11 @@ class UITableCollectionView(BaseComponent):
 
     C += ("InSection section: Int) -> Int {\n"
           "switch section {\n")
+
+    # Loop through each section
     for index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(index)
+      # Get number of cells in each section
       num_cells = len(section["cells"])
       if section["table_separate"]:
         C += ("return {}\n").format(num_cells * 2 - 1)
@@ -107,22 +109,31 @@ class UITableCollectionView(BaseComponent):
            "indexPath: IndexPath) -> CGSize {\n")
     C += "switch indexPath.section {\n"
 
+    # Loop through each section
     for section_index, section in enumerate(self.info["sections"]):
       C += ("case {}:\n").format(section_index)
+
+      # Add height of empty cells for spacing if necessary
       if section["table_separate"]:
         C += ("if (indexPath.row % 2 == 1) {{\n"
               "return {}\n}}\n").format(section["separator"][0])
       C += "switch indexPath.row {\n"
+
+      # Loop through cells in this section
       for cell_index, cell in enumerate(section["cells"]):
+        # Get correct cell index
         index = cell_index * 2 if section["table_separate"] else cell_index
         C += ("case {}:\n").format(index)
+        # Assign proper width and height
         width = section["width"] * cell["width"]
         height = section["height"] * cell["height"]
+
         if self.info["type"] == "UITableView":
           C += ("return {}.frame.height * {}\n").format(self.id, height)
         else:
           C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
                 "height*{2})\n").format(self.id, width, height)
+
       C += ("default:\nreturn 0\n}\n")
     C += ("default:\nreturn 0\n}\n}\n\n")
 
@@ -138,16 +149,10 @@ class UITableCollectionView(BaseComponent):
     if self.info['type'] == 'UITableView':
       func = ("func tableView(_ tableView: UITableView, viewForHeaderInSection "
               "section: Int) -> UIView?")
-      deq = "dequeueReusableHeaderFooterView(withIdentifier"
-      path = ""
-      section = "section"
     else:
       func = ("func collectionView(_ collectionView: UICollectionView,"
               " viewForSupplementaryElementOfKind kind: String, at indexPath: "
               "IndexPath) -> UICollectionReusableView")
-      deq = "dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier"
-      path = ", for: indexPath"
-      section = "indexPath.section"
 
     C = ("{} {{\n").format(func)
     C += self.info["header_set_prop"]
@@ -176,11 +181,16 @@ class UITableCollectionView(BaseComponent):
            "HeaderInSection section: Int) -> CGSize {\n")
 
     C += "switch section {\n"
+
+    # Loop through each section
     for index, section in enumerate(self.info["sections"]):
+      # Check if section contains a header
       if section.get("header") is not None:
         C += ("case {}:\n").format(index)
+        # Assign proper width and height
         width = section["width"] * section["header"]["width"]
         height = section["height"] * section["header"]["height"]
+
         if self.info["type"] == "UITableView":
           C += ("return {}.frame.height * {}\n").format(self.id, height)
         else:
@@ -192,11 +202,12 @@ class UITableCollectionView(BaseComponent):
 
   def register_headers(self):
     """
-    Returns (str): Swift code to register headers
+    Returns (str): Swift code to register header classes.
     """
     if len(self.info["custom_headers"]) == 0:
       return ""
 
+    # Get names of Header classes
     header_names = self.info["custom_headers"].keys()
     C = ""
     for name in header_names:
@@ -210,12 +221,15 @@ class UITableCollectionView(BaseComponent):
 
     return C
 
-  def register_custom_cells(self):
+  def register_cells(self):
     """
     Returns (str): Swift code to register custom cell classes.
     """
     C = ""
+
+    # Loop through each section
     for section in self.info["sections"]:
+      # Get name of each Cell class
       for cell_name in section["custom_cells"]:
         C += ('{}.register({}.self, forCellReuseIdentifier: "{}ID")\n'
              ).format(self.id, cell_name, utils.lowercase(cell_name))
