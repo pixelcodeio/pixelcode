@@ -131,10 +131,6 @@ class ComponentFactory(object):
     keys = ['id', 'height', 'width', 'horizontal', 'vertical']
     id_, height, width, hor, vert = utils.get_vals(keys, component)
 
-    if id_ == "searchBar":
-      for i in component.items():
-        print(i)
-
     keys = ['id', 'direction', 'distance']
     hor_id, hor_dir, hor_dist = utils.get_vals(keys, hor)
     vert_id, vert_dir, vert_dist = utils.get_vals(keys, vert)
