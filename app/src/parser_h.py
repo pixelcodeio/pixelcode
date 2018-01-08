@@ -115,12 +115,13 @@ def calculate_spacing(elem, parsed_elements, is_ios):
   elem["vertical"] = vertical
   return elem
 
-def convert_coords(elem, parent):
+def convert_coords(parser, elem, parent):
   """
   Returns: (dict) elem with coords set relative to parent height/width
   """
   width = parent["rwidth"]
   height = parent["rheight"]
+
   # cache pixel widths
   elem["rwidth"] = elem["width"]
   elem["rheight"] = elem["height"]
@@ -129,6 +130,11 @@ def convert_coords(elem, parent):
   elem["height"] = min(elem["height"]/height, 1.0)
   elem["horizontal"]["distance"] /= width
   elem["vertical"]["distance"] /= height
+
+  # Adjust height for long components in long artboards
+  if parser.is_ios and parser.globals["is_long_artboard"] and \
+  elem["height"] == 1.0 and parent["id"] == parser.artboard:
+      elem["height"] -= elem["y"]/height
 
   # generate center
   elem["cx"] = elem["x"]/width + elem["width"]/2

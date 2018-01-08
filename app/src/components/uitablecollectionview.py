@@ -22,7 +22,6 @@ class UITableCollectionView(BaseComponent):
     """
     Returns: (str) The swift code to setup a UITableView
     """
-    print(self.env)
     C = self.gen_spacing()
     C += ('{0}.delegate = self\n'
           '{0}.dataSource = self\n'
@@ -206,8 +205,6 @@ class UITableCollectionView(BaseComponent):
         else:
           height = ("{}.frame.height * {}"
                    ).format(self.id, section["height"] * header["height"])
-        # width = section["width"] * section["header"]["width"]
-        # height = section["height"] * section["header"]["height"]
 
         if self.info["type"] == "UITableView":
           C += ("return {}\n").format(height)

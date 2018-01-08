@@ -280,9 +280,6 @@ class ComponentFactory(object):
     C = ""
 
     for comp in components:
-      if comp["id"] == "searchBar":
-        for i in comp.items():
-          print(i)
       type_ = comp['type']
       id_ = comp['id']
       C += self.init_comp(type_, id_, comp)

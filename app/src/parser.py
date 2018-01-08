@@ -140,7 +140,7 @@ class Parser(object):
     while elements:
       elem = elements.pop(0)
       elem = calculate_spacing(elem, parsed_elements, self.is_ios)
-      elem = convert_coords(elem, parent)
+      elem = convert_coords(self, elem, parent)
 
       # correctly name grouped elements
       if elem.name == "g":
