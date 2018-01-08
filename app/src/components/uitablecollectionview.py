@@ -22,6 +22,7 @@ class UITableCollectionView(BaseComponent):
     """
     Returns: (str) The swift code to setup a UITableView
     """
+    print(self.env)
     C = self.gen_spacing()
     C += ('{0}.delegate = self\n'
           '{0}.dataSource = self\n'
@@ -197,14 +198,21 @@ class UITableCollectionView(BaseComponent):
       if section.get("header") is not None:
         C += ("case {}:\n").format(index)
         # Assign proper width and height
-        width = section["width"] * section["header"]["width"]
-        height = section["height"] * section["header"]["height"]
+        header = section["header"]
+        width = ("{}.frame.width * {}"
+                ).format(self.id, section["width"] * header["width"])
+        if self.env["is_long_artboard"]:
+          height = header["rheight"]
+        else:
+          height = ("{}.frame.height * {}"
+                   ).format(self.id, section["height"] * header["height"])
+        # width = section["width"] * section["header"]["width"]
+        # height = section["height"] * section["header"]["height"]
 
         if self.info["type"] == "UITableView":
-          C += ("return {}.frame.height * {}\n").format(self.id, height)
+          C += ("return {}\n").format(height)
         else:
-          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-                "height*{2})\n").format(self.id, width, height)
+          C += ("return CGSize(width: {}, height: {})\n").format(width, height)
 
     C += "default:\nreturn 0\n}\n}\n\n"
     return C
