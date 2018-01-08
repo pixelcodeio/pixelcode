@@ -130,14 +130,18 @@ class UITableCollectionView(BaseComponent):
         index = cell_index * 2 if section["table_separate"] else cell_index
         C += ("case {}:\n").format(index)
         # Assign proper width and height
-        width = section["width"] * cell["width"]
-        height = section["height"] * cell["height"]
+        width = ("{}.frame.width * {}"
+                ).format(self.id, section["width"] * cell["width"])
+        if self.env["is_long_artboard"]:
+          height = cell["rheight"]
+        else:
+          height = ("{}.frame.height * {}"
+                   ).format(self.id, section["height"] * cell["height"])
 
         if self.info["type"] == "UITableView":
-          C += ("return {}.frame.height * {}\n").format(self.id, height)
+          C += ("return {}\n").format(height)
         else:
-          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-                "height*{2})\n").format(self.id, width, height)
+          C += ("return CGSize(width: {}, height: {})\n").format(width, height)
 
       C += ("{}}}\n").format(default)
     C += ("{}}}\n}}\n\n").format(default)

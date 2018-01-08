@@ -7,17 +7,20 @@ class ComponentFactory(object):
     swift (str): swift code to generate a component
     info (dict): contains information about component
     methods (dict): contains methods to be added outside of file's init function
-    in_view (bool): whether component is generated inside a custom view file
+    env (dict): environment in which component is being generated. contains keys
+      - in_view (bool): whether component is generated inside a custom view file
+      - is_long_artboard (bool)
   """
-  def __init__(self, info, in_v):
+  def __init__(self, info, env):
     """
     Args:
       info (dict): info on component
+      env (dict): environment in which component is being generated
       in_v (bool): is whether generating from within a custom view
     """
     self.info = info
     self.methods = {}
-    self.in_view = in_v
+    self.env = env
     self.swift = self.generate_component()
 
   def generate_component(self):
@@ -28,14 +31,13 @@ class ComponentFactory(object):
     type_ = self.info["type"]
     C = ""
 
-    if not self.in_view:
+    if not self.env["in_view"]:
       C += self.init_comp(type_, id_, self.info)
 
     # prepare for create_component
     self.prepare_for_create_component()
 
-    env = {"in_view": self.in_view}
-    component = self.create_component(type_, id_, self.info, env)
+    component = self.create_component(type_, id_, self.info, self.env)
     C += component.swift
 
     # finish creating component
@@ -63,7 +65,7 @@ class ComponentFactory(object):
 
     if rect is not None and type_ != "SliderView":
       swift += utils.setup_rect(id_, type_, rect)
-      if rect.get("filter") is not None and not self.in_view:
+      if rect.get("filter") is not None and not self.env["in_view"]:
         # move code for shadows to viewDidLayoutSubviews function
         shadow = utils.add_shadow(id_, type_, rect["filter"])
         swift = swift.replace(shadow, "")
@@ -71,7 +73,7 @@ class ComponentFactory(object):
 
     if filter_ is not None:
       shadow = utils.add_shadow(id_, type_, filter_)
-      if self.in_view:
+      if self.env["in_view"]:
         swift += shadow
       else:
         self.methods["viewDidLayoutSubviews"] = shadow
@@ -96,7 +98,7 @@ class ComponentFactory(object):
         self.methods["viewDidAppear"] = component.swift
       return swift
 
-    view = 'view' if not self.in_view else None
+    view = 'view' if not self.env["in_view"] else None
     swift += utils.add_subview(view, id_, type_)
     swift += self.gen_constraints(self.info)
     return swift
@@ -105,12 +107,13 @@ class ComponentFactory(object):
     """
     Args:
       env (dict): env for component. Possible keys are
-                  [set_prop, in_view, in_cell, in_header]
+                  [set_prop, in_view, in_cell, in_header, is_long_artboard]
 
     Returns: (obj) An instance of the component to be created
     """
     # init keys
-    for key in ["set_prop", "in_view", "in_cell", "in_header"]:
+    keys = ["set_prop", "in_view", "in_cell", "in_header", "is_long_artboard"]
+    for key in keys:
       if key not in env:
         env[key] = False
 
@@ -154,7 +157,7 @@ class ComponentFactory(object):
            ).format(vert_dist)
     C += "}\n\n"
 
-    if not self.in_view:
+    if not self.env["in_view"]:
       C = C.replace("frame", "view.frame")
     return C
 
@@ -277,10 +280,14 @@ class ComponentFactory(object):
     C = ""
 
     for comp in components:
+      if comp["id"] == "searchBar":
+        for i in comp.items():
+          print(i)
       type_ = comp['type']
       id_ = comp['id']
       C += self.init_comp(type_, id_, comp)
-      com = self.create_component(type_, id_, comp, {})
+      env = {"is_long_artboard": self.env["is_long_artboard"]}
+      com = self.create_component(type_, id_, comp, env)
       C += com.swift
       C += utils.set_frame(comp) if not add_constraints else ""
       C += utils.add_subview(parent, id_, type_) if parent is not None else ""
@@ -304,7 +311,8 @@ class ComponentFactory(object):
     for j, comp in enumerate(components):
       type_ = comp['type']
       id_ = "{}.{}".format(c_or_h, ids[j])
-      env = {"set_prop": True}
+      env = {"set_prop": True,
+             "is_long_artboard": self.env["is_long_artboard"]}
 
       if type_ == 'UILabel':
         env["in_" + c_or_h] = True

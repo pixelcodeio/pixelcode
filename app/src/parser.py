@@ -76,10 +76,12 @@ class Parser(object):
       bg_color = utils.convert_hex_to_rgb(bg_hex) + (1.0,)
     else:
       bg_color = (255, 255, 255, 1.0)
+    # height = float(svg["height"][:-2])
     width = float(svg["width"][:-2])
     height = {320: 568, 375: 667, 414: 736}.get(width)
     if height is None:
       raise Exception("Parser: Artboard has invalid width size.")
+    is_long_artboard = height > float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
@@ -102,13 +104,14 @@ class Parser(object):
       fill = parse_filter_matrix(f.fecolormatrix["values"])
       filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
                       "d_size": d_size, "is_outer": is_outer}
-    return {"background_color": bg_color,
-            "width": width,
+    return {"artboard": artboard,
+            "background_color": bg_color,
+            "filters": filters,
             "height": height,
-            "pagename": pagename,
-            "artboard": artboard,
             "info": info,
-            "filters": filters}
+            "is_long_artboard": is_long_artboard,
+            "pagename": pagename,
+            "width": width}
 
   def parse_elements(self, children, parent, init=False):
     """

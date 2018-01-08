@@ -294,7 +294,9 @@ def gen_tabbar_file(interpreter, comp, in_v):
   Returns (None): Generates tabbar file in interpreter's swift dictionary.
   """
   comp["active_vc"] = interpreter.file_name # name of active view controller
-  cf = ComponentFactory(comp, in_v)
+  env = {"in_view": in_v,
+         "is_long_artboard": interpreter.globals["is_long_artboard"]}
+  cf = ComponentFactory(comp, env)
   # generate tabbar viewcontroller file
   info = interpreter.info
   vc_name = utils.uppercase(comp["id"]) + "ViewController"
@@ -313,7 +315,9 @@ def gen_slider_view_pieces(interpreter, comp, in_v):
   file_name = interpreter.file_name
   interpreter.swift[slider_opts_id] = gen_slider_options(comp, file_name)
   # Generate Content CollectionView
-  content_cf = ComponentFactory(comp["content"], in_v)
+  env = {"in_view": in_v,
+         "is_long_artboard": interpreter.globals["is_long_artboard"]}
+  content_cf = ComponentFactory(comp["content"], env)
   comp["content_swift"] = content_cf.swift
   comp["content_methods"] = content_cf.methods["tc_methods"]
   interpreter.swift[file_name] = subclass_tc(interpreter.swift[file_name],
