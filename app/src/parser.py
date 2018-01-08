@@ -77,9 +77,11 @@ class Parser(object):
     else:
       bg_color = (255, 255, 255, 1.0)
     width = float(svg["width"][:-2])
+    # Get proper height based on width
     height = {320: 568, 375: 667, 414: 736}.get(width)
     if height is None:
       raise Exception("Parser: Artboard has invalid width size.")
+    is_long_artboard = height < float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
@@ -102,13 +104,14 @@ class Parser(object):
       fill = parse_filter_matrix(f.fecolormatrix["values"])
       filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
                       "d_size": d_size, "is_outer": is_outer}
-    return {"background_color": bg_color,
-            "width": width,
+    return {"artboard": artboard,
+            "background_color": bg_color,
+            "filters": filters,
             "height": height,
-            "pagename": pagename,
-            "artboard": artboard,
             "info": info,
-            "filters": filters}
+            "is_long_artboard": is_long_artboard,
+            "pagename": pagename,
+            "width": width}
 
   def parse_elements(self, children, parent, init=False):
     """
@@ -137,7 +140,7 @@ class Parser(object):
     while elements:
       elem = elements.pop(0)
       elem = calculate_spacing(elem, parsed_elements, self.is_ios)
-      elem = convert_coords(elem, parent)
+      elem = convert_coords(self, elem, parent)
 
       # correctly name grouped elements
       if elem.name == "g":
@@ -217,7 +220,7 @@ class Parser(object):
         parsed_elem = SliderView(elem, "SliderView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
-      elif elem.name == "rect" or elem.name == "view":
+      elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "searchbar":
         parsed_elem = SearchBar(elem, "UISearchBar")
@@ -239,6 +242,8 @@ class Parser(object):
         parsed_elem = TextField(elem, "UITextField")
       elif elem.name == "tspan":
         parsed_elem = TextSpan(elem, "")
+      elif elem.name == "view":
+        parsed_elem = Container(elem, "UIView")
       else:
         raise Exception("Parser: Unhandled elem type for " + elem.name)
 

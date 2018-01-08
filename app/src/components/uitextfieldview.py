@@ -6,7 +6,7 @@ class UITextFieldView(BaseComponent):
   """
   def generate_swift(self):
     if self.env["set_prop"]:
-      tspan = info.get('text').get('textspan')
+      tspan = self.info.get('text').get('textspan')
       placeholder = tspan[0]['contents']
       pl_color = tspan[0]['fill']
       return self.set_placeholder_tc(placeholder, pl_color)
@@ -16,9 +16,8 @@ class UITextFieldView(BaseComponent):
     """
     Returns (str): swift code to setup uitextfield/view.
     """
-    info = self.info
-    tspan = info.get('text').get('textspan')
-    left_inset = info.get('left-inset')
+    tspan = self.info.get('text').get('textspan')
+    left_inset = self.info.get('left-inset')
     txt = tspan[0]
 
     keys = ["contents", "fill", "font-family", "font-size"]

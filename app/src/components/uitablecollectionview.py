@@ -61,11 +61,11 @@ class UITableCollectionView(BaseComponent):
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace("withIdentifier", "withReuseIdentifier")
+      C = C.replace('ID")', 'ID", for: indexPath)')
       C = C.replace("cell.selectionStyle = .none\n", '')
       empty = ('let cell = {}.dequeueReusableCell(withReuseIdentifier: "cell", '
                'for: indexPath)\nreturn cell\n').format(self.id)
       C = C.replace("return UITableViewCell()", empty)
-      C = utils.ins_after_key(C, 'ID"', ', for: indexPath')
 
     C += "}\n\n"
     return C
@@ -130,14 +130,18 @@ class UITableCollectionView(BaseComponent):
         index = cell_index * 2 if section["table_separate"] else cell_index
         C += ("case {}:\n").format(index)
         # Assign proper width and height
-        width = section["width"] * cell["width"]
-        height = section["height"] * cell["height"]
+        width = ("{}.frame.width * {}"
+                ).format(self.id, section["width"] * cell["width"])
+        if self.env["is_long_artboard"]:
+          height = cell["rheight"]
+        else:
+          height = ("{}.frame.height * {}"
+                   ).format(self.id, section["height"] * cell["height"])
 
         if self.info["type"] == "UITableView":
-          C += ("return {}.frame.height * {}\n").format(self.id, height)
+          C += ("return {}\n").format(height)
         else:
-          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-                "height*{2})\n").format(self.id, width, height)
+          C += ("return CGSize(width: {}, height: {})\n").format(width, height)
 
       C += ("{}}}\n").format(default)
     C += ("{}}}\n}}\n\n").format(default)
@@ -193,14 +197,19 @@ class UITableCollectionView(BaseComponent):
       if section.get("header") is not None:
         C += ("case {}:\n").format(index)
         # Assign proper width and height
-        width = section["width"] * section["header"]["width"]
-        height = section["height"] * section["header"]["height"]
+        header = section["header"]
+        width = ("{}.frame.width * {}"
+                ).format(self.id, section["width"] * header["width"])
+        if self.env["is_long_artboard"]:
+          height = header["rheight"]
+        else:
+          height = ("{}.frame.height * {}"
+                   ).format(self.id, section["height"] * header["height"])
 
         if self.info["type"] == "UITableView":
-          C += ("return {}.frame.height * {}\n").format(self.id, height)
+          C += ("return {}\n").format(height)
         else:
-          C += ("return CGSize(width: {0}.frame.width*{1}, height: {0}.frame."
-                "height*{2})\n").format(self.id, width, height)
+          C += ("return CGSize(width: {}, height: {})\n").format(width, height)
 
     C += "default:\nreturn 0\n}\n}\n\n"
     return C
@@ -230,8 +239,11 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (str): Swift code to register custom cell classes.
     """
-    C = ('{}.register(UICollectionViewCell.self, forCellWithReuse'
-         'Identifier: "cell")\n').format(self.id)
+    C = ""
+    # Register empty cell
+    if self.info["type"] == "UICollectionView":
+      C = ('{}.register(UICollectionViewCell.self, forCellWithReuse'
+           'Identifier: "cell")\n').format(self.id)
 
     # Loop through each section
     for section in self.info["sections"]:

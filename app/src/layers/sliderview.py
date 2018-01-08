@@ -35,6 +35,8 @@ class SliderView(BaseLayer):
             "height": content["height"],
             "id": utils.lowercase(cell_name),
             "rect": content["rect"],
+            "rheight": content["rheight"],
+            "rwidth": content["rwidth"],
             "type": "Cell",
             "width": content["width"],}
     section = {"cells": [cell],

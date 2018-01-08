@@ -89,7 +89,9 @@ class Interpreter(object):
             navbar_item_ids.extend(get_navbar_item_ids(comp))
           elif type_ == "UILabel":
             self.swift["InsetLabel"] = gen_inset_label() # generate custom Label
-        cf = ComponentFactory(comp, in_v)
+        env = {"in_view": in_v,
+               "is_long_artboard": self.globals["is_long_artboard"]}
+        cf = ComponentFactory(comp, env)
         C += cf.swift
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
     return C, tc_elem
