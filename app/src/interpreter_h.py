@@ -38,8 +38,6 @@ def add_view_items(components):
   Returns (list): components with view items added.
   """
   views = [c for c in components if c["type"] == "UIView"]
-  if not views:
-    return components
   for view in views:
     if view.get("components") is not None:
       for component in view["components"]:
