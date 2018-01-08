@@ -33,6 +33,20 @@ def add_sliderview_items(components):
   components.append(slider_view["slider_options"])
   return components
 
+def add_view_items(components):
+  """
+  Returns (list): components with view items added.
+  """
+  views = [c for c in components if c["type"] == "UIView"]
+  if not views:
+    return components
+  for view in views:
+    if view.get("components") is not None:
+      for component in view["components"]:
+        if component not in components:
+          components.append(component)
+  return components
+
 def filter_components(components, types):
   """
   Returns (list): components without any components of a type in types
@@ -73,10 +87,10 @@ def declare_g_vars(components):
   components = list(components) # get copy of comps
   # add navbar items
   components = add_navbar_items(components)
-
   # add slider view items
   components = add_sliderview_items(components)
-
+  # add view items
+  components = add_view_items(components)
   # filter components to not include certain components
   ignore_types = {'UINavBar', 'UIActionSheet', 'SliderView'}
   filter_comps = filter_components(components, ignore_types)

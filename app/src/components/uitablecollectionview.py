@@ -61,11 +61,11 @@ class UITableCollectionView(BaseComponent):
 
     if self.info['type'] == 'UICollectionView':
       C = C.replace("withIdentifier", "withReuseIdentifier")
+      C = C.replace('ID")', 'ID", for: indexPath)')
       C = C.replace("cell.selectionStyle = .none\n", '')
       empty = ('let cell = {}.dequeueReusableCell(withReuseIdentifier: "cell", '
                'for: indexPath)\nreturn cell\n').format(self.id)
       C = C.replace("return UITableViewCell()", empty)
-      C = utils.ins_after_key(C, 'ID"', ', for: indexPath')
 
     C += "}\n\n"
     return C
@@ -230,8 +230,11 @@ class UITableCollectionView(BaseComponent):
     """
     Returns (str): Swift code to register custom cell classes.
     """
-    C = ('{}.register(UICollectionViewCell.self, forCellWithReuse'
-         'Identifier: "cell")\n').format(self.id)
+    C = ""
+    # Register empty cell
+    if self.info["type"] == "UICollectionView":
+      C = ('{}.register(UICollectionViewCell.self, forCellWithReuse'
+           'Identifier: "cell")\n').format(self.id)
 
     # Loop through each section
     for section in self.info["sections"]:

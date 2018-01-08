@@ -13,7 +13,7 @@ class Container(BaseLayer):
     components = []
 
     for child in elem["children"]:
-      if child["type"] == "UIView" and utils.word_in_str('bound', child["id"]):
+      if utils.word_in_str('bound', child["id"]):
         if rect is None:
           rect = child
         else:

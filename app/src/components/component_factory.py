@@ -29,7 +29,7 @@ class ComponentFactory(object):
     C = ""
 
     if not self.in_view:
-      C += self.init_comp(type_, id_)
+      C += self.init_comp(type_, id_, self.info)
 
     # prepare for create_component
     self.prepare_for_create_component()
@@ -169,7 +169,7 @@ class ComponentFactory(object):
         "right": "left"
     }[d]
 
-  def init_comp(self, type_, id_):
+  def init_comp(self, type_, id_, comp):
     """
     Returns (str): swift code to initialize a component
     """
@@ -186,7 +186,7 @@ class ComponentFactory(object):
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label
     elif type_ == "UISegmentedControl":
-      items = ['"' + i.decode('utf-8') + '"' for i in self.info["items"]]
+      items = ['"' + i.decode('utf-8') + '"' for i in comp["items"]]
       return ("{} = {}(items: [{}])\n").format(id_, type_, ", ".join(items))
     return "{} = {}()\n".format(id_, type_)
 
@@ -279,7 +279,7 @@ class ComponentFactory(object):
     for comp in components:
       type_ = comp['type']
       id_ = comp['id']
-      C += self.init_comp(type_, id_)
+      C += self.init_comp(type_, id_, comp)
       com = self.create_component(type_, id_, comp, {})
       C += com.swift
       C += utils.set_frame(comp) if not add_constraints else ""
@@ -324,7 +324,7 @@ class ComponentFactory(object):
     self.info['right-buttons-code'] = self.gen_subcomponents(None, right, False)
     C = ""
     if title is not None:
-      C += self.init_comp(title['type'], title['id'])
+      C += self.init_comp(title['type'], title['id'], title)
       C += utils.set_frame(title)
       C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C

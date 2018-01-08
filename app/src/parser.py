@@ -217,7 +217,7 @@ class Parser(object):
         parsed_elem = SliderView(elem, "SliderView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
-      elif elem.name == "rect" or elem.name == "view":
+      elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "searchbar":
         parsed_elem = SearchBar(elem, "UISearchBar")
@@ -239,6 +239,8 @@ class Parser(object):
         parsed_elem = TextField(elem, "UITextField")
       elif elem.name == "tspan":
         parsed_elem = TextSpan(elem, "")
+      elif elem.name == "view":
+        parsed_elem = Container(elem, "UIView")
       else:
         raise Exception("Parser: Unhandled elem type for " + elem.name)
 
