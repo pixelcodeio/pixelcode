@@ -46,11 +46,11 @@ class Parser(object):
     """
     if debug:
       # initializes self.json
-      f = urllib2.urlopen(self.path + self.artboard + ".json", "r+")
+      f = urllib.request.urlopen(self.path + self.artboard + ".json")
       self.json = json.loads(f.read())
 
       # parses svg and sets instance variables appropriately
-      f = urllib2.urlopen(self.path + self.artboard + ".svg", "r+")
+      f = urllib.request.urlopen(self.path + self.artboard + ".svg")
       soup = BeautifulSoup(f, "lxml")
       f.close()
     else:

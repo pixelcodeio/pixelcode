@@ -55,6 +55,8 @@ if __name__ == "__main__":
   if len(sys.argv) == 2:
     if sys.argv[1] == 'zip':
       update_test_dir("../exports/", True)
+    elif sys.argv[1] == 'staging':
+      m = Main("")
     else:
       update_test_dir(sys.argv[1], False)
   else:
