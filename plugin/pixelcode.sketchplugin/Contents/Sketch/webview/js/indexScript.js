@@ -16,7 +16,7 @@ function loggedIn (response) {
   if (response.authenticated) {
     console.log('LOGIN succeeded');
     updateHash('login&token=' + response.token);
-    window.location.href = '../html/close.html';
+    window.location.href = '../html/loginClose.html';
   } else {
     console.log('LOGIN failed');
   }
@@ -25,7 +25,7 @@ function loggedIn (response) {
 function getToken (username, password, callback) {
   console.log('Getting token');
   var params = {'username': username, 'password': password};
-  var request = formDataRequest('http://192.168.1.13:8000/api/auth', {}, params, 'POST');
+  var request = formDataRequest('http://192.168.1.11:8000/api/auth', {}, params, 'POST');
   request.onreadystatechange = function () {
     var jsonStr = request.responseText;
     var jsonData = JSON.parse(jsonStr);

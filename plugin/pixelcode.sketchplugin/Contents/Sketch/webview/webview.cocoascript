@@ -23,8 +23,14 @@ function createWebViewChangeLocationDelegate(application, context, webView) {
         //You’ll be able to use hash.artboardName to return 'Mark'
         var hash = parseHash(locationHash);
         log(hash);
-        var token = hash["token"];
-        application.setSettingForKey("token", token);
+        if (hash.hasOwnProperty("token")) {
+          var token = hash["token"];
+          application.setSettingForKey("token", token);
+        } else if (hash.hasOwnProperty("projectHash")) {
+          var projectHash = hash["projectHash"];
+          log("PROJECT HASH:");
+          log(projectHash);
+        }
       }
     );
 
@@ -46,12 +52,6 @@ function createWindow(width, height) {
   window_.center();
   window_.makeKeyAndOrderFront_(window_);
   return window_;
-}
-
-function createProjectsJSON(projects) {
-  var filePath = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/";
-  var file = NSString.stringWithString(JSON.stringify(projects, null, "\t"));
-  [file writeToFile:filePath+"projects.json" atomically:true encoding:NSUTF8StringEncoding error:null];
 }
 
 function createWebView(context, window_, htmlFile, width, height) {

@@ -7,7 +7,8 @@
       "handlers" : {
         "run" : "onRun"
       },
-      "identifier" : "export_swift_identifier"
+      "identifier" : "export_swift_identifier",
+      "shortcut": "ctrl e"
     },
     {
       "script" : "script.cocoascript",
@@ -15,7 +16,8 @@
       "handlers" : {
         "run" : "updateProjects"
       },
-      "identifier" : "update_projects_identifier"
+      "identifier" : "update_projects_identifier",
+      "shortcut": "ctrl u"
     }
   ],
   "menu" : {
