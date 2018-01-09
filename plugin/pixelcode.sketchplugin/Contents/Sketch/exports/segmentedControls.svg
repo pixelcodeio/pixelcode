@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375px" height="667px" viewBox="0 0 375 667" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background: #FFFFFF;">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>segmentedControls</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M4,0 L172,0 L172,29 L4,29 C1.790861,29 2.705415e-16,27.209139 0,25 L0,4 C-2.705415e-16,1.790861 1.790861,4.05812251e-16 4,0 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="segmentedControls">
+            <g id="segmentedControl" transform="translate(16.000000, 10.000000)">
+                <rect id="bound" stroke="#007AFF" x="0.5" y="0.5" width="342" height="28" rx="4"></rect>
+                <g id="segment1">
+                    <g id="bound1">
+                        <use fill="#007AFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        <path stroke="#007AFF" stroke-width="1" d="M171.5,28.5 L171.5,0.5 L4,0.5 C2.06700338,0.5 0.5,2.06700338 0.5,4 L0.5,25 C0.5,26.9329966 2.06700338,28.5 4,28.5 L171.5,28.5 Z"></path>
+                    </g>
+                    <rect id="divider" fill="#007AFF" x="171" y="0" width="1" height="29"></rect>
+                    <text id="label1" font-family="SFProText-Regular, SF Pro Text" font-size="13" font-weight="normal" line-spacing="18" letter-spacing="-0.0799999982" fill="#FFFFFF">
+                        <tspan x="64.7931836" y="17">Label 1</tspan>
+                    </text>
+                </g>
+                <g id="segment2" transform="translate(172.000000, 0.000000)">
+                    <path d="M0,0 L167,0 C169.209139,-4.05812251e-16 171,1.790861 171,4 L171,25 C171,27.209139 169.209139,29 167,29 L0,29 L0,0 Z" id="bound2"></path>
+                    <text id="label2" font-family="SFProText-Regular, SF Pro Text" font-size="13" font-weight="normal" line-spacing="18" letter-spacing="-0.0799999982" fill="#007AFF">
+                        <tspan x="62.8981641" y="17">Label 2</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
