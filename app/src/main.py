@@ -57,7 +57,7 @@ if __name__ == "__main__":
       update_test_dir("../exports/", True)
     elif sys.argv[1] == 'staging':
       m = Main("https://s3.amazonaws.com/pixelcode/dev/assets/b94b77403cc4bbaf45ee86bc28173b0a/", "longArtboardView")
-      m.convert_artboard()
+      print(m.convert_artboard())
     else:
       update_test_dir(sys.argv[1], False)
   else:
