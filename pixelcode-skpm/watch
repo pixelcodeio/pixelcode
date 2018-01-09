@@ -1,2 +1,0 @@
-fswatch -o ./plugin.sketchplugin | xargs -n1 ./update
-
