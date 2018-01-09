@@ -1,2 +1,2 @@
-fswatch -o ./pixelcode.sketchplugin | xargs -n1 ./update
+fswatch -o ./plugin.sketchplugin | xargs -n1 ./update
 
