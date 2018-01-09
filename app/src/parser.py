@@ -1,5 +1,6 @@
 # library imports
 import json
+import urllib2
 from operator import itemgetter
 from bs4 import BeautifulSoup
 # custom imports
@@ -26,11 +27,12 @@ class Parser(object):
         - font-size(list)
     is_ios: whether the code being generated is iOS code
   """
-  def __init__(self, path, artboard, is_ios):
+  def __init__(self, path, artboard, is_ios, debug=False):
     """
     Returns: Parser object for parsing the file located at filepath
     """
     self.artboard = artboard
+    self.debug = debug
     self.elements = []
     self.json = {}
     self.globals = {}
@@ -42,14 +44,24 @@ class Parser(object):
     """
     Parses artboard with name [self.artboard]
     """
-    # initializes self.json
-    f = open(self.path + self.artboard + ".json", "r+")
-    self.json = json.loads(f.read())
+    if debug:
+      # initializes self.json
+      f = urllib2.urlopen(self.path + self.artboard + ".json", "r+")
+      self.json = json.loads(f.read())
 
-    # parses svg and sets instance variables appropriately
-    f = open(self.path + self.artboard + ".svg", "r+")
-    soup = BeautifulSoup(f, "lxml")
-    f.close()
+      # parses svg and sets instance variables appropriately
+      f = urllib2.urlopen(self.path + self.artboard + ".svg", "r+")
+      soup = BeautifulSoup(f, "lxml")
+      f.close()
+    else:
+      # initializes self.json
+      f = open(self.path + self.artboard + ".json", "r+")
+      self.json = json.loads(f.read())
+
+      # parses svg and sets instance variables appropriately
+      f = open(self.path + self.artboard + ".svg", "r+")
+      soup = BeautifulSoup(f, "lxml")
+      f.close()
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
