@@ -7,13 +7,22 @@
       "handlers" : {
         "run" : "onRun"
       },
-      "identifier" : "com.bohemiancoding.sketch.runscriptidentifier"
+      "identifier" : "export_swift_identifier"
+    },
+    {
+      "script" : "script.cocoascript",
+      "name" : "Update Projects",
+      "handlers" : {
+        "run" : "updateProjects"
+      },
+      "identifier" : "update_projects_identifier"
     }
   ],
   "menu" : {
     "title" : "Pixelcode",
     "items" : [
-      "com.bohemiancoding.sketch.runscriptidentifier"
+      "export_swift_identifier",
+      "update_projects_identifier"
     ]
   },
   "identifier" : "com.example.sketch.b46b0b06-defb-4f6d-b2f7-cfdc719f9e3e",
