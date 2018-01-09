@@ -1,7 +1,7 @@
 # library imports
 import json
-import urllib2
 from operator import itemgetter
+from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
 from layers._all import *
@@ -44,13 +44,13 @@ class Parser(object):
     """
     Parses artboard with name [self.artboard]
     """
-    if debug:
+    if self.debug:
       # initializes self.json
-      f = urllib.request.urlopen(self.path + self.artboard + ".json")
+      f = request.urlopen(self.path + self.artboard + ".json")
       self.json = json.loads(f.read())
 
       # parses svg and sets instance variables appropriately
-      f = urllib.request.urlopen(self.path + self.artboard + ".svg")
+      f = request.urlopen(self.path + self.artboard + ".svg")
       soup = BeautifulSoup(f, "lxml")
       f.close()
     else:
