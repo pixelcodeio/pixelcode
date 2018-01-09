@@ -1,4 +1,4 @@
-from components._all import *
+from ._all import *
 from . import *
 
 class ComponentFactory(object):

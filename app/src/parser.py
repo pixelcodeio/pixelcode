@@ -46,15 +46,6 @@ class Parser(object):
     """
     if self.debug:
       # initializes self.json
-      f = request.urlopen(self.path + self.artboard + ".json")
-      self.json = json.loads(f.read())
-
-      # parses svg and sets instance variables appropriately
-      f = request.urlopen(self.path + self.artboard + ".svg")
-      soup = BeautifulSoup(f, "lxml")
-      f.close()
-    else:
-      # initializes self.json
       f = open(self.path + self.artboard + ".json", "r+")
       self.json = json.loads(f.read())
 
@@ -62,6 +53,16 @@ class Parser(object):
       f = open(self.path + self.artboard + ".svg", "r+")
       soup = BeautifulSoup(f, "lxml")
       f.close()
+    else:
+      # initializes self.json
+      f = request.urlopen(self.path + self.artboard + ".json")
+      self.json = json.loads(f.read())
+
+      # parses svg and sets instance variables appropriately
+      f = request.urlopen(self.path + self.artboard + ".svg")
+      soup = BeautifulSoup(f, "lxml")
+      f.close()
+
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375

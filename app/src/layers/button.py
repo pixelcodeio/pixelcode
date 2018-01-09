@@ -1,5 +1,5 @@
-from layers.rect import Rect
-from layers.text import Text
+from .rect import Rect
+from .text import Text
 from . import *
 
 class Button(BaseLayer):
