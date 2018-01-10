@@ -1,0 +1,1 @@
+rsync -avv plugin ../../../../website/pixelcode
