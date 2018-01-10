@@ -26,7 +26,7 @@ function getToken (username, password, callback) {
   console.log('Getting token');
   var params = {'username': username, 'password': password};
   var options = {method: 'POST', body: JSON.stringify(params), headers: {'Content-Type': 'application/json'}};
-  fetch('http://192.168.1.11:8000/api/auth', options)
+  fetch('http://0.0.0.0:8000/api/auth', options)
     .then(response => response.text())
     .then(text => JSON.parse(text))
     .then(json => callback({'authenticated': true, 'token': json.token}))

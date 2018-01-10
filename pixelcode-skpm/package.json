@@ -19,6 +19,8 @@
     "@skpm/builder": "^0.2.0"
   },
   "dependencies": {
-    "sketch-module-web-view": "^0.2.6"
+    "sketch-module-web-view": "^0.2.6",
+    "fs": "*",
+    "mkdirp": "*"
   }
 }

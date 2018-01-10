@@ -1,6 +1,8 @@
 import globals from './globals';
-import {createWebUI} from './webview/webview';
+import createWebUI from './webview/webview';
 import WebUI from 'sketch-module-web-view';
+import mkdirp from 'mkdirp';
+import 'fs';
 
 
 function onRun (context) {
@@ -10,100 +12,94 @@ function onRun (context) {
   //var filepath = '/Users/Young/Documents/pixelcode/app/tests/';
   var filepath = globals.filepath;
   var exportsPath = globals.exportsPath;
+  var webviewPath = globals.webviewPath;
   var application = new sketch.Application(context);
 
   context.document.showMessage('Working!!!');
 
-  // fetch('https://google.com')
-  //   .then(response => response.text())
-  //   .then(text => console.log(text));
-
   if (application.settingForKey('token') == null) {
-    createWebUI(context, application, 520, 496);
+    createWebUI(context, application, 'index.html', 520, 496);
     return;
   }
 
   if (application.settingForKey('projects') == null) {
     updateProjects(context);
   }
-  //
-  // log('Exporting now:')
-  // if (layers.isEmpty) {
-  //   context.document.showMessage('PixelCode: No artboard selected.');
-  // } else {
-  //   var artboards = [];
-  //   layers.iterate(function(layer) {
-  //       if (layer.isArtboard) {
-  //           // Add artboard name to list of artboards
-  //           artboards.push(layer.name);
-  //           // log('Creating project folder in exports');
-  //           // Create project folder in exports directory
-  //           // var fileManager = [[NSFileManager alloc] init];
-  //           // var projectDirectory = exportsPath + layer.name + '/';
-  //           // log('project directory is:')
-  //           // log(projectDirectory);
-  //           // [fileManager createDirectoryAtPath:projectDirectory withIntermediateDirectories:false attributes:nil error:nil];
-  //           // // Create assets folder in project directory
-  //           // [fileManager createDirectoryAtPath:projectDirectory+'/assets/' withIntermediateDirectories:false attributes:nil error:nil];
-  //           // output = exportJSON(layer, filepath);
-  //           output = exportJSON(layer, exportsPath);
-  //
-  //           var options = {
-  //               'scales' : '1',
-  //               'formats' : 'svg',
-  //               'overwriting' : 'true',
-  //               //'output': filepath
-  //               'output': exportsPath
-  //           };
-  //           layer.export(options);
-  //           layer.iterate(function(currentLayer) {
-  //               renameLayers(currentLayer, output['originalNames']);
-  //           });
-  //           context.document.showMessage('Pixelcode: Export finished!');
-  //       } else {
-  //           context.document.showMessage('Pixelcode: No artboard selected.');
-  //           return;
-  //       }
-  //   });
-  //   // Create artboards.json
-  //   createArtboardsJSON(artboards);
-  //   // Get projects and open export window
-  //   var projects = JSON.parse(application.settingForKey('projects'));
-  //   var window_ = createWindow(560, 496);
-  //   var webView = createWebView(context, window_, 'export.html', 560, 496);
-  //   createWebViewChangeLocationDelegate(application, context, webView);
-  //   [NSApp run];
-  //   return;
-  // };
+  console.log(application.settingForKey('projects'));
+
+  log('Exporting now:')
+  if (layers.isEmpty) {
+    context.document.showMessage('PixelCode: No artboard selected.');
+  } else {
+    var artboards = [];
+    layers.iterate(function (layer) {
+      if (layer.isArtboard) {
+        // Add artboard name to list of artboards
+        artboards.push(layer.name);
+        mkdirp(exportsPath + layer.name + 'Assets/', function (err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+        // output = exportJSON(layer, filepath);
+        var output = exportJSON(layer, exportsPath);
+
+        var options = {
+          'scales': '1',
+          'formats': 'svg',
+          'overwriting': 'true',
+          //'output': filepath
+          'output': exportsPath
+        };
+        layer.export(options);
+        layer.iterate(function (currentLayer) {
+          renameLayers(currentLayer, output['originalNames']);
+        });
+        context.document.showMessage('Pixelcode: Export finished!');
+      } else {
+        context.document.showMessage('Pixelcode: No artboard selected.');
+        return;
+      }
+    });
+    // Create artboards.json
+    // createArtboardsJSON(artboards, webviewPath);
+    console.log("OPENING Export.html");
+    createWebUI(context, application, 'export.html', 560, 496);
+  }
 }
 
-function createArtboardsJSON(artboards) {
-  var filePath = '/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/';
-  var file = NSString.stringWithString(artboards.toString());
-  //[file writeToFile:filePath+'artboards.txt' atomically:true encoding:NSUTF8StringEncoding error:null]
-  file.writeToFile(filePath+'artboards.txt', true, NSUTF8StringEncoding, null);
-}
+// function createArtboardsTXT (artboards, webviewPath) {
+//   fs.writeFile(webviewPath + '')
+// }
 
-function updateProjects(context) {
+function updateProjects (context) {
   var sketch = context.api();
   var application = new sketch.Application(context);
+  var webviewPath = globals.webviewPath;
   var token = application.settingForKey('token');
 
   if (token == null) {
     context.document.showMessage('Pixelcode: No user logged in.');
     return;
   }
-  var options = {'method': 'GET', 'Authorization': 'Token ' + token}
-  fetch('http://192.168.1.11:8000/api/userprojects', options)
+  var options = {'method': 'GET', 'Authorization': 'Token ' + token};
+  fetch('http://0.0.0.0:8000/api/userprojects', options)
     .then(response => response.text())
-    .then(text => application.setSettingForKey('projects', text))
+    .then(text => {
+      application.setSettingForKey('projects', text);
+      fs.writeFile(webviewPath + 'projects.json', text, function (err) {
+        if (err) {
+          console.log('Failed to write projects.json');
+        }
+      });
+    })
     .catch(error => context.document.showMessage('Pixelcode: Failed to get projects.'))
 }
 
-function renameLayers(layer, originalNames) {
+function renameLayers (layer, originalNames) {
   layer.name = originalNames[layer.id];
   if (layer.isGroup) {
-    layer.iterate(function(subLayer) {
+    layer.iterate(function (subLayer) {
       renameLayers(subLayer, originalNames);
     });
   }
@@ -111,7 +107,7 @@ function renameLayers(layer, originalNames) {
 
 function exportJSON (artboard, filepath) {
   var layerArray = [];
-  var ret = { 'layerNames': [], 'dictList': [] , 'originalNames': {} };
+  var ret = { 'layerNames': [], 'dictList': [], 'originalNames': {} };
 
   artboard.iterate(function (layer) {
     if (layer.isImage) {
@@ -137,7 +133,7 @@ function exportJSON (artboard, filepath) {
   var jsonObj = { layers: layerArray };
   var file = NSString.stringWithString(JSON.stringify(jsonObj, null, '\t'));
   //[file writeToFile:filepath+artboardName+'.json' atomically:true encoding:NSUTF8StringEncoding error:null];
-  file.writeToFile(filepath+artboardName+'.json', true, NSUTF8StringEncoding, null);
+  file.writeToFile(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
   return ret;
 }
 
@@ -195,7 +191,7 @@ function checkFormatting (layer, layerNames, originalNames) {
     ret['dictList'].push(currentDict);
 
     if (currentLayer.isGroup) {
-      currentLayer.iterate(function(subLayer) {
+      currentLayer.iterate(function (subLayer) {
         stack.push(subLayer);
       });
     }
@@ -225,7 +221,7 @@ function createProjectsJSON (projects) {
   var filePath = '/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/';
   var file = NSString.stringWithString(JSON.stringify(projects, null, '\t'));
   // [file writeToFile:filePath+'projects.json' atomically:true encoding:NSUTF8StringEncoding error:null];
-  file.writeToFile(filePath+'projects.json', true, NSUTF8StringEncoding, null);
+  file.writeToFile(filePath + 'projects.json', true, NSUTF8StringEncoding, null);
 }
 
 export default onRun;
