@@ -1,5 +1,7 @@
 import globals from './globals';
 import {createWebViewChangeLocationDelegate, createWindow, createWebView} from './webview/webview';
+import WebUI from 'sketch-module-web-view';
+
 
 function onRun (context) {
   var sketch = context.api();
@@ -12,22 +14,53 @@ function onRun (context) {
 
   context.document.showMessage('Working!!!');
 
+
   // fetch('https://google.com')
   //   .then(response => response.text())
   //   .then(text => console.log(text));
 
-  log("begins here:");
-  log(application.settingForKey("token"));
-  application.setSettingForKey("token", null);
-  if (application.settingForKey("token") == null) {
-    var window_ = createWindow(520, 496);
-    var webView = createWebView(context, window_, 'index.html', 520, 496);
-    // createWebViewRedirectDelegate(application, context, webView);
-    createWebViewChangeLocationDelegate(application, context, webView);
-
-    NSApp.run();
-    return;
+  var options = {
+    identifier: 'loginUIID', // to reuse the UI
+    x: 0,
+    y: 0,
+    width: 520,
+    height: 496,
+    background: NSColor.whiteColor(),
+    blurredBackground: false,
+    onlyShowCloseButton: false,
+    title: 'Log In',
+    hideTitleBar: false,
+    shouldKeepAround: true,
+    show: true,
+    resizable: false,
+    frameLoadDelegate: { // https://developer.apple.com/reference/webkit/webframeloaddelegate?language=objc
+      // 'webView:didFinishLoadForFrame:': function (webView, webFrame) {
+      //   WebUI.clean()
+      // }
+      'webView:didChangeLocationWithinPageForFrame:': function (webView, webFrame) {
+        context.document.showMessage('Switched Pages!');
+      }
+    },
+    uiDelegate: {}, // https://developer.apple.com/reference/webkit/webuidelegate?language=objc
+    onPanelClose: function () {
+      // Stuff
+      // return `false` to prevent closing the panel
+    }
   }
+
+  const webUI = new WebUI(context, require('./webview/html/index.html'), options);
+  // log("begins here:");
+  // log(application.settingForKey("token"));
+  // application.setSettingForKey("token", null);
+  // if (application.settingForKey("token") == null) {
+  //   var window_ = createWindow(520, 496);
+  //   var webView = createWebView(context, window_, 'index.html', 520, 496);
+  //   // createWebViewRedirectDelegate(application, context, webView);
+  //   createWebViewChangeLocationDelegate(application, context, webView);
+  //
+  //   NSApp.run();
+  //   return;
+  // }
   //
   // if (application.settingForKey("projects") == null) {
   //   updateProjects(context);

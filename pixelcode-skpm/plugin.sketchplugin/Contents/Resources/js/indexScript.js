@@ -16,7 +16,8 @@ function loggedIn (response) {
   if (response.authenticated) {
     console.log('LOGIN succeeded');
     updateHash('login&token=' + response.token);
-    window.location.href = '../html/loginClose.html';
+    // window.location.href = '../html/loginClose.html';
+    window.location.href = 'https://www.google.com';
   } else {
     console.log('LOGIN failed');
   }
@@ -25,21 +26,27 @@ function loggedIn (response) {
 function getToken (username, password, callback) {
   console.log('Getting token');
   var params = {'username': username, 'password': password};
-  var request = formDataRequest('http://192.168.1.11:8000/api/auth', {}, params, 'POST');
-  request.onreadystatechange = function () {
-    var jsonStr = request.responseText;
-    var jsonData = JSON.parse(jsonStr);
-    console.log(jsonData);
-    if (request.readyState === 4) {
-      if (request.status === 200) {
-        callback({'authenticated': true, 'token': jsonData.token});
-        console.log('Succeeded getting token');
-      } else {
-        console.log('Failed getting token.');
-        callback({ 'authenticated': false });
-      }
-    }
-  };
+  var options = {method: 'POST', body: JSON.stringify(params), headers: {'Content-Type': 'application/json'}};
+  fetch('http://192.168.1.11:8000/api/auth', options)
+    .then(response => response.text())
+    .then(text => JSON.parse(text))
+    .then(json => callback({'authenticated': true, 'token': json.token}))
+    .catch(error => callback({'authenticated': false}))
+  // var request = formDataRequest('http://192.168.1.11:8000/api/auth', {}, params, 'POST');
+  // request.onreadystatechange = function () {
+  //   var jsonStr = request.responseText;
+  //   var jsonData = JSON.parse(jsonStr);
+  //   console.log(jsonData);
+  //   if (request.readyState === 4) {
+  //     if (request.status === 200) {
+  //       callback({'authenticated': true, 'token': jsonData.token});
+  //       console.log('Succeeded getting token');
+  //     } else {
+  //       console.log('Failed getting token.');
+  //       callback({ 'authenticated': false });
+  //     }
+  //   }
+  // };
 }
 
 function updateHash (hash) {

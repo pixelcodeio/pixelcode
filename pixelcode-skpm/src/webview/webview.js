@@ -1,3 +1,5 @@
+import WebUI from 'sketch-module-web-view';
+
 export function createWebViewChangeLocationDelegate(application, context, webView) {
     /**
      * Create a Delegate class and register it
