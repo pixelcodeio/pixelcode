@@ -1,9 +1,6 @@
 import globals from './globals';
 import {createWebUI} from './webview/webview';
 import WebUI from 'sketch-module-web-view';
-import mkdirp from 'mkdirp';
-import 'fs';
-
 
 function onRun (context) {
   var sketch = context.api();
@@ -15,19 +12,19 @@ function onRun (context) {
   var webviewPath = globals.webviewPath;
   var application = new sketch.Application(context);
 
-  context.document.showMessage('Working!!!');
-
+  // application.setSettingForKey('token', null);
   if (application.settingForKey('token') == null) {
     createWebUI(context, application, 'Log In', 'index.html', 520, 496);
     return;
   }
 
+  application.setSettingForKey('projects', null);
   if (application.settingForKey('projects') == null) {
     updateProjects(context);
   }
-  console.log(application.settingForKey('projects'));
 
-  log('Exporting now:')
+  console.log(application.settingForKey('projects'));
+  context.document.showMessage('About to export');
   if (layers.isEmpty) {
     context.document.showMessage('PixelCode: No artboard selected.');
   } else {
@@ -36,11 +33,6 @@ function onRun (context) {
       if (layer.isArtboard) {
         // Add artboard name to list of artboards
         artboards.push(layer.name);
-        mkdirp(exportsPath + layer.name + 'Assets/', function (err) {
-          if (err) {
-            console.log(err);
-          }
-        });
         // output = exportJSON(layer, filepath);
         var output = exportJSON(layer, exportsPath);
 
@@ -64,7 +56,7 @@ function onRun (context) {
     // Create artboards.json
     // createArtboardsJSON(artboards, webviewPath);
     console.log("OPENING Export.html");
-    createWebUI(context, application, 'exportUIID', 'Export to Projects', 560, 496);
+    createWebUI(context, application, 'Export to Projects', 'export.html', 560, 496);
   }
 }
 
@@ -82,18 +74,28 @@ function updateProjects (context) {
     context.document.showMessage('Pixelcode: No user logged in.');
     return;
   }
-  var options = {'method': 'GET', 'Authorization': 'Token ' + token};
-  fetch('http://0.0.0.0:8000/api/userprojects', options)
+
+  var options = {'method': 'GET', headers: {'Authorization': 'Token ' + token}};
+  console.log('Token is: ' + token);
+  fetch('http://0.0.0.0:8000/api/csrf/userprojects', options)
     .then(response => response.text())
     .then(text => {
-      application.setSettingForKey('projects', text);
-      fs.writeFile(webviewPath + 'projects.json', text, function (err) {
-        if (err) {
-          console.log('Failed to write projects.json');
-        }
-      });
+      var responseJSON = JSON.parse(text);
+      if (responseJSON.hasOwnProperty('detail')) {
+        console.log('Error to query csrf userprojects');
+        console.log(text);
+        context.document.showMessage('Pixelcode: Failed to get projects.');
+      } else {
+        application.setSettingForKey('projects', text);
+        var projectsStr = NSString.stringWithString(text);
+        projectsStr.writeToFile_atomically_encoding_error(webviewPath + 'projects.json', true, NSUTF8StringEncoding, null);
+        context.document.showMessage('Pixelcode: Sucessfully updated projects!');
+      }
+    }).catch(error => {
+      console.log('Failed to get projects');
+      console.log(error);
+      context.document.showMessage('Pixelcode: Failed to get projects.');
     })
-    .catch(error => context.document.showMessage('Pixelcode: Failed to get projects.'))
 }
 
 function renameLayers (layer, originalNames) {
@@ -132,8 +134,8 @@ function exportJSON (artboard, filepath) {
   var artboardName = artboard.name;
   var jsonObj = { layers: layerArray };
   var file = NSString.stringWithString(JSON.stringify(jsonObj, null, '\t'));
-  //[file writeToFile:filepath+artboardName+'.json' atomically:true encoding:NSUTF8StringEncoding error:null];
-  file.writeToFile(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
+  file.writeToFile_atomically_encoding_error(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
+  // [file writeToFile:filePath+'projects.json' atomically:true encoding:NSUTF8StringEncoding error:null];
   return ret;
 }
 
@@ -221,7 +223,7 @@ function createProjectsJSON (projects) {
   var filePath = '/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/';
   var file = NSString.stringWithString(JSON.stringify(projects, null, '\t'));
   // [file writeToFile:filePath+'projects.json' atomically:true encoding:NSUTF8StringEncoding error:null];
-  file.writeToFile(filePath + 'projects.json', true, NSUTF8StringEncoding, null);
+  file.writeToFile_atomically_encoding_error(filePath + 'projects.json', true, NSUTF8StringEncoding, null);
 }
 
 export default onRun;

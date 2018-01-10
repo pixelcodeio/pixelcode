@@ -4,9 +4,10 @@ var artboards = [];
 var zip = null;
 
 $(document).ready(function () {
-  fetch('../projects.json', {'method': 'GET'})
+  fetch('../../../../src/webview/projects.json', {'method': 'GET'})
     .then(response => response.json())
     .then(json => {
+      console.log("Projects JSON is: " + json);
       projects = json;
       displayProjects(json);
       $('.project').click(function () {
@@ -18,7 +19,7 @@ $(document).ready(function () {
         console.log(projects[selectedIndex]);
       });
     });
-  fetch('../artboards.txt', {'method': 'GET'})
+  fetch('../../../../src/webview/artboards.txt', {'method': 'GET'})
     .then(response => response.text())
     .then(text => {
       console.log(text);

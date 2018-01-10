@@ -4,17 +4,21 @@
     {
       "script" : "./script.js",
       "name" : "Export to Swift",
-      "handlers" : {
-        "run" : "onRun"
-      },
       "identifier" : "export_swift_identifier",
       "shortcut": "ctrl e"
+    },
+    {
+      "script" : "./update.js",
+      "name" : "Update Projects",
+      "identifier" : "update_projects_identifier",
+      "shortcut": "ctrl u"
     }
   ],
   "menu" : {
     "title" : "pixelcode-skpm",
     "items" : [
-      "export_swift_identifier"
+      "export_swift_identifier",
+      "update_projects_identifier"
     ]
   },
   "identifier" : "Pixelcode_Plugin",
