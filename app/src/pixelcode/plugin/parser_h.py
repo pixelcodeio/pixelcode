@@ -1,4 +1,4 @@
-import utils
+import pixelcode.plugin.utils as utils
 
 def inherit_from(parent, child, init=False):
   """

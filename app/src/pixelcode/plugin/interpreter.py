@@ -1,4 +1,4 @@
-from interpreter_h import *
+from pixelcode.plugin.interpreter_h import *
 
 class Interpreter(object):
   """

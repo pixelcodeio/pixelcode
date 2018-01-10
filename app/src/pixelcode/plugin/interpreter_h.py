@@ -1,5 +1,5 @@
-import utils
-from components.component_factory import ComponentFactory
+import pixelcode.plugin.utils as utils
+from pixelcode.plugin.components.component_factory import ComponentFactory
 
 def add_navbar_items(components):
   """

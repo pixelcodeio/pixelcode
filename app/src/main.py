@@ -1,8 +1,8 @@
 import os
 import sys
 from zipfile import *
-from parser import Parser
-from interpreter import Interpreter
+from pixelcode.plugin.parser import Parser
+from pixelcode.plugin.interpreter import Interpreter
 
 class Main(object):
   """
@@ -18,7 +18,7 @@ class Main(object):
     self.artboard = artboard
 
   def convert_artboard(self):
-    p = Parser(self.path, self.artboard, True, debug=True)
+    p = Parser(self.path, self.artboard, True, debug=False)
     p.parse_artboard()
 
     i = Interpreter(p.globals)

@@ -4,9 +4,9 @@ from operator import itemgetter
 from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
-from layers._all import *
-from parser_h import *
-import utils
+from pixelcode.plugin.layers._all import *
+from pixelcode.plugin.parser_h import *
+import pixelcode.plugin.utils as utils
 
 class Parser(object):
   """
