@@ -75,6 +75,7 @@ class BaseLayer(object):
         "cell_name",
         "cells",
         "char-spacing",
+        "children",
         "components",
         "content", # content of a SliderView
         "contents", # text of a label
