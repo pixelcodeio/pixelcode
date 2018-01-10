@@ -233,24 +233,45 @@ def check_spacing(r1, r2, direction):
 def add_to_info(key, new_value, info):
   """
   Args:
-    key (str): either 'font', 'font-family', or 'font-size'
+    key (str): either 'fill' or 'text'
   """
-  if new_value is not None:
-    if key == 'fill':
-      new_value = [float(v) for v in new_value] # convert strings to float
-    if new_value not in info[key]:
-      info[key].append(new_value)
+  if new_value is None:
+    return info
+  if key == 'fill':
+    key = 'colors'
+    new_value = {'r': int(float(new_value[0])), # convert strings to int
+                 'g': int(float(new_value[1])),
+                 'b': int(float(new_value[2])),
+                 'a': float(new_value[3])}
+  else:
+    key = 'text-styles'
+    letter_spacing = new_value.get('char-spacing')
+    line_height = new_value.get('line-spacing')
+    tspan_keys = ['fill', 'font-family', 'font-size']
+    fill, font, size = utils.get_vals(tspan_keys, new_value['textspan'][0])
+    if fill is not None:
+      fill = {'r': int(float(fill[0])),
+              'g': int(float(fill[1])),
+              'b': int(float(fill[2])),
+              'a': float(fill[3])}
+    new_value = {'font': font,
+                 'font_size': size,
+                 'letter_spacing': letter_spacing,
+                 'line_height': line_height,
+                 'color': fill}
+  if new_value not in info[key]:
+    info[key].append(new_value)
   return info
 
 def extract_to_info(elem, info):
   """
   Returns: extracts style-guide information from elem and adds it to info
   """
-  keys = ['fill', 'font-family', 'font-size']
-  fill, font_family, font_size = utils.get_vals(keys, elem)
+  # keys = ['char-spacing', 'fill', 'font-family', 'font-size', 'line-spacing']
+  keys = ['fill', 'text']
+  fill, text = utils.get_vals(keys, elem)
   info = add_to_info('fill', fill, info)
-  info = add_to_info('font-family', font_family, info)
-  info = add_to_info('font-size', font_size, info)
+  info = add_to_info('text', text, info)
   return info
 
 def parse_filter_matrix(matrix):

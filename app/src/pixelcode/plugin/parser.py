@@ -22,12 +22,11 @@ class Parser(object):
       - artboard (str)
       - filters: (dict) contains information about shadows
       - info: dictionary with keys (used for style-guide)
-        - fill (list)
-        - font-family (list)
-        - font-size(list)
+        - colors (list of dicts)
+        - text-styles (list of dicts)
     is_ios: whether the code being generated is iOS code
   """
-  def __init__(self, path, artboard, is_ios, debug=False):
+  def __init__(self, path, artboard, is_ios, debug):
     """
     Returns: Parser object for parsing the file located at filepath
     """
@@ -97,8 +96,12 @@ class Parser(object):
     is_long_artboard = height < float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
-    fill = [bg_color, (0, 0, 0, 0)]
-    info = {'fill': fill, 'font-family': [], 'font-size': []}
+    fill = [{'r': int(float(bg_color[0])),
+             'g': int(float(bg_color[1])),
+             'b': int(float(bg_color[2])),
+             'a': float(bg_color[3])},
+            {'r': 0, 'g': 0, 'b': 0, 'a': 0.0}]
+    info = {'colors': fill, 'text-styles': []}
     svg_filters = svg.find_all("filter")
     filters = {}
     for f in svg_filters:

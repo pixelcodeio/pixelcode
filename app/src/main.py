@@ -17,8 +17,8 @@ class Main(object):
     self.path = path
     self.artboard = artboard
 
-  def convert_artboard(self):
-    p = Parser(self.path, self.artboard, True, debug=False)
+  def convert_artboard(self, debug):
+    p = Parser(self.path, self.artboard, True, debug)
     p.parse_artboard()
 
     i = Interpreter(p.globals)
@@ -39,7 +39,7 @@ def update_test_dir(path, zip_):
     print("Generating from file: " + f + ".svg")
     m = Main(path, f)
     swift_files = []
-    for (filename, code) in m.convert_artboard().items():
+    for (filename, code) in m.convert_artboard(True).items():
       swift_file = filename + ".swift"
       swift_files.append(swift_file)
       o = open(path + swift_file, "w+")
@@ -57,7 +57,7 @@ if __name__ == "__main__":
       update_test_dir("../exports/", True)
     elif sys.argv[1] == 'staging':
       m = Main("https://s3.amazonaws.com/pixelcode/dev/assets/b94b77403cc4bbaf45ee86bc28173b0a/", "longArtboardView")
-      print(m.convert_artboard())
+      print(m.convert_artboard(False))
     else:
       update_test_dir(sys.argv[1], False)
   else:

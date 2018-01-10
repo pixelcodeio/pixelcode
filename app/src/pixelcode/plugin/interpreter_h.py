@@ -109,7 +109,7 @@ def gen_global_colors(global_fills, swift):
   Returns (dict): Updated dictionary of all generated files using global colors
   """
   C = ("import UIKit\n\nextension UIColor {\n\n")
-  colors = [utils.create_uicolor(f) for f in global_fills]
+  colors = [utils.create_uicolor(f, rgba=True) for f in global_fills]
 
   for index, color in enumerate(colors): # generate colors file
     color_name = ("color{}").format(index)
