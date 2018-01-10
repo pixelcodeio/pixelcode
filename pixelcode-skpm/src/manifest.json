@@ -1,17 +1,25 @@
 {
-  "compatibleVersion": 3,
-  "bundleVersion": 1,
-  "commands": [
+  "author" : "100B",
+  "commands" : [
     {
-      "name": "my-command",
-      "identifier": "my-command-identifier",
-      "script": "./my-command.js"
+      "script" : "./script.js",
+      "name" : "Export to Swift",
+      "handlers" : {
+        "run" : "onRun"
+      },
+      "identifier" : "export_swift_identifier",
+      "shortcut": "ctrl e"
     }
   ],
-  "menu": {
-    "title": "pixelcode-skpm",
-    "items": [
-      "my-command-identifier"
+  "menu" : {
+    "title" : "pixelcode-skpm",
+    "items" : [
+      "export_swift_identifier"
     ]
-  }
+  },
+  "identifier" : "com.example.sketch.b46b0b06-defb-4f6d-b2f7-cfdc719f9e3e",
+  "version" : "0.1",
+  "description" : "Converts Artboards to Swift Code",
+  "authorEmail" : "kim.thunderbird@gmail.com",
+  "name" : "Pixelcode"
 }
