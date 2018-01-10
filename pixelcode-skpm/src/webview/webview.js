@@ -41,14 +41,14 @@ export function createWebViewChangeLocationDelegate(application, context, webVie
 
 };
 
-
 export function createWindow(width, height) {
-  var window_ = [[[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, width, height)
-      styleMask:NSTitledWindowMask | NSClosableWindowMask
-      backing:NSBackingStoreBuffered
-      defer:false
-    ] autorelease];
+  var window_ = NSWindow.alloc().init(NSMakeRect(0, 0, width, height), NSClosableWindowMask, NSBackingStoreBuffered, false);
+  // var window_ = [[NSWindow.alloc()
+  //     initWithContentRect:NSMakeRect(0, 0, width, height)
+  //     styleMask:NSTitledWindowMask | NSClosableWindowMask
+  //     backing:NSBackingStoreBuffered
+  //     defer:false
+  //   ] autorelease];
   window_.center();
   window_.makeKeyAndOrderFront_(window_);
   return window_;
@@ -62,8 +62,8 @@ export function createWebView(context, window_, htmlFile, width, height) {
   var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/html/";
   var webviewHtmlFile = webviewFolder + htmlFile;
   log(webviewHtmlFile);
-  var requestUrl      = [NSURL fileURLWithPath:webviewHtmlFile];
-  var urlRequest      = [NSMutableURLRequest requestWithURL:requestUrl];
+  var requestUrl      = NSURL.fileURLWithPath(webviewHtmlFile);
+  var urlRequest      = NSMutableURLRequest.requestWithURL(requestUrl);
 
   // Create the WebView, frame, and set content
   var webView = WebView.new();
@@ -90,27 +90,4 @@ export function parseHash(aURL) {
     }
 
     return vars;
-}
-
-export function request(queryURL, headers, method) {
-   var request = NSMutableURLRequest.new();
-   [request setHTTPMethod:method];
-   [request setURL:[NSURL URLWithString:queryURL]];
-
-   for (var key in headers) {
-      [request addValue:headers[key] forHTTPHeaderField:key];
-   };
-
-   var session = NSURLSession.sharedSession();
-   var task = session.dataTaskWithRequest(request);
-   task.resume()
-
-   var error = NSError.new();
-   var responseCode = null;
-
-   var oResponseData = [NSURLConnection sendSynchronousRequest:request returningResponse:responseCode error:error];
-
-   var dataString = [[NSString alloc] initWithData:oResponseData encoding:NSUTF8StringEncoding];
-
-   return dataString;
 }

@@ -17,9 +17,9 @@
       "export_swift_identifier"
     ]
   },
-  "identifier" : "com.example.sketch.b46b0b06-defb-4f6d-b2f7-cfdc719f9e3e",
+  "identifier" : "Pixelcode_Plugin",
   "version" : "0.1",
   "description" : "Converts Artboards to Swift Code",
   "authorEmail" : "kim.thunderbird@gmail.com",
-  "name" : "Pixelcode"
+  "name" : "Pixelcode-skpm"
 }

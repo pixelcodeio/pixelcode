@@ -1,7 +1,7 @@
 import globals from './globals';
+import {createWebViewChangeLocationDelegate, createWindow, createWebView} from './webview/webview';
 
 function onRun (context) {
-  // context.document.showMessage('Its alive 🙌!!!:)');
   var sketch = context.api();
   var app = NSApplication.sharedApplication();
   var layers = sketch.selectedDocument.selectedLayers;
@@ -10,20 +10,24 @@ function onRun (context) {
   var exportsPath = globals.exportsPath;
   var application = new sketch.Application(context);
 
-  context.document.showMessage('Working!');
+  context.document.showMessage('Working!!!');
 
-  // log("begins here:");
-  // log(application.settingForKey("token"));
-  // // application.setSettingForKey("token", null);
-  // if (application.settingForKey("token") == null) {
-  //   var window_ = createWindow(520, 496);
-  //   var webView = createWebView(context, window_, 'index.html', 520, 496);
-  //   // createWebViewRedirectDelegate(application, context, webView);
-  //   createWebViewChangeLocationDelegate(application, context, webView);
-  //
-  //   [NSApp run];
-  //   return;
-  // }
+  // fetch('https://google.com')
+  //   .then(response => response.text())
+  //   .then(text => console.log(text));
+
+  log("begins here:");
+  log(application.settingForKey("token"));
+  application.setSettingForKey("token", null);
+  if (application.settingForKey("token") == null) {
+    var window_ = createWindow(520, 496);
+    var webView = createWebView(context, window_, 'index.html', 520, 496);
+    // createWebViewRedirectDelegate(application, context, webView);
+    createWebViewChangeLocationDelegate(application, context, webView);
+
+    NSApp.run();
+    return;
+  }
   //
   // if (application.settingForKey("projects") == null) {
   //   updateProjects(context);
