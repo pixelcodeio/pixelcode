@@ -16,8 +16,7 @@ function loggedIn (response) {
   if (response.authenticated) {
     console.log('LOGIN succeeded');
     updateHash('login&token=' + response.token);
-    // window.location.href = '../html/loginClose.html';
-    window.location.href = 'https://www.google.com';
+    window.location.href = '../html/loginClose.html';
   } else {
     console.log('LOGIN failed');
   }

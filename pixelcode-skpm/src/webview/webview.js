@@ -1,81 +1,124 @@
 import WebUI from 'sketch-module-web-view';
 
-export function createWebViewChangeLocationDelegate(application, context, webView) {
-    /**
-     * Create a Delegate class and register it
-     */
-    var className = 'MochaJSDelegate_DynamicClass_SymbolUI_WebviewRedirectDelegate' + NSUUID.UUID().UUIDString();
-    var delegateClassDesc = MOClassDescription.allocateDescriptionForClassWithName_superclass_(className, NSObject);
-    delegateClassDesc.registerClass();
-
-    /**
-     * Register the "event" to respond to and specify the callback function
-     */
-    var windowObject = webView.windowScriptObject();
-    var changeLocationEventSelector = NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:');
-    delegateClassDesc.addInstanceMethodWithSelector_function_(
-      // The "event" - the WebView is about to redirect soon
-      NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:'),
-
-      // The "listener" - a callback function to fire
-      function(webView, webFrame) {
+export function createWebUI(context, application, width, height) {
+  var options = {
+    identifier: 'loginUIID', // to reuse the UI
+    x: 0,
+    y: 0,
+    width: width,
+    height: height,
+    background: NSColor.whiteColor(),
+    blurredBackground: false,
+    onlyShowCloseButton: false,
+    title: 'Log In',
+    hideTitleBar: false,
+    shouldKeepAround: true,
+    show: true,
+    resizable: false,
+    frameLoadDelegate: {
+      'webView:didChangeLocationWithinPageForFrame:': function (webView, webFrame) {
+        var windowObject = webView.windowScriptObject();
         var locationHash = windowObject.evaluateWebScript("window.location.hash");
         //The hash object exposes commands and parameters
         //In example, if you send updateHash('add','artboardName','Mark')
         //You’ll be able to use hash.artboardName to return 'Mark'
         var hash = parseHash(locationHash);
-        log(hash);
+        console.log(hash);
         if (hash.hasOwnProperty("token")) {
           var token = hash["token"];
           application.setSettingForKey("token", token);
         } else if (hash.hasOwnProperty("projectHash")) {
           var projectHash = hash["projectHash"];
-          log("PROJECT HASH:");
-          log(projectHash);
         }
       }
-    );
+    },
+    uiDelegate: {}, // https://developer.apple.com/reference/webkit/webuidelegate?language=objc
+    onPanelClose: function () {
+      // Stuff
+      // return `false` to prevent closing the panel
+    }
+  };
 
-    // Associate the new delegate to the WebView we already created
-    webView.setFrameLoadDelegate_(
-      NSClassFromString(className).new()
-    );
-
-};
-
-export function createWindow(width, height) {
-  var window_ = NSWindow.alloc().init();
-  window_.rect = NSMakeRect(0, 0, width, height);
-  // var window_ = [[NSWindow.alloc()
-  //     initWithContentRect:NSMakeRect(0, 0, width, height)
-  //     styleMask:NSTitledWindowMask | NSClosableWindowMask
-  //     backing:NSBackingStoreBuffered
-  //     defer:false
-  //   ] autorelease];
-  window_.center();
-  window_.makeKeyAndOrderFront_(window_);
-  return window_;
+  // HTML path is relative to Contents/Resources directory
+  const webUI = new WebUI(context, require('./html/index.html'), options);
 }
 
-export function createWebView(context, window_, htmlFile, width, height) {
-  // create frame for loading content in
-  var webviewFrame = NSMakeRect(0, 0, width, height);
-
-  // Request index.html
-  var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/html/";
-  var webviewHtmlFile = webviewFolder + htmlFile;
-  log(webviewHtmlFile);
-  var requestUrl      = NSURL.fileURLWithPath(webviewHtmlFile);
-  var urlRequest      = NSMutableURLRequest.requestWithURL(requestUrl);
-
-  // Create the WebView, frame, and set content
-  var webView = WebView.new();
-  webView.initWithFrame(webviewFrame);
-  webView.mainFrame().loadRequest(urlRequest);
-  window_.contentView().addSubview(webView);
-
-  return webView;
-}
+// export function createWebViewChangeLocationDelegate(application, context, webView) {
+//     /**
+//      * Create a Delegate class and register it
+//      */
+//     var className = 'MochaJSDelegate_DynamicClass_SymbolUI_WebviewRedirectDelegate' + NSUUID.UUID().UUIDString();
+//     var delegateClassDesc = MOClassDescription.allocateDescriptionForClassWithName_superclass_(className, NSObject);
+//     delegateClassDesc.registerClass();
+//
+//     /**
+//      * Register the "event" to respond to and specify the callback function
+//      */
+//     var windowObject = webView.windowScriptObject();
+//     var changeLocationEventSelector = NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:');
+//     delegateClassDesc.addInstanceMethodWithSelector_function_(
+//       // The "event" - the WebView is about to redirect soon
+//       NSSelectorFromString('webView:didChangeLocationWithinPageForFrame:'),
+//
+//       // The "listener" - a callback function to fire
+//       function(webView, webFrame) {
+        // var locationHash = windowObject.evaluateWebScript("window.location.hash");
+        // //The hash object exposes commands and parameters
+        // //In example, if you send updateHash('add','artboardName','Mark')
+        // //You’ll be able to use hash.artboardName to return 'Mark'
+        // var hash = parseHash(locationHash);
+        // log(hash);
+        // if (hash.hasOwnProperty("token")) {
+        //   var token = hash["token"];
+        //   application.setSettingForKey("token", token);
+        // } else if (hash.hasOwnProperty("projectHash")) {
+        //   var projectHash = hash["projectHash"];
+        //   log("PROJECT HASH:");
+        //   log(projectHash);
+        // }
+//       }
+//     );
+//
+//     // Associate the new delegate to the WebView we already created
+//     webView.setFrameLoadDelegate_(
+//       NSClassFromString(className).new()
+//     );
+//
+// };
+//
+// export function createWindow(width, height) {
+//   var window_ = NSWindow.alloc().init();
+//   window_.rect = NSMakeRect(0, 0, width, height);
+//   // var window_ = [[NSWindow.alloc()
+//   //     initWithContentRect:NSMakeRect(0, 0, width, height)
+//   //     styleMask:NSTitledWindowMask | NSClosableWindowMask
+//   //     backing:NSBackingStoreBuffered
+//   //     defer:false
+//   //   ] autorelease];
+//   window_.center();
+//   window_.makeKeyAndOrderFront_(window_);
+//   return window_;
+// }
+//
+// export function createWebView(context, window_, htmlFile, width, height) {
+//   // create frame for loading content in
+//   var webviewFrame = NSMakeRect(0, 0, width, height);
+//
+//   // Request index.html
+//   var webviewFolder   = "/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/html/";
+//   var webviewHtmlFile = webviewFolder + htmlFile;
+//   log(webviewHtmlFile);
+//   var requestUrl      = NSURL.fileURLWithPath(webviewHtmlFile);
+//   var urlRequest      = NSMutableURLRequest.requestWithURL(requestUrl);
+//
+//   // Create the WebView, frame, and set content
+//   var webView = WebView.new();
+//   webView.initWithFrame(webviewFrame);
+//   webView.mainFrame().loadRequest(urlRequest);
+//   window_.contentView().addSubview(webView);
+//
+//   return webView;
+// }
 
 export function parseHash(aURL) {
   aURL = aURL;
