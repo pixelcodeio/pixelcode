@@ -1,0 +1,2 @@
+rsync -avv ./plugin.sketchplugin ~/Library/Application\ Support/com.bohemiancoding.sketch3/Plugins/pixelcode-skpm/
+
