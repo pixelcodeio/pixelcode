@@ -15,5 +15,5 @@ app/exports
 # global files
 plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript
 
-# Server export files
+# Plugin exports file
 plugin/pixelcode.sketchplugin/Contents/Sketch/exports

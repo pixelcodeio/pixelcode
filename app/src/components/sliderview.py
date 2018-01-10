@@ -49,13 +49,29 @@ class SliderView(BaseComponent):
     Returns (str): Methods for content collection view with correct values.
     """
     slider_options = self.info["slider_options"]
-    content_methods = self.info["content_methods"]
-    content_methods = self.gen_scrollview_funcs() + content_methods
+    # Add scroll view function
+    methods = self.info["content_methods"]
+    methods = self.gen_scrollview_funcs() + methods
+    # Adjust number of items in section
     num_cells = ("return {}").format(len(slider_options["options"]))
-    content_methods = content_methods.replace("return 1", num_cells)
-    case_number = ("case {}").format(slider_options["selected_index"])
-    content_methods = content_methods.replace("case 0", case_number)
-    return content_methods
+    methods = methods.replace("return 1", num_cells)
+    # Adjust case for cellForItemAt
+    beg = methods.find("cellForItemAt")
+    end = methods.find("func", beg)
+    mid = methods[beg:end]
+    case = ("switch indexPath.row {{\ncase {}"
+           ).format(slider_options["selected_index"])
+    mid = mid.replace("switch indexPath.row {\ncase 0", case)
+    methods = methods[:beg] + mid + methods[end:]
+    # Adjust case for sizeForItemAt
+    beg = methods.find("sizeForItemAt")
+    end = methods.find("func", beg)
+    mid = methods[beg:end]
+    case = ("switch indexPath.row {{\ncase (0...{})"
+           ).format(len(slider_options["options"]) - 1)
+    mid = mid.replace("switch indexPath.row {\ncase 0", case)
+    methods = methods[:beg] + mid + methods[end:]
+    return methods
 
   def fix_content_swift(self):
     """

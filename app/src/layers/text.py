@@ -1,4 +1,4 @@
-from layers.text_span import TextSpan, params_equal
+from .text_span import TextSpan, params_equal
 from . import *
 
 class Text(BaseLayer):

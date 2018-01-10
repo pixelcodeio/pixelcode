@@ -1,4 +1,4 @@
-from components._all import *
+from ._all import *
 from . import *
 
 class ComponentFactory(object):
@@ -7,17 +7,20 @@ class ComponentFactory(object):
     swift (str): swift code to generate a component
     info (dict): contains information about component
     methods (dict): contains methods to be added outside of file's init function
-    in_view (bool): whether component is generated inside a custom view file
+    env (dict): environment in which component is being generated. contains keys
+      - in_view (bool): whether component is generated inside a custom view file
+      - is_long_artboard (bool)
   """
-  def __init__(self, info, in_v):
+  def __init__(self, info, env):
     """
     Args:
       info (dict): info on component
+      env (dict): environment in which component is being generated
       in_v (bool): is whether generating from within a custom view
     """
     self.info = info
     self.methods = {}
-    self.in_view = in_v
+    self.env = env
     self.swift = self.generate_component()
 
   def generate_component(self):
@@ -28,14 +31,13 @@ class ComponentFactory(object):
     type_ = self.info["type"]
     C = ""
 
-    if not self.in_view:
-      C += self.init_comp(type_, id_)
+    if not self.env["in_view"]:
+      C += self.init_comp(type_, id_, self.info)
 
     # prepare for create_component
     self.prepare_for_create_component()
 
-    env = {"in_view": self.in_view}
-    component = self.create_component(type_, id_, self.info, env)
+    component = self.create_component(type_, id_, self.info, self.env)
     C += component.swift
 
     # finish creating component
@@ -63,7 +65,7 @@ class ComponentFactory(object):
 
     if rect is not None and type_ != "SliderView":
       swift += utils.setup_rect(id_, type_, rect)
-      if rect.get("filter") is not None and not self.in_view:
+      if rect.get("filter") is not None and not self.env["in_view"]:
         # move code for shadows to viewDidLayoutSubviews function
         shadow = utils.add_shadow(id_, type_, rect["filter"])
         swift = swift.replace(shadow, "")
@@ -71,7 +73,7 @@ class ComponentFactory(object):
 
     if filter_ is not None:
       shadow = utils.add_shadow(id_, type_, filter_)
-      if self.in_view:
+      if self.env["in_view"]:
         swift += shadow
       else:
         self.methods["viewDidLayoutSubviews"] = shadow
@@ -96,7 +98,7 @@ class ComponentFactory(object):
         self.methods["viewDidAppear"] = component.swift
       return swift
 
-    view = 'view' if not self.in_view else None
+    view = 'view' if not self.env["in_view"] else None
     swift += utils.add_subview(view, id_, type_)
     swift += self.gen_constraints(self.info)
     return swift
@@ -105,12 +107,13 @@ class ComponentFactory(object):
     """
     Args:
       env (dict): env for component. Possible keys are
-                  [set_prop, in_view, in_cell, in_header]
+                  [set_prop, in_view, in_cell, in_header, is_long_artboard]
 
     Returns: (obj) An instance of the component to be created
     """
     # init keys
-    for key in ["set_prop", "in_view", "in_cell", "in_header"]:
+    keys = ["set_prop", "in_view", "in_cell", "in_header", "is_long_artboard"]
+    for key in keys:
       if key not in env:
         env[key] = False
 
@@ -154,7 +157,7 @@ class ComponentFactory(object):
            ).format(vert_dist)
     C += "}\n\n"
 
-    if not self.in_view:
+    if not self.env["in_view"]:
       C = C.replace("frame", "view.frame")
     return C
 
@@ -169,7 +172,7 @@ class ComponentFactory(object):
         "right": "left"
     }[d]
 
-  def init_comp(self, type_, id_):
+  def init_comp(self, type_, id_, comp):
     """
     Returns (str): swift code to initialize a component
     """
@@ -186,7 +189,7 @@ class ComponentFactory(object):
     elif type_ == 'UILabel':
       type_ = "InsetLabel" # use our custom label
     elif type_ == "UISegmentedControl":
-      items = ['"' + i.decode('utf-8') + '"' for i in self.info["items"]]
+      items = ['"' + i.decode('utf-8') + '"' for i in comp["items"]]
       return ("{} = {}(items: [{}])\n").format(id_, type_, ", ".join(items))
     return "{} = {}()\n".format(id_, type_)
 
@@ -196,31 +199,78 @@ class ComponentFactory(object):
       Adds code for setting properties of all cells/headers' subcomponents to
       the info instance variable.
     """
-    if self.info.get('header') is not None:
-      # set properties for components in header
-      ids = []
-      C = "case 0:\n"
-      components = self.info['header']['components']
-      ids = [comp.get('id') for comp in components]
-      C += self.gen_subcomponents_properties("header", components, ids)
-      self.info["header_set_prop"] = C
+    # Set properties for headers' components
+    C = "switch section {\n"
 
-    # set properties for components in cells
-    cells = self.info['cells']
-    fst_cell_comps = cells[0].get('components')
-    ids = [comp.get('id') for comp in fst_cell_comps]
+    # Looping through the headers of each section
+    for index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(index)
 
-    C = ""
-    case = 0
-    for cell in cells:
-      components = cell.get('components')
-      if len(components) != len(fst_cell_comps):
-        continue
-      C += '\ncase {}:\n'.format(case)
-      C += self.gen_subcomponents_properties("cell", components, ids)
-      C += 'return cell'
-      case += 1
+      if section.get('header') is not None:
+        header = section['header']
 
+        if self.info["type"] == "UITableView":
+          path = ""
+        else:
+          path = ", for: indexPath"
+
+        # Initialize header variable
+        header_name = header["header_name"]
+        C += ("let header = {}.dequeueReusableHeaderFooterView(withIdentifier:"
+              ' "{}ID"{}) as! {}\n'
+             ).format(self.info["id"], utils.lowercase(header_name), path,
+                      header_name)
+        # Generating header's components
+        components = header['components']
+        custom_header = self.info["custom_headers"][header_name]
+        ids = [c["id"] for c in custom_header["components"]]
+        C += self.gen_subcomponents_properties("header", components, ids)
+        C += "return header\n"
+      else:
+        C += "return UIView()\n"
+
+    C += "default:\nreturn UIView()\n}\n"
+    self.info["header_set_prop"] = C
+
+    # Set properties for cells' components
+    default = "default:\nreturn UITableViewCell()\n"
+    C = "switch indexPath.section {\n"
+
+    # Loop through each section
+    for section_index, section in enumerate(self.info["sections"]):
+      C += ("case {}:\n").format(section_index)
+      # Check if this is a UITableView and cells have spacing in this section
+      if section["table_separate"]:
+        C += ("if (indexPath.row % 2 == 1) {\n"
+              "let cell = UITableViewCell()\n"
+              "cell.backgroundColor = .clear\n"
+              "cell.selectionStyle = .none\n"
+              "return cell\n}\n")
+      C += "switch indexPath.row {\n"
+
+      # Loop through each cell in this section
+      for cell_index, cell in enumerate(section["cells"]):
+        index = cell_index * 2 if section["table_separate"] else cell_index
+        # Initialize cell variable
+        cell_name = cell["cell_name"]
+        C += ("case {}:\n"
+              "let cell = {}.dequeueReusableCell(withIdentifier: "
+              '"{}ID") as! {}\n'
+              "cell.selectionStyle = .none\n"
+             ).format(index, self.info["id"], utils.lowercase(cell_name),
+                      cell_name)
+
+        # Get ids of components in correct custom cell class
+        for name, custom_cell in section["custom_cells"].items():
+          if name == cell_name:
+            ids = [comp["id"] for comp in custom_cell["components"]]
+            break
+
+        # Generate cell's components
+        C += self.gen_subcomponents_properties("cell", cell["components"], ids)
+        C += "return cell\n"
+      C += ("{}}}\n").format(default)
+    C += ("{0}}}\n").format(default)
     self.info["cell_set_prop"] = C
 
   def gen_subcomponents(self, parent, components, add_constraints):
@@ -230,10 +280,11 @@ class ComponentFactory(object):
     C = ""
 
     for comp in components:
-      type_ = comp.get('type')
-      id_ = comp.get('id')
-      C += self.init_comp(type_, id_)
-      com = self.create_component(type_, id_, comp, {})
+      type_ = comp['type']
+      id_ = comp['id']
+      C += self.init_comp(type_, id_, comp)
+      env = {"is_long_artboard": self.env["is_long_artboard"]}
+      com = self.create_component(type_, id_, comp, env)
       C += com.swift
       C += utils.set_frame(comp) if not add_constraints else ""
       C += utils.add_subview(parent, id_, type_) if parent is not None else ""
@@ -255,9 +306,10 @@ class ComponentFactory(object):
     components = [c for c in components if c['type'] != "UICollectionView"]
 
     for j, comp in enumerate(components):
-      type_ = comp.get('type')
+      type_ = comp['type']
       id_ = "{}.{}".format(c_or_h, ids[j])
-      env = {"set_prop": True}
+      env = {"set_prop": True,
+             "is_long_artboard": self.env["is_long_artboard"]}
 
       if type_ == 'UILabel':
         env["in_" + c_or_h] = True
@@ -277,7 +329,7 @@ class ComponentFactory(object):
     self.info['right-buttons-code'] = self.gen_subcomponents(None, right, False)
     C = ""
     if title is not None:
-      C += self.init_comp(title['type'], title['id'])
+      C += self.init_comp(title['type'], title['id'], title)
       C += utils.set_frame(title)
       C += self.gen_subcomponents(title['id'], title.get('components'), False)
     self.info['title-code'] = C

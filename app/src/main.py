@@ -18,7 +18,7 @@ class Main(object):
     self.artboard = artboard
 
   def convert_artboard(self):
-    p = Parser(self.path, self.artboard, True)
+    p = Parser(self.path, self.artboard, True, debug=True)
     p.parse_artboard()
 
     i = Interpreter(p.globals)
@@ -55,6 +55,9 @@ if __name__ == "__main__":
   if len(sys.argv) == 2:
     if sys.argv[1] == 'zip':
       update_test_dir("../exports/", True)
+    elif sys.argv[1] == 'staging':
+      m = Main("https://s3.amazonaws.com/pixelcode/dev/assets/b94b77403cc4bbaf45ee86bc28173b0a/", "longArtboardView")
+      print(m.convert_artboard())
     else:
       update_test_dir(sys.argv[1], False)
   else:

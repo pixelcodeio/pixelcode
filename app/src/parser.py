@@ -1,6 +1,7 @@
 # library imports
 import json
 from operator import itemgetter
+from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
 from layers._all import *
@@ -26,11 +27,12 @@ class Parser(object):
         - font-size(list)
     is_ios: whether the code being generated is iOS code
   """
-  def __init__(self, path, artboard, is_ios):
+  def __init__(self, path, artboard, is_ios, debug=False):
     """
     Returns: Parser object for parsing the file located at filepath
     """
     self.artboard = artboard
+    self.debug = debug
     self.elements = []
     self.json = {}
     self.globals = {}
@@ -42,14 +44,25 @@ class Parser(object):
     """
     Parses artboard with name [self.artboard]
     """
-    # initializes self.json
-    f = open(self.path + self.artboard + ".json", "r+")
-    self.json = json.loads(f.read())
+    if self.debug:
+      # initializes self.json
+      f = open(self.path + self.artboard + ".json", "r+")
+      self.json = json.loads(f.read())
 
-    # parses svg and sets instance variables appropriately
-    f = open(self.path + self.artboard + ".svg", "r+")
-    soup = BeautifulSoup(f, "lxml")
-    f.close()
+      # parses svg and sets instance variables appropriately
+      f = open(self.path + self.artboard + ".svg", "r+")
+      soup = BeautifulSoup(f, "lxml")
+      f.close()
+    else:
+      # initializes self.json
+      f = request.urlopen(self.path + self.artboard + ".json")
+      self.json = json.loads(f.read())
+
+      # parses svg and sets instance variables appropriately
+      f = request.urlopen(self.path + self.artboard + ".svg")
+      soup = BeautifulSoup(f, "lxml")
+      f.close()
+
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
@@ -76,8 +89,12 @@ class Parser(object):
       bg_color = utils.convert_hex_to_rgb(bg_hex) + (1.0,)
     else:
       bg_color = (255, 255, 255, 1.0)
-    height = svg["height"][:-2]
-    width = svg["width"][:-2]
+    width = float(svg["width"][:-2])
+    # Get proper height based on width
+    height = {320: 568, 375: 667, 414: 736}.get(width)
+    if height is None:
+      raise Exception("Parser: Artboard has invalid width size.")
+    is_long_artboard = height < float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
     fill = [bg_color, (0, 0, 0, 0)]
@@ -100,13 +117,14 @@ class Parser(object):
       fill = parse_filter_matrix(f.fecolormatrix["values"])
       filters[id_] = {"dx": dx, "dy": dy, "radius": radius, "fill": fill,
                       "d_size": d_size, "is_outer": is_outer}
-    return {"background_color": bg_color,
-            "width": float(width),
-            "height": float(height),
-            "pagename": pagename,
-            "artboard": artboard,
+    return {"artboard": artboard,
+            "background_color": bg_color,
+            "filters": filters,
+            "height": height,
             "info": info,
-            "filters": filters}
+            "is_long_artboard": is_long_artboard,
+            "pagename": pagename,
+            "width": width}
 
   def parse_elements(self, children, parent, init=False):
     """
@@ -135,7 +153,7 @@ class Parser(object):
     while elements:
       elem = elements.pop(0)
       elem = calculate_spacing(elem, parsed_elements, self.is_ios)
-      elem = convert_coords(elem, parent)
+      elem = convert_coords(self, elem, parent)
 
       # correctly name grouped elements
       if elem.name == "g":
@@ -149,8 +167,10 @@ class Parser(object):
           elem.name = "collectionview"
         elif utils.word_in_str("header", elem["id"]):
           elem.name = "header"
-        elif utils.word_in_str("listView", elem["id"]):
+        elif utils.word_in_str("tableView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("section", elem["id"]):
+          elem.name = "section"
         elif utils.word_in_str("sliderContent", elem["id"]):
           elem.name = "slidercontent"
         elif utils.word_in_str("sliderOptions", elem["id"]):
@@ -201,6 +221,8 @@ class Parser(object):
         parsed_elem = Container(elem, "Header")
       elif elem.name in {"image", "polygon", "path", "circle"}:
         parsed_elem = Image(elem, "UIImageView")
+      elif elem.name == "section":
+        parsed_elem = Section(elem, "Section")
       elif elem.name == "slidercontent":
         parsed_elem = Container(elem, "SliderContent")
       elif elem.name == "slideroption":
@@ -211,7 +233,7 @@ class Parser(object):
         parsed_elem = SliderView(elem, "SliderView")
       elif elem.name == "navbar":
         parsed_elem = NavBar(elem, "UINavBar")
-      elif elem.name == "rect" or elem.name == "view":
+      elif elem.name == "rect":
         parsed_elem = Rect(elem, "UIView")
       elif elem.name == "searchbar":
         parsed_elem = SearchBar(elem, "UISearchBar")
@@ -233,6 +255,8 @@ class Parser(object):
         parsed_elem = TextField(elem, "UITextField")
       elif elem.name == "tspan":
         parsed_elem = TextSpan(elem, "")
+      elif elem.name == "view":
+        parsed_elem = Container(elem, "UIView")
       else:
         raise Exception("Parser: Unhandled elem type for " + elem.name)
 

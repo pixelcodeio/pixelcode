@@ -9,10 +9,10 @@ class TextSpan(BaseLayer):
     Args:
       Refer to args in __init__
     """
-    elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
-    elem["stroke-width"] = None
-    elem["stroke-color"] = None
     elem["contents"] = elem.text
+    elem["stroke-color"] = None
+    elem["stroke-width"] = None
+    elem["text-color"] = utils.convert_hex_to_rgb(elem["fill"])
     return super().parse_elem(elem)
 
 def params_equal(tspan1, tspan2):

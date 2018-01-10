@@ -1,5 +1,5 @@
-from layers.rect import Rect
-from layers.text import Text
+from .rect import Rect
+from .text import Text
 from . import *
 
 class Button(BaseLayer):
@@ -15,7 +15,7 @@ class Button(BaseLayer):
         if utils.word_in_str('bound', child["id"]):
           rect = child
         else:
-          child['path'] = child['id'] # add path key
+          child['path'] = child['id'] + '.png' # add path key
           bg_img = child
       elif child["type"] == "UILabel":
         text = child
@@ -25,8 +25,7 @@ class Button(BaseLayer):
     if text is None and bg_img is None:
       raise Exception("Button: Nothing in button in " + elem["id"])
 
+    elem["bg_img"] = bg_img
     elem["rect"] = rect
     elem["text"] = text
-    elem["bg_img"] = bg_img
-
     return super().parse_elem(elem)

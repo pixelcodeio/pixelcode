@@ -72,11 +72,14 @@ class BaseLayer(object):
         "bg_img",
         "bookmark-icon",
         "border-radius",
+        "cell_name",
         "cells",
         "char-spacing",
         "components",
         "content", # content of a SliderView
         "contents", # text of a label
+        "custom_cells",
+        "custom_headers",
         "cx",
         "cy",
         "fill",
@@ -84,6 +87,7 @@ class BaseLayer(object):
         "font-family",
         "font-size",
         "header",
+        "header_name",
         "height",
         "horizontal",
         "id",
@@ -101,6 +105,7 @@ class BaseLayer(object):
         "rwidth", # width in pixels
         "rheight", # height in pixels
         "search-icon",
+        "sections",
         "selected_index",
         "separator",
         "slider_options",
@@ -108,6 +113,7 @@ class BaseLayer(object):
         "stroke-width",
         "stroke-opacity",
         "tabbar-buttons",
+        "table_separate",
         "text",
         "textspan",
         "text-align",

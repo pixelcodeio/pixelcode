@@ -25,7 +25,7 @@ class SearchBar(BaseLayer):
           else:
             bookmark_icon = child
 
+    elem["bookmark-icon"] = bookmark_icon
     elem["contents"] = contents
     elem["search-icon"] = search_icon
-    elem["bookmark-icon"] = bookmark_icon
     return super().parse_elem(elem)

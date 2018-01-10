@@ -1,5 +1,5 @@
-from layers.rect import Rect
-from layers.text import Text
+from .rect import Rect
+from .text import Text
 from . import *
 
 class TabBar(BaseLayer):
@@ -28,7 +28,6 @@ class TabBar(BaseLayer):
     # sort buttons by x value
     tabbar_buttons = sorted(tabbar_buttons, key=lambda c: c.get('x'))
 
-    elem["tabbar-buttons"] = tabbar_buttons
     elem["rect"] = rect
-
+    elem["tabbar-buttons"] = tabbar_buttons
     return super().parse_elem(elem)

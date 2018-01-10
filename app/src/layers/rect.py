@@ -20,13 +20,4 @@ class Rect(BaseLayer):
       elem["stroke-width"] = None
       elem["stroke-opacity"] = None
 
-    components = []
-    for child in elem["children"]:
-      components.append(child)
-
-    if components:
-      elem["components"] = components
-    else:
-      elem["components"] = None
-
     return super().parse_elem(elem)

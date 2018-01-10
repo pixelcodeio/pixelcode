@@ -19,6 +19,14 @@ def uppercase(string):
   """
   return string if not string else string[0].upper() + string[1:]
 
+def lowercase(string):
+  """
+  Returns (str):
+    string with the first letter lowercased. if string is the empty string, the
+    empty string is returned.
+  """
+  return string[:1].lower() + string[1:] if string else ''
+
 def word_in_str(word, string):
   """
   Returns (bool): whether string contains word or capitalized version of word
@@ -102,7 +110,7 @@ def add_shadow(id_, type_, filter_):
           "{1}, dy: -{1})).cgPath\n").format(id_, d_size)
 
   if not is_outer:
-    C = C.replace(id_ + ".layer", "innerShadowLayer")
+    C = C.replace("{}.layer".format(id_), "innerShadowLayer")
     C = ("let innerShadowLayer = CALayer()\n"
          "innerShadowLayer.frame = {}.bounds\n"
          "innerShadowLayer.masksToBounds = true\n{}").format(id_, C)
@@ -120,7 +128,7 @@ def add_shadow(id_, type_, filter_):
     C += "navigationController?.navigationBar.layer.masksToBounds = false\n"
   return C
 
-def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
+def setup_rect(cid, type_, rect, header=False, cell=False):
   """
   Args:
     cid: (str) id of component
@@ -130,21 +138,19 @@ def setup_rect(cid, type_, rect, tc_header=False, tc_cell=False):
   """
   keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
   fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
-
   C = ""
   if word_in_str("navBar", cid): # only set background color for UINavBar
     str_c = None
     str_w = None
     border_r = None
-  if tc_cell or tc_header:
+  if cell or header:
     cid = None
-
   if fill is not None:
-    if tc_header:
+    if header:
       C += set_bg('backgroundView?', fill)
     elif cid is not None and word_in_str('tabBar', cid):
       C += set_bg('tabBar', fill)
-    elif cid is not None and not word_in_str("switch", cid):
+    elif cid is not None and word_in_str("switch", cid):
       C += ""
     else:
       C += set_bg(cid, fill)
@@ -167,6 +173,12 @@ def req_init():
   """
   return ("required init?(coder aDecoder: NSCoder) {\n"
           'fatalError("init(coder:) has not been implemented")\n}')
+
+def index_of(str_, key):
+  """
+  Returns: Maximum of indices of key and capitalized key in str
+  """
+  return max(str_.find(key), str_.find(uppercase(key)))
 
 def ins_after_key(s, k, ins):
   """

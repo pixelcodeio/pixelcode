@@ -1,6 +1,6 @@
 import math
-from layers.rect import Rect
-from layers.text import Text
+from .rect import Rect
+from .text import Text
 from . import *
 
 class TableCollectionView(BaseLayer):
@@ -9,34 +9,58 @@ class TableCollectionView(BaseLayer):
   """
   def parse_elem(self, elem):
     rect = None
-    header = None
-    cells = []
+    sections = []
+
     for child in elem["children"]:
-      if utils.word_in_str("bound", child["id"]):
+      if child["type"] == "Section":
+        sections.append(child)
+      elif utils.word_in_str("bound", child["id"]):
         if rect:
-          raise Exception("TableCollectionView: Only one wash allowed in "
-                          + elem["id"])
+          raise Exception("TableCollectionView: Only one bound allowed")
         else:
           rect = child
-      elif child["type"] == "Cell":
-        cells.append(child)
-      elif child["type"] == "Header":
-        if header:
-          raise Exception("TableCollectionView: Only one header allowed "
-                          + elem["id"])
-        else:
-          header = child
-      else:
-        raise Exception("TableCollectionView: Unsupported elem type in "
-                        + elem["id"])
 
-    if not cells:
-      raise Exception("TableCollectionView: No cells in " + elem["id"])
+    if not sections:
+      raise Exception("TableCollectionView: No sections in " + elem["id"])
+    elif rect is None:
+      raise Exception("TableCollectionView: Missing bound in " + elem["id"])
 
+    # Calculate cell spacing for all sections
+    sections = sorted(sections, key=lambda s: s['y']) # sort by y
+    type_ = elem["type"]
+    sections = [self.calculate_separator(sect, type_) for sect in sections]
+
+    # Calculate spacing between sections
+    separator = []
+    if len(sections) >= 2:
+      section_sep = sections[1]['y'] - sections[0]['y'] - sections[0]['rheight']
+      separator.append(section_sep)
+
+    # Get all the custom headers
+    custom_headers = {}
+    for section in sections:
+      if section.get("header") is not None:
+        header = section["header"]
+        index = utils.index_of(header["id"], "header")
+        header_name = utils.uppercase(header["id"][:index + 6])
+        header["header_name"] = header_name
+        if custom_headers.get(header_name) is None:
+          custom_headers[header_name] = header
+
+    elem["custom_headers"] = custom_headers
+    elem["rect"] = rect
+    elem["sections"] = sections
+    elem["separator"] = separator
+    return super().parse_elem(elem)
+
+  def calculate_separator(self, section, type_):
+    """
+    Returns (dict): Section dict with "separator" and "table_separate" key added
+    """
+    cells = section["cells"]
     separator = []
     if len(cells) >= 2:
-      cells = sorted(cells, key=lambda c: c['y']) # sort by y
-      if elem['type'] == 'UITableView':
+      if type_ == 'UITableView':
         vert_sep = cells[1]['y'] - cells[0]['y'] - cells[0]['rheight']
         separator = [vert_sep]
       else:
@@ -46,10 +70,8 @@ class TableCollectionView(BaseLayer):
         if len(cells) > npr: # more than one row exists
           vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
           separator.append(vert_sep)
-
-    elem["rect"] = rect
-    elem["header"] = header
-    elem["cells"] = cells
-    elem["separator"] = separator
-
-    return super().parse_elem(elem)
+    section["separator"] = separator
+    section["table_separate"] = (type_ == "UITableView" and \
+                                 len(separator) > 0 and \
+                                 separator[0] > 0)
+    return section
