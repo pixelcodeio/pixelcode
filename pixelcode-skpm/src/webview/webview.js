@@ -42,7 +42,8 @@ export function createWebViewChangeLocationDelegate(application, context, webVie
 };
 
 export function createWindow(width, height) {
-  var window_ = NSWindow.alloc().init(NSMakeRect(0, 0, width, height), NSClosableWindowMask, NSBackingStoreBuffered, false);
+  var window_ = NSWindow.alloc().init();
+  window_.rect = NSMakeRect(0, 0, width, height);
   // var window_ = [[NSWindow.alloc()
   //     initWithContentRect:NSMakeRect(0, 0, width, height)
   //     styleMask:NSTitledWindowMask | NSClosableWindowMask
