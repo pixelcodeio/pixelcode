@@ -1,8 +1,8 @@
 import WebUI from 'sketch-module-web-view';
 
-export function createWebUI(context, application, html, width, height) {
+export function createWebUI(context, application, name, html, width, height) {
   var options = {
-    identifier: 'ID', // to reuse the UI
+    identifier: name, // to reuse the UI
     x: 0,
     y: 0,
     width: width,
@@ -10,7 +10,7 @@ export function createWebUI(context, application, html, width, height) {
     background: NSColor.whiteColor(),
     blurredBackground: false,
     onlyShowCloseButton: false,
-    title: 'Log In',
+    title: name,
     hideTitleBar: false,
     shouldKeepAround: true,
     show: true,
@@ -40,7 +40,7 @@ export function createWebUI(context, application, html, width, height) {
   };
 
   // HTML path is relative to Contents/Resources directory
-  const webUI = new WebUI(context, require('./html/' + html), options);
+  var webUI = new WebUI(context, require('./html/' + html), options);
 }
 
 // export function createWebViewChangeLocationDelegate(application, context, webView) {

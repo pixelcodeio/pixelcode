@@ -1,5 +1,5 @@
 import globals from './globals';
-import createWebUI from './webview/webview';
+import {createWebUI} from './webview/webview';
 import WebUI from 'sketch-module-web-view';
 import mkdirp from 'mkdirp';
 import 'fs';
@@ -18,7 +18,7 @@ function onRun (context) {
   context.document.showMessage('Working!!!');
 
   if (application.settingForKey('token') == null) {
-    createWebUI(context, application, 'index.html', 520, 496);
+    createWebUI(context, application, 'Log In', 'index.html', 520, 496);
     return;
   }
 
@@ -64,7 +64,7 @@ function onRun (context) {
     // Create artboards.json
     // createArtboardsJSON(artboards, webviewPath);
     console.log("OPENING Export.html");
-    createWebUI(context, application, 'export.html', 560, 496);
+    createWebUI(context, application, 'exportUIID', 'Export to Projects', 560, 496);
   }
 }
 
