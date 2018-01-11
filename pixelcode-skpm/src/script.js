@@ -1,5 +1,5 @@
 import globals from './globals';
-import {createWebUI} from './webview/webview';
+import {createWebUI, createWebview, createWebViewChangeLocationDelegate, createWindow} from './webview/webview';
 import WebUI from 'sketch-module-web-view';
 
 function onRun (context) {
@@ -13,8 +13,13 @@ function onRun (context) {
   var application = new sketch.Application(context);
 
   // application.setSettingForKey('token', null);
-  if (application.settingForKey('token') == null) {
-    createWebUI(context, application, 'Log In', 'index.html', 520, 496);
+  var token = application.settingForKey('token');
+  if (token == null) {
+    // createWebview('Log In', webviewPath + 'html/index.html', 520, 496);
+    var window_ = createWindow(520, 496);
+    var webview = createWebview(context, window_, webviewPath + 'html/index.html', 520, 496);
+    createWebViewChangeLocationDelegate(application, context, window_, webview, null);
+    NSApp.run();
     return;
   }
 
@@ -56,7 +61,10 @@ function onRun (context) {
     // Create artboards.json
     // createArtboardsJSON(artboards, webviewPath);
     console.log("OPENING Export.html");
-    createWebUI(context, application, 'Export to Projects', 'export.html', 560, 496);
+    var window_ = createWindow(560, 496);
+    var webview = createWebview(context, window_, webviewPath + 'html/export.html', 560, 472);
+    createWebViewChangeLocationDelegate(application, context, window_, webview, token);
+    NSApp.run();
   }
 }
 
@@ -89,10 +97,9 @@ function updateProjects (context) {
         application.setSettingForKey('projects', text);
         var projectsStr = NSString.stringWithString(text);
         projectsStr.writeToFile_atomically_encoding_error(webviewPath + 'projects.json', true, NSUTF8StringEncoding, null);
-        context.document.showMessage('Pixelcode: Sucessfully updated projects!');
       }
     }).catch(error => {
-      console.log('Failed to get projects');
+      console.log('Failed to get projects, in catch');
       console.log(error);
       context.document.showMessage('Pixelcode: Failed to get projects.');
     })

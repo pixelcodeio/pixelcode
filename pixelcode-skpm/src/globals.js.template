@@ -2,7 +2,7 @@ const globals = {
   filepath: '/Users/[USER]/Documents/pixelcode/app/exports/',
   exportsPath: '/Users/[USER]/Documents/pixelcode/pixelcode-skpm/src/exports/',
   webviewPath: '/Users/[USER]/Documents/pixelcode/pixelcode-skpm/src/webview/',
-  resourcesPath: '/Users/[USER]/Documents/pixelcode/pixelcode-skpm/plugin.sketchplugin/Contents/Resources'
+  resourcesPath: '/Users/[USER]/Documents/pixelcode/pixelcode-skpm/plugin.sketchplugin/Contents/Resources/'
 };
 
 export default globals;
