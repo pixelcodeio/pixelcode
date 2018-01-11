@@ -61,7 +61,10 @@ class Parser(object):
       # parses svg and sets instance variables appropriately
       f = requests.get(self.path + self.artboard + ".svg")
       soup = BeautifulSoup(f.content, "lxml")
+<<<<<<< HEAD
 
+=======
+>>>>>>> c73df4dcc6867b2c20a2e291702a89942d0a9675
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
