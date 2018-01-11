@@ -1,5 +1,6 @@
 # library imports
 import json
+import requests
 from operator import itemgetter
 from urllib import request
 from bs4 import BeautifulSoup
@@ -54,13 +55,12 @@ class Parser(object):
       f.close()
     else:
       # initializes self.json
-      f = request.urlopen(self.path + self.artboard + ".json")
-      self.json = json.loads(f.read())
+      f = requests.get(self.path + self.artboard + ".json")
+      self.json = json.loads(f.content)
 
       # parses svg and sets instance variables appropriately
-      f = request.urlopen(self.path + self.artboard + ".svg")
-      soup = BeautifulSoup(f, "lxml")
-      f.close()
+      f = requests.get(self.path + self.artboard + ".svg")
+      soup = BeautifulSoup(f.content, "lxml")
 
 
     self.globals = self.parse_globals(soup.svg)
