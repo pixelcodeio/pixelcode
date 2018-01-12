@@ -8,7 +8,6 @@ function onRun (context) {
   var layers = sketch.selectedDocument.selectedLayers;
   //var filepath = '/Users/Young/Documents/pixelcode/app/tests/';
   var filepath = globals.filepath;
-  var exportsPath = globals.exportsPath;
   var webviewPath = globals.webviewPath;
   var application = new sketch.Application(context);
 
@@ -23,22 +22,22 @@ function onRun (context) {
     return;
   }
 
-  application.setSettingForKey('projects', null);
   if (application.settingForKey('projects') == null) {
     updateProjects(context);
   }
 
-  console.log(application.settingForKey('projects'));
   context.document.showMessage('About to export');
   if (layers.isEmpty) {
     context.document.showMessage('PixelCode: No artboard selected.');
   } else {
     var artboards = [];
+    var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+    var exportsPath = contentsPath + '/Resources/exports/';
+    console.log('Exports path is: ' + exportsPath);
     layers.iterate(function (layer) {
       if (layer.isArtboard) {
         // Add artboard name to list of artboards
         artboards.push(layer.name);
-        // output = exportJSON(layer, filepath);
         var output = exportJSON(layer, exportsPath);
 
         var options = {
@@ -60,10 +59,10 @@ function onRun (context) {
     });
     // Create artboards.json
     // createArtboardsJSON(artboards, webviewPath);
-    console.log("OPENING Export.html");
     var window_ = createWindow(560, 496);
     var webview = createWebview(context, window_, webviewPath + 'html/export.html', 560, 472);
-    createWebViewChangeLocationDelegate(application, context, window_, webview, token);
+    var info = {token: token, artboards: artboards};
+    createWebViewChangeLocationDelegate(application, context, window_, webview, info);
     NSApp.run();
   }
 }
@@ -75,6 +74,7 @@ function onRun (context) {
 function updateProjects (context) {
   var sketch = context.api();
   var application = new sketch.Application(context);
+  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
   var webviewPath = globals.webviewPath;
   var token = application.settingForKey('token');
 
@@ -96,13 +96,13 @@ function updateProjects (context) {
       } else {
         application.setSettingForKey('projects', text);
         var projectsStr = NSString.stringWithString(text);
-        projectsStr.writeToFile_atomically_encoding_error(webviewPath + 'projects.json', true, NSUTF8StringEncoding, null);
+        projectsStr.writeToFile_atomically_encoding_error(contentsPath + '/Resources/projects.json', true, NSUTF8StringEncoding, null);
       }
     }).catch(error => {
       console.log('Failed to get projects, in catch');
       console.log(error);
       context.document.showMessage('Pixelcode: Failed to get projects.');
-    })
+    });
 }
 
 function renameLayers (layer, originalNames) {
@@ -141,8 +141,8 @@ function exportJSON (artboard, filepath) {
   var artboardName = artboard.name;
   var jsonObj = { layers: layerArray };
   var file = NSString.stringWithString(JSON.stringify(jsonObj, null, '\t'));
+  console.log('JSON exported to ' + filepath + artboardName + '.json');
   file.writeToFile_atomically_encoding_error(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
-  // [file writeToFile:filePath+'projects.json' atomically:true encoding:NSUTF8StringEncoding error:null];
   return ret;
 }
 

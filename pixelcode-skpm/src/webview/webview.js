@@ -1,103 +1,7 @@
-import WebUI from 'sketch-module-web-view';
+import globals from '../globals';
 import {MochaJSDelegate} from './MochaJSDelegate';
 
-export function createWebUI(context, application, name, html, width, height) {
-  var options = {
-    identifier: name, // to reuse the UI
-    x: 0,
-    y: 0,
-    width: width,
-    height: height,
-    background: NSColor.whiteColor(),
-    blurredBackground: false,
-    onlyShowCloseButton: false,
-    title: name,
-    hideTitleBar: false,
-    shouldKeepAround: false,
-    show: true,
-    styleMask: NSTitledWindowMask | NSClosableWindowMask,
-    resizable: false,
-    frameLoadDelegate: {
-      'webView:didChangeLocationWithinPageForFrame:': function (webView, webFrame) {
-        var windowObject = webView.windowScriptObject();
-        var locationHash = windowObject.evaluateWebScript('window.location.hash');
-        //The hash object exposes commands and parameters
-        //In example, if you send updateHash('add','artboardName','Mark')
-        //You’ll be able to use hash.artboardName to return 'Mark'
-        var hash = parseHash(locationHash);
-        console.log(hash);
-        if (hash.hasOwnProperty('token')) {
-          var token = hash['token'];
-          application.setSettingForKey('token', token);
-        } else if (hash.hasOwnProperty('projectHash')) {
-          var projectHash = hash['projectHash'];
-        }
-      }
-    },
-    uiDelegate: {}, // https://developer.apple.com/reference/webkit/webuidelegate?language=objc
-    onPanelClose: function () {
-      context.document.showMessage('Deteced WINDOW CLOSE');
-      console.log('detected close');
-      return true;
-      // Stuff
-      // return `false` to prevent closing the panel
-    }
-  };
-
-  // HTML path is relative to Contents/Resources directory
-  var webUI = new WebUI(context, require('./html/' + html), options);
-}
-
-// export function createWebview(name, path, width, height) {
-//   var webViewWindow = NSPanel.alloc().init();
-//   webViewWindow.setFrame_display(NSMakeRect(0, 0, width, height), true);
-//   webViewWindow.setStyleMask(NSTitledWindowMask | NSClosableWindowMask);
-//
-//   //Uncomment the following line to define the app bar color with an NSColor
-//   //webViewWindow.setBackgroundColor(NSColor.whiteColor());
-//   webViewWindow.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
-//   webViewWindow.standardWindowButton(NSWindowZoomButton).setHidden(true);
-//   webViewWindow.setTitle(name);
-//   webViewWindow.setTitlebarAppearsTransparent(true);
-//   webViewWindow.becomeKeyWindow();
-//   webViewWindow.setLevel(NSFloatingWindowLevel);
-//   COScript.currentCOScript().setShouldKeepAround_(true);
-//
-//   //Add Web View to window
-//   var webView = WebView.alloc().initWithFrame(NSMakeRect(0, 0, width, height - 24));
-//   webView.setAutoresizingMask(NSViewWidthSizable|NSViewHeightSizable);
-//   var windowObject = webView.windowScriptObject();
-//   var delegate = new MochaJSDelegate({
-//
-//     //To get commands from the webView we observe the location hash: if it changes, we do something
-//     'webView:didChangeLocationWithinPageForFrame:' : (function(webView, webFrame) {
-//       var locationHash = windowObject.evaluateWebScript('window.location.hash');
-//       //The hash object exposes commands and parameters
-//       //In example, if you send updateHash('add','artboardName','Mark')
-//       //You’ll be able to use hash.artboardName to return 'Mark'
-//       var hash = parseHash(locationHash);
-//       log(hash);
-//       //We parse the location hash and check for the command we are sending from the UI
-//       //If the command exist we run the following code
-//       webViewWindow.close();
-//      })
-//   })
-//
-//   webView.setFrameLoadDelegate_(delegate.getClassInstance());
-//   webView.setMainFrameURL_(NSURL.fileURLWithPath(path));
-//   webViewWindow.contentView().addSubview(webView);
-//   webViewWindow.center();
-//   webViewWindow.makeKeyAndOrderFront(nil);
-//   // Define the close window behaviour on the standard red traffic light button
-//   var closeButton = webViewWindow.standardWindowButton(NSWindowCloseButton);
-//   closeButton.setCOSJSTargetFunction(function(sender) {
-//     COScript.currentCOScript().setShouldKeepAround(false);
-//     webViewWindow.close();
-//   });
-//   closeButton.setAction('callAction:');
-// }
-
-export function createWebViewChangeLocationDelegate(application, context, window_, webView, token) {
+export function createWebViewChangeLocationDelegate(application, context, window_, webView, info) {
   /**
    * Create a Delegate class and register it
    */
@@ -129,7 +33,7 @@ export function createWebViewChangeLocationDelegate(application, context, window
         application.setSettingForKey('token', token);
       } else if (hash.hasOwnProperty('projectHash')) {
         var projectHash = hash['projectHash'];
-        uploadToProject(projectHash, token);
+        uploadToProject(context, projectHash, info.token, info.artboards);
         context.document.showMessage('Pixelcode: Uploaded to project!');
         console.log('PROJECT HASH:');
         console.log(projectHash);
@@ -143,22 +47,43 @@ export function createWebViewChangeLocationDelegate(application, context, window
   );
 };
 
-function uploadToProject(projectHash, token) {
-  // /api/project/[projecthash]/upload
-  var url = 'http://0.0.0.0:8000/api/project' + projectHash + '/upload';
-  fetch('http://0.0.0.0:8000/api/project/ +userprojects')
+function uploadFileToProject (context, projectHash, token, filename) {
+  console.log('Uploading file: LMAO ' + filename);
+  // /Users/kevinchan/Library/Application Support/com.bohemiancoding.sketch3/Plugins/pixelcode-skpm/plugin.sketchplugin/Contents
+  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+  var exportsPath = contentsPath + '/Resources/exports/';
+  var fileContents = JSON.stringify(NSString.stringWithContentsOfFile(exportsPath + filename));
+  var options = {
+    method: 'POST',
+    body: fileContents,
+    headers: {
+      'Authorization': 'Token ' + token,
+      'Content-Disposition': 'form-data; filename=' + filename
+    }
+  };
+  var uploadUrl = 'http://0.0.0.0:8000/api/project/' + projectHash + '/upload';
+  fetch(uploadUrl, options)
+    .then(response => response.text())
+    .then(text => console.log('UPLOAD URL RESPONSE TEXT IS: ' + text))
+    .catch(error => console.log('Upload error is: ' + error))
+}
+
+function uploadToProject (context, projectHash, token, artboards) {
+  console.log('Uploading to Project');
+  console.log('Artboards length is: ' + artboards.length);
+  for (var i = 0; i < artboards.length; i++) {
+    var artboard = artboards[i];
+    console.log('artboard: ' + artboard);
+    uploadFileToProject(context, projectHash, token, artboard + '.json');
+    uploadFileToProject(context, projectHash, token, artboard + '.svg');
+    console.log('Uploading artboards .json and .svg: ' + artboard);
+  }
 }
 
 export function createWindow(width, height) {
   var window_ = NSWindow.alloc().init();
   window_.setFrame_display(NSMakeRect(0, 0, width, height), true);
   window_.setStyleMask(NSTitledWindowMask | NSClosableWindowMask);
-  // var window_ = [[NSWindow.alloc()
-  //     initWithContentRect:NSMakeRect(0, 0, width, height)
-  //     styleMask:NSTitledWindowMask | NSClosableWindowMask
-  //     backing:NSBackingStoreBuffered
-  //     defer:false
-  //   ] autorelease];
   window_.center();
   window_.makeKeyAndOrderFront_(window_);
   return window_;
