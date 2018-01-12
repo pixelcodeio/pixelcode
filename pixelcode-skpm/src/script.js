@@ -40,13 +40,22 @@ function onRun (context) {
         artboards.push(layer.name);
         var output = exportJSON(layer, exportsPath);
 
-        var options = {
+        var svgOptions = {
           'scales': '1',
           'formats': 'svg',
           'overwriting': 'true',
           'output': exportsPath
         };
-        layer.export(options);
+        layer.export(svgOptions);
+
+        var pngOptions = {
+          'scales': '3',
+          'formats': 'png',
+          'overwriting': 'true',
+          'output': exportsPath
+        };
+        layer.export(pngOptions);
+
         layer.iterate(function (currentLayer) {
           renameLayers(currentLayer, output['originalNames']);
         });
@@ -113,15 +122,7 @@ function exportJSON (artboard, filepath) {
   var ret = { 'layerNames': [], 'dictList': [], 'originalNames': {} };
 
   artboard.iterate(function (layer) {
-    if (layer.isImage) {
-      var options = {
-        'scales': '1',
-        'formats': 'png',
-        'overwriting': 'true',
-        'output': filepath
-      };
-      layer.export(options);
-    }
+    exportImages(layer, filepath);
 
     var output = checkFormatting(layer, ret['layerNames'], ret['originalNames']);
     ret = output;
@@ -138,6 +139,22 @@ function exportJSON (artboard, filepath) {
   console.log('JSON exported to ' + filepath + artboardName + '.json');
   file.writeToFile_atomically_encoding_error(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
   return ret;
+}
+
+function exportImages (layer, filepath) {
+  var options = {
+    'scales': '1',
+    'formats': 'png',
+    'overwriting': 'true',
+    'output': filepath
+  };
+  if (layer.isImage) {
+    layer.export(options);
+  } else if (layer.isGroup) {
+    layer.iterate(function (sublayer) {
+      exportImages(sublayer, filepath);
+    });
+  }
 }
 
 // Account for sublayers in checking formatting
