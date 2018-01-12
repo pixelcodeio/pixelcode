@@ -44,7 +44,6 @@ function onRun (context) {
           'scales': '1',
           'formats': 'svg',
           'overwriting': 'true',
-          //'output': filepath
           'output': exportsPath
         };
         layer.export(options);
@@ -58,7 +57,6 @@ function onRun (context) {
       }
     });
     // Create artboards.json
-    // createArtboardsJSON(artboards, webviewPath);
     var window_ = createWindow(560, 496);
     var webview = createWebview(context, window_, webviewPath + 'html/export.html', 560, 472);
     var info = {token: token, artboards: artboards};
@@ -66,10 +64,6 @@ function onRun (context) {
     NSApp.run();
   }
 }
-
-// function createArtboardsTXT (artboards, webviewPath) {
-//   fs.writeFile(webviewPath + '')
-// }
 
 function updateProjects (context) {
   var sketch = context.api();
