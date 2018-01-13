@@ -1,6 +1,5 @@
 import globals from './globals';
-import {createWebUI, createWebview, createWebViewChangeLocationDelegate, createWindow} from './webview/webview';
-import WebUI from 'sketch-module-web-view';
+import {createWebview, createWebViewChangeLocationDelegate, createWindow} from './webview/webview';
 
 function onRun (context) {
   var sketch = context.api();
@@ -78,7 +77,6 @@ function updateProjects (context) {
   var sketch = context.api();
   var application = new sketch.Application(context);
   var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
-  var webviewPath = globals.webviewPath;
   var token = application.settingForKey('token');
 
   if (token == null) {
@@ -88,7 +86,7 @@ function updateProjects (context) {
 
   var options = {'method': 'GET', headers: {'Authorization': 'Token ' + token}};
   console.log('Token is: ' + token);
-  fetch('http://0.0.0.0:8000/api/csrf/userprojects', options)
+  fetch(globals.userProjectsRoute, options)
     .then(response => response.text())
     .then(text => {
       var responseJSON = JSON.parse(text);
@@ -229,19 +227,6 @@ function arrayContains (needle, arrhaystack) {
 
 function lowerCaseFirstChar (string) {
   return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
-// function getProjects (token) {
-//   var headers = {'Authorization': 'Token ' + token};
-//   var dataStr = request('http://192.168.1.11:8000/api/userprojects', headers, 'GET');
-//   return dataStr;
-// }
-
-function createProjectsJSON (projects) {
-  var filePath = '/Users/kevinchan/Documents/pixelcode/plugin/pixelcode.sketchplugin/Contents/Sketch/webview/';
-  var file = NSString.stringWithString(JSON.stringify(projects, null, '\t'));
-  // [file writeToFile:filePath+'projects.json' atomically:true encoding:NSUTF8StringEncoding error:null];
-  file.writeToFile_atomically_encoding_error(filePath + 'projects.json', true, NSUTF8StringEncoding, null);
 }
 
 export default onRun;
