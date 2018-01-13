@@ -54,16 +54,11 @@ export function uploadArtboardToProject (projectHash, exportsPath, token, artboa
   var jsonContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.json'));
   var svgContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.svg'));
   // var pngContents = NSString.stringWithContentsOfFile(exportsPath + artboard + '@3x.png');
-  console.log('making data');
-  //var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '@3x.png', NSDataReadingUncached, null);
+  var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '@3x.png', NSDataReadingUncached, null);
   console.log('made data');
   // var pngContents = String(NSString.stringWithUTF8String(pngData));
-  var pngImage = NSImage.alloc().initWithContentsOfFile(exportsPath + artboard + '@3x.png');
-  console.log('ONE');
-  var pngData = pngImage.PNGRepresentationOfImage();
-  console.log('TWO');
-  var pngContents = pngData.base64EncodedString(0);
-  console.log('made string: HII ' + pngContents);
+  var pngContents = String(pngData.base64EncodedStringWithOptions(0));
+  console.log('made png contents LOL' + pngContents);
   // pngContents.writeToFile_atomically_encoding_error(exportsPath + 'test.png', true, NSUTF8StringEncoding, null);
   // if (filename.includes('.png') && filename.includes('@')) {
   //   var atSymbolIndex = filename.indexOf('@');
@@ -71,7 +66,6 @@ export function uploadArtboardToProject (projectHash, exportsPath, token, artboa
   //   filename = filename.substring(0, atSymbolIndex) + filename.substring(dotIndex);
   // }
   // console.log('Uploading file: ABC ' + filename);
-  console.log('Uploading ARTBOARD to project: ' + artboard);
   var body = JSON.stringify({'asset_name': artboard, 'json': jsonContents, 'svg': svgContents, 'png': pngContents});
   // var form = new FormData();
   // console.log('MADE FORM');

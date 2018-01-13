@@ -50,6 +50,9 @@ $(document).ready(function () {
       window.location.href = '../html/uploadClose.html';
     }
   });
+  $('#cancel').click(function () {
+    window.location.href = '../html/uploadClose.html';
+  });
 });
 
 function updateHash (hash) {
