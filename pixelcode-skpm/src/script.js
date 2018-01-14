@@ -88,8 +88,6 @@ function updateProjects (context) {
     .then(text => {
       var responseJSON = JSON.parse(text);
       if (responseJSON.hasOwnProperty('detail')) {
-        console.log('Error to query csrf userprojects');
-        console.log(text);
         context.document.showMessage('Pixelcode: Failed to get projects.');
       } else {
         application.setSettingForKey('projects', text);
@@ -97,8 +95,6 @@ function updateProjects (context) {
         projectsStr.writeToFile_atomically_encoding_error(resourcesPath + '/projects.json', true, NSUTF8StringEncoding, null);
       }
     }).catch(error => {
-      console.log('Failed to get projects, in catch');
-      console.log(error);
       context.document.showMessage('Pixelcode: Failed to get projects.');
     });
 }
