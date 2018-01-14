@@ -1,0 +1,7 @@
+const globals = {
+    userProjectsRoute: '[URL]/api/csrf/userprojects',
+    uploadToProjectRoute: '[URL]/api/project/'
+};
+
+export default globals;
+

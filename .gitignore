@@ -12,8 +12,37 @@ venv
 # export files 
 app/exports
 
-# global files
+# Original global files
 plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript
 
-# Plugin exports file
+# Original Plugin exports file
 plugin/pixelcode.sketchplugin/Contents/Sketch/exports
+
+### skpm plugin
+
+# build artifacts
+pixelcode-skpm/plugin.sketchplugin/Contents/Sketch
+pixelcode-skpm/plugin.sketchplugin/Contents/Resources/_webpack_resources
+
+# npm
+pixelcode-skpm/node_modules
+# .npm
+pixelcode-skpm/npm-debug.log
+
+# # mac
+pixelcode-skpm/.DS_Store
+
+# # WebStorm
+pixelcode-skpm/.idea
+
+# skpm plugin globals file
+pixelcode-skpm/src/globals.js
+
+# skpm plugin src exports
+pixelcode-skpm/src/exports/
+
+# skpm plugin exports
+pixelcode-skpm/plugin.sketchplugin/Contents/Resources/exports/
+
+# skpm plugin routes file
+pixelcode-skpm/plugin.sketchplugin/Contents/Resources/routes.js

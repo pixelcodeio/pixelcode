@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+        <link rel="stylesheet" href="../css/indexStyle.css">
+  </head>
+  <body>
+        <!-- Login Form -->
+        <div class = "parent container">
+          <a href = "https://pixelcode.io"><img src = "../assets/pixelcodeText.png"></img></a>
+
+          <div class="child">
+            <div class="username">
+              <label>USERNAME</label>
+            </div>
+            <div>
+              <input id="username" type="text" placeholder="johnsmith" name="uname" required>
+            </div>
+          </div>
+
+          <div class="child">
+            <div class = "password">
+              <label>PASSWORD</label>
+            </div>
+            <div>
+              <input id="password" type="password" placeholder="********" name="psw" required>
+            </div>
+          </div>
+
+          <div class="child login-child">
+            <div class = "login">
+              <button id="loginBtn" type="submit">Log In</button>
+            </div>
+          </div>
+
+          <div class="child">
+            <p style="color: rgb(146, 145, 153); font-size: 14px; text-align: center;">
+              Don't have an account?<a href="https://pixelcode.io/" style="color: rgb(87, 79, 183); font-weight: 400;">&nbsp;Create a free one!</a>
+          </div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="../js/indexScript.js"></script>
+  </body>
+</html>
