@@ -24,7 +24,6 @@ function loggedIn (response) {
 }
 
 function getToken (username, password, callback) {
-  console.log('Getting token');
   var params = {'username': username, 'password': password};
   var options = {method: 'POST', body: JSON.stringify(params), headers: {'Content-Type': 'application/json'}};
   fetch(getTokenRoute, options)

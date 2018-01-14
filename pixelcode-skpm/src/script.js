@@ -28,7 +28,6 @@ function onRun (context) {
   } else {
     var artboards = [];
     var exportsPath = resourcesPath + '/exports/';
-    console.log('Exports path is: ' + exportsPath);
     layers.iterate(function (layer) {
       if (layer.isArtboard) {
         // Add artboard name to list of artboards
@@ -82,7 +81,6 @@ function updateProjects (context) {
   }
 
   var options = {'method': 'GET', headers: {'Authorization': 'Token ' + token}};
-  console.log('Token is: ' + token);
   fetch(globals.userProjectsRoute, options)
     .then(response => response.text())
     .then(text => {
@@ -127,7 +125,6 @@ function exportJSON (artboard, filepath) {
   var artboardName = artboard.name;
   var jsonObj = { layers: layerArray };
   var file = NSString.stringWithString(JSON.stringify(jsonObj, null, '\t'));
-  console.log('JSON exported to ' + filepath + artboardName + '.json');
   file.writeToFile_atomically_encoding_error(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
   return ret;
 }

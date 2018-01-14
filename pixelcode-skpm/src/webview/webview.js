@@ -21,11 +21,9 @@ export function createWebViewChangeLocationDelegate (application, context, windo
     // The 'listener' - a callback function to fire
     function(webView, webFrame) {
       window_.close();
-      console.log('window closed');
       var locationHash = windowObject.evaluateWebScript('window.location.hash');
       //The hash object exposes commands and parameters
       var hash = parseHash(locationHash);
-      console.log(hash);
       if (hash.hasOwnProperty('token')) {
         var token = hash['token'];
         context.document.showMessage('Pixelcode: Login successful!');
@@ -34,8 +32,6 @@ export function createWebViewChangeLocationDelegate (application, context, windo
         var projectHash = hash['projectHash'];
         uploadToProject(context, projectHash, info.token, info.artboards);
         context.document.showMessage('Pixelcode: Uploaded to project!');
-        console.log('PROJECT HASH:');
-        console.log(projectHash);
       }
     }
   );
@@ -52,9 +48,7 @@ function uploadArtboardToProject (context, projectHash, token, artboard) {
   var jsonContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.json'));
   var svgContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.svg'));
   var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '@3x.png', NSDataReadingUncached, null);
-  console.log('made data');
   var pngContents = String(pngData.base64EncodedStringWithOptions(0));
-  console.log('made png contents LOL' + pngContents);
   var body = JSON.stringify({'asset_name': artboard, 'json': jsonContents, 'svg': svgContents, 'png': pngContents});
   var options = {
     method: 'PUT',
@@ -72,7 +66,6 @@ function uploadArtboardToProject (context, projectHash, token, artboard) {
 }
 
 function uploadToProject (context, projectHash, token, artboards) {
-  console.log('Uploading to Project');
   for (var i = 0; i < artboards.length; i++) {
     var artboard = String(artboards[i]);
     uploadArtboardToProject(context, projectHash, token, artboard);
