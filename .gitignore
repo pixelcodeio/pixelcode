@@ -21,5 +21,8 @@ plugin/pixelcode.sketchplugin/Contents/Sketch/exports
 # skpm plugin global files
 pixelcode-skpm/src/globals.js
 
-# skpm plugin exports
+# skpm plugin src exports
 pixelcode-skpm/src/exports/
+
+# skpm plugin exports
+pixelcode-skpm/plugin.sketchplugin/Contents/Resources/exports/

@@ -1,7 +1,6 @@
 import globals from '../globals';
 import {MochaJSDelegate} from './MochaJSDelegate';
 
-
 export function createWebViewChangeLocationDelegate (application, context, window_, webView, info) {
   /**
    * Create a Delegate class and register it
@@ -21,12 +20,10 @@ export function createWebViewChangeLocationDelegate (application, context, windo
 
     // The 'listener' - a callback function to fire
     function(webView, webFrame) {
-      var locationHash = windowObject.evaluateWebScript('window.location.hash');
-      //The hash object exposes commands and parameters
-      //In example, if you send updateHash('add','artboardName','Mark')
-      //You’ll be able to use hash.artboardName to return 'Mark'
       window_.close();
       console.log('window closed');
+      var locationHash = windowObject.evaluateWebScript('window.location.hash');
+      //The hash object exposes commands and parameters
       var hash = parseHash(locationHash);
       console.log(hash);
       if (hash.hasOwnProperty('token')) {
@@ -49,71 +46,37 @@ export function createWebViewChangeLocationDelegate (application, context, windo
   );
 };
 
-export function uploadArtboardToProject (projectHash, exportsPath, token, artboard) {
-  // /Users/kevinchan/Library/Application Support/com.bohemiancoding.sketch3/Plugins/pixelcode-skpm/plugin.sketchplugin/Contents
+function uploadArtboardToProject (context, projectHash, token, artboard) {
+  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+  var exportsPath = contentsPath + '/Resources/exports/';
   var jsonContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.json'));
   var svgContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.svg'));
-  // var pngContents = NSString.stringWithContentsOfFile(exportsPath + artboard + '@3x.png');
   var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '@3x.png', NSDataReadingUncached, null);
   console.log('made data');
-  // var pngContents = String(NSString.stringWithUTF8String(pngData));
   var pngContents = String(pngData.base64EncodedStringWithOptions(0));
   console.log('made png contents LOL' + pngContents);
-  // pngContents.writeToFile_atomically_encoding_error(exportsPath + 'test.png', true, NSUTF8StringEncoding, null);
-  // if (filename.includes('.png') && filename.includes('@')) {
-  //   var atSymbolIndex = filename.indexOf('@');
-  //   var dotIndex = filename.indexOf('.png');
-  //   filename = filename.substring(0, atSymbolIndex) + filename.substring(dotIndex);
-  // }
-  // console.log('Uploading file: ABC ' + filename);
   var body = JSON.stringify({'asset_name': artboard, 'json': jsonContents, 'svg': svgContents, 'png': pngContents});
-  // var form = new FormData();
-  // console.log('MADE FORM');
-  // form.append('asset_name', artboard);
-  // form.append('json', jsonContents);
-  // form.append('svg', svgContents);
-  // form.append('png', pngContents);
   var options = {
     method: 'PUT',
     body: body,
     headers: {
       'Authorization': 'Token ' + token,
       'Content-Type': 'application/json'
-      // 'Content-Disposition': 'form-data; filename=' + filename
     }
   };
   var uploadUrl = globals.uploadToProjectRoute + projectHash + '/upload';
   fetch(uploadUrl, options)
     .then(response => response.text())
-    .then(text => console.log('UPLOAD URL RESPONSE TEXT IS: ' + text))
-    .catch(error => console.log('Upload error is: ' + error));
+    .then(text => context.document.showMessage('Pixelcode: Uploaded to Project!'))
+    .catch(error => context.document.showMessage('Pixelcode: Failed to upload to project.'));
 }
 
-export function uploadToProject (context, projectHash, token, artboards) {
+function uploadToProject (context, projectHash, token, artboards) {
   console.log('Uploading to Project');
-  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
-  var exportsPath = contentsPath + '/Resources/exports/';
   for (var i = 0; i < artboards.length; i++) {
     var artboard = String(artboards[i]);
-    uploadArtboardToProject(projectHash, exportsPath, token, artboard);
+    uploadArtboardToProject(context, projectHash, token, artboard);
   }
-
-  // for (var i = 0; i < artboards.length; i++) {
-  //   var artboard = artboards[i];
-  //   console.log('artboard: ' + artboard);
-  //
-  //   uploadFileToProject(projectHash, exportsPath, token, artboard + '.json');
-  //   uploadFileToProject(projectHash, exportsPath, token, artboard + '.svg');
-  //   uploadFileToProject(projectHash, exportsPath, token, artboard + '@3x.png');
-  //   console.log('Uploading artboards .json, .svg, and .png: ' + artboard);
-  // }
-
-  // var files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(exportsPath, null);
-  // for (var i = 0; i < files.length; i++) {
-  //   var filename = files[i];
-  //   console.log('Uploading ' + filename);
-  //   uploadFileToProject(projectHash, exportsPath, token, filename);
-  // }
 }
 
 export function createWindow(width, height) {

@@ -5,17 +5,15 @@ function onRun (context) {
   var sketch = context.api();
   var app = NSApplication.sharedApplication();
   var layers = sketch.selectedDocument.selectedLayers;
-  //var filepath = '/Users/Young/Documents/pixelcode/app/tests/';
-  var filepath = globals.filepath;
-  var webviewPath = globals.webviewPath;
+  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+  var resourcesPath = contentsPath + '/Resources';
   var application = new sketch.Application(context);
 
-  // application.setSettingForKey('token', null);
   var token = application.settingForKey('token');
   if (token == null) {
-    // createWebview('Log In', webviewPath + 'html/index.html', 520, 496);
+    // Open Login window
     var window_ = createWindow(520, 496);
-    var webview = createWebview(context, window_, webviewPath + 'html/index.html', 520, 496);
+    var webview = createWebview(context, window_, resourcesPath + '/html/index.html', 520, 496);
     createWebViewChangeLocationDelegate(application, context, window_, webview, null);
     NSApp.run();
     return;
@@ -25,13 +23,11 @@ function onRun (context) {
     updateProjects(context);
   }
 
-  context.document.showMessage('About to export');
   if (layers.isEmpty) {
     context.document.showMessage('PixelCode: No artboard selected.');
   } else {
     var artboards = [];
-    var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
-    var exportsPath = contentsPath + '/Resources/exports/';
+    var exportsPath = resourcesPath + '/exports/';
     console.log('Exports path is: ' + exportsPath);
     layers.iterate(function (layer) {
       if (layer.isArtboard) {
@@ -58,15 +54,15 @@ function onRun (context) {
         layer.iterate(function (currentLayer) {
           renameLayers(currentLayer, output['originalNames']);
         });
-        context.document.showMessage('Pixelcode: Export finished!');
       } else {
         context.document.showMessage('Pixelcode: No artboard selected.');
         return;
       }
     });
-    // Create artboards.json
+
+    // Open Export to Projects window
     var window_ = createWindow(560, 496);
-    var webview = createWebview(context, window_, webviewPath + 'html/export.html', 560, 472);
+    var webview = createWebview(context, window_, resourcesPath + '/html/export.html', 560, 472);
     var info = {token: token, artboards: artboards};
     createWebViewChangeLocationDelegate(application, context, window_, webview, info);
     NSApp.run();
@@ -77,6 +73,7 @@ function updateProjects (context) {
   var sketch = context.api();
   var application = new sketch.Application(context);
   var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+  var resourcesPath = contentsPath + '/Resources';
   var token = application.settingForKey('token');
 
   if (token == null) {
@@ -97,7 +94,7 @@ function updateProjects (context) {
       } else {
         application.setSettingForKey('projects', text);
         var projectsStr = NSString.stringWithString(text);
-        projectsStr.writeToFile_atomically_encoding_error(contentsPath + '/Resources/projects.json', true, NSUTF8StringEncoding, null);
+        projectsStr.writeToFile_atomically_encoding_error(resourcesPath + '/projects.json', true, NSUTF8StringEncoding, null);
       }
     }).catch(error => {
       console.log('Failed to get projects, in catch');

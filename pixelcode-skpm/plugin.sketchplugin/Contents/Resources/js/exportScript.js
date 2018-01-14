@@ -1,7 +1,5 @@
 var selectedIndex = -1;
 var projects = {};
-var artboards = [];
-var zip = null;
 
 $(document).ready(function () {
   fetch('../projects.json', {'method': 'GET'})
@@ -16,42 +14,18 @@ $(document).ready(function () {
       $('.project').dblclick(function () {
         projectClicked($(this));
         updateHash('upload&projectHash=' + projects[selectedIndex].hashed);
-        window.location.href = '../html/uploadClose.html';
         console.log(projects[selectedIndex]);
       });
     });
-  // fetch('../artboards.txt', {'method': 'GET'})
-  //   .then(response => response.text())
-  //   .then(text => {
-  //     console.log(text);
-  //     artboards = text.split(',');
-  //     zip = new JSZip();
-  //     artboards.forEach(function (artboard) {
-  //       var folder = artboard + '/';
-  //       zip.folder(folder);
-  //       var svg = artboard + '.svg';
-  //       var json = artboard + '.json';
-  //       fetch('../../exports/' + artboard + '.svg', {'method': 'GET'})
-  //         .then(response => response.text())
-  //         .then(text => zip.file(folder + svg, text));
-  //       fetch('../../exports/' + artboard + '.json', {'method': 'GET'})
-  //         .then(response => response.text())
-  //         .then(text => zip.file(folder + json, text));
-  //     });
-  //     console.log('ZIP:');
-  //     console.log(zip);
-  //   });
   $('#export').click(function () {
     if (selectedIndex > -1) {
       console.log(projects[selectedIndex]);
       console.log('Exporting');
-      // uploadProject();
       updateHash('upload&projectHash=' + projects[selectedIndex].hashed);
-      window.location.href = '../html/uploadClose.html';
     }
   });
   $('#cancel').click(function () {
-    window.location.href = '../html/uploadClose.html';
+    updateHash('cancel');
   });
 });
 
