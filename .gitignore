@@ -35,7 +35,7 @@ pixelcode-skpm/.DS_Store
 # # WebStorm
 pixelcode-skpm/.idea
 
-# skpm plugin global files
+# skpm plugin globals file
 pixelcode-skpm/src/globals.js
 
 # skpm plugin src exports
@@ -43,3 +43,6 @@ pixelcode-skpm/src/exports/
 
 # skpm plugin exports
 pixelcode-skpm/plugin.sketchplugin/Contents/Resources/exports/
+
+# skpm plugin routes file
+pixelcode-skpm/plugin.sketchplugin/Contents/Resources/routes.js

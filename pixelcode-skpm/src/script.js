@@ -9,6 +9,7 @@ function onRun (context) {
   var resourcesPath = contentsPath + '/Resources';
   var application = new sketch.Application(context);
 
+  application.setSettingForKey('token', null);
   var token = application.settingForKey('token');
   if (token == null) {
     // Open Login window

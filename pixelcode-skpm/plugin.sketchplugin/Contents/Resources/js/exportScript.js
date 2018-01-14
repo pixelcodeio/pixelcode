@@ -5,7 +5,6 @@ $(document).ready(function () {
   fetch('../projects.json', {'method': 'GET'})
     .then(response => response.json())
     .then(json => {
-      console.log("Projects JSON is: " + json);
       projects = json;
       displayProjects(json);
       $('.project').click(function () {
@@ -14,13 +13,10 @@ $(document).ready(function () {
       $('.project').dblclick(function () {
         projectClicked($(this));
         updateHash('upload&projectHash=' + projects[selectedIndex].hashed);
-        console.log(projects[selectedIndex]);
       });
     });
   $('#export').click(function () {
     if (selectedIndex > -1) {
-      console.log(projects[selectedIndex]);
-      console.log('Exporting');
       updateHash('upload&projectHash=' + projects[selectedIndex].hashed);
     }
   });
@@ -42,11 +38,9 @@ function projectClicked (project) {
   $('.project').removeClass('active');
   project.addClass('active');
   selectedIndex = project.attr('index');
-  console.log(selectedIndex);
 }
 
 function displayProjects (projects) {
-  console.log(projects);
   var div = document.createElement('div');
   var divHTML = '';
   for (var i = 0; i < projects.length; i++) {
