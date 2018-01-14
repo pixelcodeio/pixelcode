@@ -33,13 +33,25 @@ def word_in_str(word, string):
   """
   return word in string or uppercase(word) in string
 
-def create_uicolor(color):
+def create_uicolor(color, rgba=False):
   """
+  Args:
+    rgba (bool): whether color is a dictionary with keys r, g, b, a
+
   Returns: The UIColor of [color].
   """
-  r, g, b, o = color
+  if rgba:
+    r = color['r']
+    g = color['g']
+    b = color['b']
+    a = color['a']
+  else:
+    r = int(float(color[0]))
+    g = int(float(color[1]))
+    b = int(float(color[2]))
+    a = float(color[3])
   return ("UIColor(red: {}/255.0, green: {}/255.0, blue: {}/255.0, alpha"
-          ": {})").format(r, g, b, o)
+          ": {})").format(r, g, b, a)
 
 def set_bg(id_, color):
   """

@@ -1,4 +1,4 @@
-from interpreter_h import *
+from pixelcode.plugin.interpreter_h import *
 
 class Interpreter(object):
   """
@@ -35,7 +35,7 @@ class Interpreter(object):
     self.file_name = view_controller
     self.swift[view_controller] = C
     self.gen_file(False)
-    self.swift = gen_global_colors(self.globals["info"]["fill"], self.swift)
+    self.swift = gen_global_colors(self.globals["info"]["colors"], self.swift)
 
   def gen_file(self, in_v):
     """

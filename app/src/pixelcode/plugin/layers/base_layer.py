@@ -1,4 +1,4 @@
-import utils
+import pixelcode.plugin.utils as utils
 
 class BaseLayer(object):
   """
@@ -75,6 +75,7 @@ class BaseLayer(object):
         "cell_name",
         "cells",
         "char-spacing",
+        "children",
         "components",
         "content", # content of a SliderView
         "contents", # text of a label
@@ -96,9 +97,11 @@ class BaseLayer(object):
         "items",
         "left-inset",
         "line-spacing",
+        "name",
         "navbar-items",
         "opacity",
         "options",
+        "originalName",
         "path",
         "progress_fill",
         "rect",

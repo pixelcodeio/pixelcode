@@ -1,4 +1,4 @@
-import utils
+import pixelcode.plugin.utils as utils
 
 class BaseComponent(object):
   """

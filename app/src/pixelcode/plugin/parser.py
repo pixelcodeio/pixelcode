@@ -1,12 +1,13 @@
 # library imports
 import json
+import requests
 from operator import itemgetter
 from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
-from layers._all import *
-from parser_h import *
-import utils
+from pixelcode.plugin.layers._all import *
+from pixelcode.plugin.parser_h import *
+import pixelcode.plugin.utils as utils
 
 class Parser(object):
   """
@@ -22,12 +23,11 @@ class Parser(object):
       - artboard (str)
       - filters: (dict) contains information about shadows
       - info: dictionary with keys (used for style-guide)
-        - fill (list)
-        - font-family (list)
-        - font-size(list)
+        - colors (list of dicts)
+        - text-styles (list of dicts)
     is_ios: whether the code being generated is iOS code
   """
-  def __init__(self, path, artboard, is_ios, debug=False):
+  def __init__(self, path, artboard, is_ios, debug):
     """
     Returns: Parser object for parsing the file located at filepath
     """
@@ -55,14 +55,16 @@ class Parser(object):
       f.close()
     else:
       # initializes self.json
-      f = request.urlopen(self.path + self.artboard + ".json")
-      self.json = json.loads(f.read())
+      f = requests.get(self.path + self.artboard + ".json")
+      self.json = json.loads(f.content)
 
       # parses svg and sets instance variables appropriately
-      f = request.urlopen(self.path + self.artboard + ".svg")
-      soup = BeautifulSoup(f, "lxml")
-      f.close()
+      f = requests.get(self.path + self.artboard + ".svg")
+      soup = BeautifulSoup(f.content, "lxml")
+<<<<<<< HEAD
 
+=======
+>>>>>>> c73df4dcc6867b2c20a2e291702a89942d0a9675
 
     self.globals = self.parse_globals(soup.svg)
     self.scale = float(self.globals["width"]) / 375
@@ -97,8 +99,12 @@ class Parser(object):
     is_long_artboard = height < float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]
-    fill = [bg_color, (0, 0, 0, 0)]
-    info = {'fill': fill, 'font-family': [], 'font-size': []}
+    fill = [{'r': int(float(bg_color[0])),
+             'g': int(float(bg_color[1])),
+             'b': int(float(bg_color[2])),
+             'a': float(bg_color[3])},
+            {'r': 0, 'g': 0, 'b': 0, 'a': 0.0}]
+    info = {'colors': fill, 'text-styles': []}
     svg_filters = svg.find_all("filter")
     filters = {}
     for f in svg_filters:
