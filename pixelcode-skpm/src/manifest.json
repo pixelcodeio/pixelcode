@@ -9,7 +9,7 @@
     }
   ],
   "menu" : {
-    "title" : "pixelcode-skpm",
+    "title" : "Pixelcode-skpm",
     "items" : [
       "export_swift_identifier"
     ]
