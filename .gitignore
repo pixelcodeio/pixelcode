@@ -12,8 +12,14 @@ venv
 # export files 
 app/exports
 
-# global files
+# Original global files
 plugin/pixelcode.sketchplugin/Contents/Sketch/globals.cocoascript
 
-# Plugin exports file
+# Original Plugin exports file
 plugin/pixelcode.sketchplugin/Contents/Sketch/exports
+
+# skpm plugin global files
+pixelcode-skpm/src/globals.js
+
+# skpm plugin exports
+pixelcode-skpm/src/exports/
