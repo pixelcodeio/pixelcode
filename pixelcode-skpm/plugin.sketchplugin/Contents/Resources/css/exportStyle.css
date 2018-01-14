@@ -7,21 +7,18 @@ html, body {
   font-family: 'Roboto', sans-serif;
 }
 
-header {
+footer {
   display: flex;
-  flex-direction: column;
-  border-bottom-width:1px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+header {
   border-bottom-color: #DBDBDB;
   border-bottom-style: solid;
-}
-
-#headline {
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
-
-.hidden {
-  opacity: 0;
+  border-bottom-width:1px;
+  display: flex;
+  flex-direction: column;
 }
 
 header label {
@@ -29,30 +26,58 @@ header label {
   text-align: center;
 }
 
-.wrapper {
-  height: 100%;
+img {
+  max-width: 99px;
+}
+
+.active {
+  background: #FAFAFA;
+}
+
+.button {
+  border-radius: 4px;
+  border: none;
+  font-size: 13px;
+  height: 30px;
+  margin-left: 15px;
+  outline: none;
+  width: 125px;
+}
+
+.button:active {
+  border-style: none;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.image {
+  border-color: black;
+  border-style: solid;
+  border-width: 0.5px;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+  margin: 10px;
+  width: 100px;
+}
+
+.info {
   display: flex;
   flex-direction: column;
 }
 
-.projects {
-  flex: 1;
-  overflow: auto;
-}
-
-.image {
-  display: flex;
-  width: 100px;
-  height: 100px;
-  justify-content: center;
-  border-color: black;
-  border-style: solid;
-  border-width: 0.5px;
-  margin: 10px;
-}
-
-img {
-  max-width: 99px;
+.name {
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 36px;
 }
 
 .project {
@@ -65,19 +90,18 @@ img {
   background: #F4F4F4;
 }
 
-.active {
-  background: #FAFAFA;
+.projects {
+  flex: 1;
+  overflow: auto;
 }
 
-.info {
+.replaceScreens {
   display: flex;
-  flex-direction: column;
-}
-
-.name {
-  margin-top: 36px;
-  margin-bottom: 5px;
-  font-size: 14px;
+  flex-direction: row;
+  font-size: 13px;
+  magrgin-bottom: 16px;
+  margin-top: 8px;
+  padding:10px;
 }
 
 .timestamp {
@@ -85,48 +109,10 @@ img {
   font-size: 12px;
 }
 
-footer {
+.wrapper {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.replaceScreens {
-  display: flex;
-  flex-direction: row;
-  margin-top: 8px;
-  magrgin-bottom: 16px;
-  font-size: 13px;
-  padding:10px;
-}
-
-#replace {
-  margin-top:2px;
-  margin-left: 4px;
-}
-
-.buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.button {
-  width: 125px;
-  height: 30px;
-  margin-left: 15px;
-  border: none;
-  border-radius: 4px;
-  outline: none;
-  font-size: 13px;
-}
-
-.button:active {
-  border-style: none;
-}
-
-#cancel, #export {
-  margin: 12px;
+  flex-direction: column;
+  height: 100%;
 }
 
 #cancel {
@@ -134,7 +120,21 @@ footer {
   background: #EBEBEB;
 }
 
+#cancel, #export {
+  margin: 12px;
+}
+
 #export {
   background: #574FB7;
   color: #847FCA;
+}
+
+#headline {
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+#replace {
+  margin-left: 4px;
+  margin-top:2px;
 }

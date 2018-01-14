@@ -1,72 +1,39 @@
 html {
-  width: 100%;
-  height: 100%;
   background: white;
   font-family: 'Roboto', sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
 }
 
 h1 {
-    font-size: 28px;
-    font-weight: 300;
-    line-height: 1.14;
-    letter-spacing: -0.8px;
-    color: #222222;
-    margin: 0 auto;
-    margin-top: 30px;
-    margin-bottom: 64px;
-    text-align: center;
-}
-
-.parent a {
-  max-width: 100px;
+  color: #222222;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.8px;
+  line-height: 1.14;
+  margin-bottom: 64px;
+  margin-top: 30px;
   margin: 0 auto;
-  margin-top: 58px;
-  margin-bottom: 58px;
+  text-align: center;
 }
 
 img {
   max-width: 100%;
 }
 
-.parent {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 336px;
-  margin: 0 auto;
-}
-
-.child {
-  height: 58px;
-  margin-bottom: 24px;
-}
-
-.login-child {
-  height: 44px;
-}
-
-label {
-  height: 14px;
-  font-size: 10px;
-  color: #929199;
-  margin-bottom: 4px;
-}
-
 input {
-  width: 336px;
-  height: 40px;
+  border-color: #929199;
   border-radius: 6px;
   border-style: solid;
   border-width: 1px;
-  border-color: #929199;
+  height: 40px;
   outline: none;
   padding-left: 10px;
-}
-
-.login {
-  width: 172px;
-  height: 48px;
-  margin: 0 auto;
+  width: 336px;
 }
 
 input:focus {
@@ -76,18 +43,51 @@ input:focus {
   }
 }
 
-a {
-  text-decoration: none;
+label {
+  color: #929199;
+  font-size: 10px;
+  height: 14px;
+  margin-bottom: 4px;
+}
+
+.child {
+  height: 58px;
+  margin-bottom: 24px;
+}
+
+.login {
+  height: 48px;
+  margin: 0 auto;
+  width: 172px;
+}
+
+.login-child {
+  height: 44px;
+}
+
+.parent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  width: 336px;
+}
+
+.parent a {
+  margin-bottom: 58px;
+  margin-top: 58px;
+  margin: 0 auto;
+  max-width: 100px;
 }
 
 #loginBtn {
-  width: 100%;
-  height: 44px;
+  background: #574FB7;
   border-radius: 6px;
   color: white;
-  background: #574FB7;
   font-size: 14px;
+  height: 44px;
   outline:none;
+  width: 100%;
 }
 
 #loginBtn:active {
