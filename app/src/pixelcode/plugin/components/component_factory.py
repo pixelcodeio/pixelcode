@@ -140,9 +140,9 @@ class ComponentFactory(object):
          "frame.height*{}))\n"
         ).format(id_, width, height)
 
-    if self.env["is_individual"]:
-      C = C.replace(width, component["rwidth"])
-      C = C.replace(height, component["rheight"])
+    if self.env["is_partial"]:
+      C = C.replace("frame.width*{}".format(width), str(component["rwidth"]))
+      C = C.replace("frame.height*{}".format(height), str(component["rheight"]))
     else:
       if hor_id:
         opp_dir = self.get_opp_dir(hor_dir)

@@ -90,9 +90,9 @@ class Parser(object):
     rwidth = float(svg["width"][:-2])
     rheight = float(svg["height"][:-2])
     # Get proper height based on width
-    height = {320: 568, 375: 667, 414: 736}.get(width)
+    height = {320: 568, 375: 667, 414: 736}.get(rwidth)
     if height is None:
-      raise Exception("Parser: Artboard has invalid width size.")
+      height = rheight
     is_long_artboard = height < float(svg["height"][:-2])
     pagename = svg.g["id"]
     artboard = svg.g.g["id"]

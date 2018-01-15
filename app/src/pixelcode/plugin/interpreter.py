@@ -28,18 +28,19 @@ class Interpreter(object):
     # Generate header of view controller file
     self.info["components"] = components
     artboard = utils.uppercase(self.globals["artboard"])
-    is_individual = (len(artboard) > 0 and artboard[0] == '#')
-    if is_individual:
-      artboard = utils.uppercase(artboard[1:])
     view_controller = "{}ViewController".format(artboard)
     C = gen_viewcontroller_header(view_controller, self.info, True)
     C += utils.set_bg("view", self.globals["background_color"])
 
     self.file_name = view_controller
     self.swift[view_controller] = C
-    env = {"is_individual": is_individual, "in_view": False}
-    self.gen_file(env)
+    self.gen_file({"in_view": False, "is_partial": False})
     self.swift = gen_global_colors(self.globals["info"]["colors"], self.swift)
+
+  def gen_partial(self, components):
+    env = {"in_view": False, "is_partial": True}
+    swift, tc_elem = self.gen_comps(self.info["components"], env)
+    return swift
 
   def gen_file(self, env):
     """
@@ -51,7 +52,7 @@ class Interpreter(object):
     self.info["methods"] = {}
 
     if not tc_elem:
-      if in_v:
+      if env["in_view"]:
         self.swift[self.file_name] += "{}\n}}".format(utils.req_init())
       else:
         self.swift[self.file_name] += "}"
