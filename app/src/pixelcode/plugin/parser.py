@@ -172,8 +172,6 @@ class Parser(object):
           elem.name = "collectionview"
         elif utils.word_in_str("header", elem["id"]):
           elem.name = "header"
-        elif utils.word_in_str("tableView", elem["id"]):
-          elem.name = "tableview"
         elif utils.word_in_str("section", elem["id"]):
           elem.name = "section"
         elif utils.word_in_str("sliderContent", elem["id"]):
@@ -200,6 +198,8 @@ class Parser(object):
           elem.name = "switch"
         elif utils.word_in_str("tabBar", elem["id"]):
           elem.name = "tabbar"
+        elif utils.word_in_str("tableView", elem["id"]):
+          elem.name = "tableview"
         elif utils.word_in_str("textField", elem["id"]):
           elem.name = "textfield"
         elif utils.word_in_str("view", elem["id"]):
