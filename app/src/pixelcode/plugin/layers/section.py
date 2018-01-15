@@ -16,6 +16,7 @@ class Section(BaseLayer):
         else:
           header = child
       elif child["type"] == "Cell":
+        child = self.check_cell_for_hairline(child)
         cells.append(child)
         index = utils.index_of(child["id"], "cell")
         cell_name = utils.uppercase(child["id"][:index + 4])
@@ -40,3 +41,17 @@ class Section(BaseLayer):
     elem["header"] = header
     elem["rect"] = rect
     return super().parse_elem(elem)
+
+  def check_cell_for_hairline(self, cell):
+    """
+    Returns (dict): adjusts cell dictionary if hairline exists in the cell
+    """
+    hairline_index = -1
+    for index, comp in enumerate(cell["components"]):
+      if utils.word_in_str("hairline", comp["id"]):
+        hairline_index = index
+        break
+    if hairline_index > -1:
+      cell["hairline"] = cell["components"][hairline_index]
+      del cell["components"][hairline_index]
+    return cell
