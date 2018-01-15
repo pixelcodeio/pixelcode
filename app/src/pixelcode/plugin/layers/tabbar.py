@@ -11,7 +11,7 @@ class TabBar(BaseLayer):
     rect = None
 
     for child in elem["children"]:
-      if utils.word_in_str("tabButton", child["id"]):
+      if utils.word_in_str("tab", child["id"]):
         child["active"] = utils.word_in_str("active", child["id"])
         tabbar_buttons.append(child)
       elif utils.word_in_str('bound', child["id"]):
