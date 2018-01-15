@@ -69,8 +69,8 @@ class Parser(object):
     artboard = inherit_from(page, artboard, init=True)
 
     # init rwidth and rheight for inheritance
-    artboard["rwidth"] = self.globals["width"]
-    artboard["rheight"] = self.globals["height"]
+    artboard["rwidth"] = self.globals["rwidth"]
+    artboard["rheight"] = self.globals["rheight"]
 
     self.elements = self.parse_elements(
         [c for c in artboard.children],
@@ -87,7 +87,8 @@ class Parser(object):
       bg_color = utils.convert_hex_to_rgb(bg_hex) + (1.0,)
     else:
       bg_color = (255, 255, 255, 1.0)
-    width = float(svg["width"][:-2])
+    rwidth = float(svg["width"][:-2])
+    rheight = float(svg["height"][:-2])
     # Get proper height based on width
     height = {320: 568, 375: 667, 414: 736}.get(width)
     if height is None:
@@ -126,7 +127,9 @@ class Parser(object):
             "info": info,
             "is_long_artboard": is_long_artboard,
             "pagename": pagename,
-            "width": width}
+            "rheight": rheight,
+            "rwidth": rwidth,
+            "width": rwidth}
 
   def parse_elements(self, children, parent, init=False):
     """
