@@ -8,6 +8,13 @@
 
 `assets/`: Contains assets for running tests
 
+## Plugin Setup
+
+1. Run `npm install` in the `pixelcode-skpm` directory. 
+2. Make a `globals.js` file in the `pixelcode-skpm/src/` directory (look at `globals.js.template`).
+3. Make a `routes.js` file in the `pixelcode-skpm/plugin.sketchplugin/Contents/Resources` directory (look at `routes.js.template`).
+4. Run `sh update.sh` in the `pixelcode-skpm` directory 
+
 ## Running Tests with Plugin
 
 To install the plugin, run `update` in the `plugin/` directory.
