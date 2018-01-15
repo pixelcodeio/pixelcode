@@ -6,12 +6,24 @@
       "name" : "Export to Swift",
       "identifier" : "export_swift_identifier",
       "shortcut": "ctrl e"
+    },
+    {
+      "script" : "./update.js",
+      "name" : "Update Projects",
+      "identifier" : "update_projects_identifier"
+    },
+    {
+      "script" : "./logout.js",
+      "name" : "Log out",
+      "identifier" : "log_out_identifier"
     }
   ],
   "menu" : {
     "title" : "Pixelcode-skpm",
     "items" : [
-      "export_swift_identifier"
+      "export_swift_identifier",
+      "update_projects_identifier",
+      "log_out_identifier"
     ]
   },
   "identifier" : "Pixelcode_Plugin",

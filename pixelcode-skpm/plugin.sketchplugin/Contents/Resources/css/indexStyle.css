@@ -74,9 +74,9 @@ label {
 }
 
 .parent a {
-  margin-bottom: 58px;
-  margin-top: 58px;
   margin: 0 auto;
+  margin-bottom: 56px;
+  margin-top: 56px;
   max-width: 100px;
 }
 
