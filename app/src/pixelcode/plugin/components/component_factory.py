@@ -140,21 +140,25 @@ class ComponentFactory(object):
          "frame.height*{}))\n"
         ).format(id_, width, height)
 
-    if hor_id:
-      opp_dir = self.get_opp_dir(hor_dir)
-      C += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
-           ).format(hor_dir, hor_id, opp_dir, hor_dist)
+    if self.env["is_partial"]:
+      C = C.replace("frame.width*{}".format(width), str(component["rwidth"]))
+      C = C.replace("frame.height*{}".format(height), str(component["rheight"]))
     else:
-      C += ('make.left.equalToSuperview().offset(frame.width*{})\n'
-           ).format(hor_dist)
+      if hor_id:
+        opp_dir = self.get_opp_dir(hor_dir)
+        C += ('make.{}.equalTo({}.snp.{}).offset(frame.width*{})\n'
+             ).format(hor_dir, hor_id, opp_dir, hor_dist)
+      else:
+        C += ('make.left.equalToSuperview().offset(frame.width*{})\n'
+             ).format(hor_dist)
 
-    if vert_id:
-      opp_dir = self.get_opp_dir(vert_dir)
-      C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
-           ).format(vert_dir, vert_id, opp_dir, vert_dist)
-    else:
-      C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
-           ).format(vert_dist)
+      if vert_id:
+        opp_dir = self.get_opp_dir(vert_dir)
+        C += ('make.{}.equalTo({}.snp.{}).offset(frame.height*{})\n'
+             ).format(vert_dir, vert_id, opp_dir, vert_dist)
+      else:
+        C += ('make.top.equalToSuperview().offset(frame.height*{})\n'
+             ).format(vert_dist)
     C += "}\n\n"
 
     if not self.env["in_view"]:

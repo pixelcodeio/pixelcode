@@ -34,20 +34,25 @@ class Interpreter(object):
 
     self.file_name = view_controller
     self.swift[view_controller] = C
-    self.gen_file(False)
+    self.gen_file({"in_view": False, "is_partial": False})
     self.swift = gen_global_colors(self.globals["info"]["colors"], self.swift)
 
-  def gen_file(self, in_v):
+  def gen_partial(self, components):
+    env = {"in_view": False, "is_partial": True}
+    swift, tc_elem = self.gen_comps(self.info["components"], env)
+    return swift
+
+  def gen_file(self, env):
     """
     Returns: Fills in the swift instance variable with generated file.
     """
-    swift, tc_elem = self.gen_comps(self.info["components"], in_v)
+    swift, tc_elem = self.gen_comps(self.info["components"], env)
     self.swift[self.file_name] += swift + "}\n\n" + \
                                   add_methods(self.info["methods"])
     self.info["methods"] = {}
 
     if not tc_elem:
-      if in_v:
+      if env["in_view"]:
         self.swift[self.file_name] += "{}\n}}".format(utils.req_init())
       else:
         self.swift[self.file_name] += "}"
@@ -58,7 +63,7 @@ class Interpreter(object):
       self.swift[self.file_name] += "}"
       self.gen_table_collection_view_files(tc_elem)
 
-  def gen_comps(self, components, in_v):
+  def gen_comps(self, components, env):
     """
     Args:
       components: (dict list) contains information about components
@@ -89,8 +94,7 @@ class Interpreter(object):
             navbar_item_ids.extend(get_navbar_item_ids(comp))
           elif type_ == "UILabel":
             self.swift["InsetLabel"] = gen_inset_label() # generate custom Label
-        env = {"in_view": in_v,
-               "is_long_artboard": self.globals["is_long_artboard"]}
+        env["is_long_artboard"] = self.globals["is_long_artboard"]
         cf = ComponentFactory(comp, env)
         C += cf.swift
         self.info["methods"] = concat_dicts(self.info["methods"], cf.methods)
