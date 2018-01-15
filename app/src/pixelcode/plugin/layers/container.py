@@ -21,7 +21,7 @@ class Container(BaseLayer):
       else:
         components.append(child)
 
-    if rect is None:
+    if rect is None and elem["type"] != "UIView":
       raise Exception("Container: No bound field in " + elem["id"])
 
     elem["components"] = components

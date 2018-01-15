@@ -94,6 +94,7 @@ class BaseLayer(object):
         "id",
         "img",
         "img_fill",
+        "is_on",
         "items",
         "left-inset",
         "line-spacing",

@@ -19,8 +19,6 @@ class SliderView(BaseLayer):
 
     if slider_options is None:
       raise Exception("SliderView: No options in SliderView: " + elem["id"])
-    elif rect is None:
-      raise Exception("SliderView: No bound in SliderView: " + elem["id"])
     elif content is None:
       raise Exception("SliderView: No content in SliderView: " + elem["id"])
 

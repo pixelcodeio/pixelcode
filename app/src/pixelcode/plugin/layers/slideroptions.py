@@ -16,8 +16,6 @@ class SliderOptions(BaseLayer):
 
     if not options:
       raise Exception("SliderOptions: No options found in " + elem["id"])
-    elif rect is None:
-      raise Exception("SliderOptions: No bound in " + elem["id"])
 
     options = sorted(options, key=lambda i: i["x"])
     selected_index = 0
