@@ -185,7 +185,8 @@ class ComponentFactory(object):
               "{} = {}(frame: .zero, collectionViewLayout: layout)\n"
              ).format(id_, type_)
     elif type_ == "UITableView":
-      return ("{} = {}(frame: .zero, style: .grouped)\n").format(id_, type_)
+      style = ".plain" if utils.word_in_str("sticky", id_) else ".grouped"
+      return ("{} = {}(frame: .zero, style: {})\n").format(id_, type_, style)
     elif "barButton" in id_ or "BarButton" in id_:
       return "{} = UIButton(type: .system)\n".format(id_)
     elif type_ in {"UINavBar", "UITabBar", "UIActionSheet", "SliderView"}:
