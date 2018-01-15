@@ -14,5 +14,6 @@ class Switch(BaseLayer):
     if rect is None:
       raise Exception("Switch: No bound in switch.")
 
+    elem["is_on"] = utils.word_in_str("off", elem["id"])
     elem["rect"] = rect
     return super().parse_elem(elem)

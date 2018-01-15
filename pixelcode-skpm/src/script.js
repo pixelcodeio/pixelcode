@@ -185,15 +185,8 @@ function checkFormatting (layer, layerNames, originalNames) {
       currentDict['text_align'] = String(currentLayer.alignment);
     }
 
-    if (currentLayer.container.isArtboard) {
-      currentDict['abs_x'] = currentDict['x'];
-      currentDict['abs_y'] = currentDict['y'];
-    } else {
-      var absx = String(currentLayer.frame.x + currentLayer.container.frame.x);
-      var absy = String(currentLayer.frame.y + currentLayer.container.frame.y);
-      currentDict['abs_x'] = absx;
-      currentDict['abs_y'] = absy;
-    }
+    currentDict['abs_x'] = getAbsoluteX(currentLayer, currentLayer.frame.x);
+    currentDict['abs_y'] = getAbsoluteY(currentLayer, currentLayer.frame.y);
 
     ret['layerNames'].push(layerName);
     ret['dictList'].push(currentDict);
@@ -205,6 +198,22 @@ function checkFormatting (layer, layerNames, originalNames) {
     }
   }
   return ret;
+}
+
+function getAbsoluteX (layer, x) {
+  if (layer.container.isArtboard) {
+    return x;
+  } else {
+    return getAbsoluteX(layer.container, x + layer.container.frame.x);
+  }
+}
+
+function getAbsoluteY (layer, y) {
+  if (layer.container.isArtboard) {
+    return y;
+  } else {
+    return getAbsoluteY(layer.container, y + layer.container.frame.y);
+  }
 }
 
 function hasWhiteSpace (s) {
