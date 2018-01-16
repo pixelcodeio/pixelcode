@@ -289,3 +289,19 @@ def parse_filter_matrix(matrix):
   b = float(matrix[12])
   a = float(matrix[18])
   return (r, g, b, a)
+
+def move_bounds_to_end(elements):
+  """
+  Returns (list):
+    recursively moves bound to the end of each element's children property
+  """
+  for elem in elements:
+    bound_index = -1
+    for index, child in enumerate(elem["children"]):
+      if utils.word_in_str("bound", child["id"]):
+        bound_index = index
+        break
+    if bound_index > -1:
+      elem["children"] += [elem["children"].pop(bound_index)]
+    elem["children"] = move_bounds_to_end(elem["children"])
+  return elements

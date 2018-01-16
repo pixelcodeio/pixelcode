@@ -72,11 +72,13 @@ class Parser(object):
     artboard["rwidth"] = self.globals["rwidth"]
     artboard["rheight"] = self.globals["rheight"]
 
-    self.elements = self.parse_elements(
+    elements = self.parse_elements(
         [c for c in artboard.children],
         artboard,
         init=True
     )
+    elements = move_bounds_to_end(elements)
+    self.elements= elements
 
   def parse_globals(self, svg):
     """
