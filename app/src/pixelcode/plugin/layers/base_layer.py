@@ -77,6 +77,7 @@ class BaseLayer(object):
         "char-spacing",
         "children",
         "components",
+        "contains_hairline",
         "content", # content of a SliderView
         "contents", # text of a label
         "custom_cells",
@@ -87,6 +88,7 @@ class BaseLayer(object):
         "filter",
         "font-family",
         "font-size",
+        "hairline",
         "header",
         "header_name",
         "height",

@@ -36,7 +36,15 @@ class Section(BaseLayer):
 
     cells = sorted(cells, key=lambda c: c['y']) # sort by y
 
+    # Check if cells have hairline
+    contains_hairline = False
+    for cell in cells:
+      if cell.get("hairline") is not None:
+        contains_hairline = True
+        break
+
     elem["cells"] = cells
+    elem["contains_hairline"] = contains_hairline
     elem["custom_cells"] = custom_cells
     elem["header"] = header
     elem["rect"] = rect
