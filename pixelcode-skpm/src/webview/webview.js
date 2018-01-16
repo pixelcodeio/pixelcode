@@ -45,8 +45,10 @@ export function createWebViewChangeLocationDelegate (application, context, windo
 function uploadArtboardToProject (context, projectHash, token, artboard) {
   var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
   var exportsPath = contentsPath + '/Resources/exports/';
-  var jsonContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.json'));
-  var svgContents = String(NSString.stringWithContentsOfFile(exportsPath + artboard + '.svg'));
+  var jsonData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '.json', NSDataReadingUncached, null);
+  var jsonContents = String(jsonData.base64EncodedStringWithOptions(0));
+  var svgData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '.svg', NSDataReadingUncached, null);
+  var svgContents = String(svgData.base64EncodedStringWithOptions(0));
   var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + artboard + '@3x.png', NSDataReadingUncached, null);
   var pngContents = String(pngData.base64EncodedStringWithOptions(0));
   var body = JSON.stringify({'asset_name': artboard, 'json': jsonContents, 'svg': svgContents, 'png': pngContents});
