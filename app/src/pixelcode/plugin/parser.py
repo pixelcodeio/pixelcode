@@ -190,6 +190,8 @@ class Parser(object):
           elem.name = "segmentedcontrol"
         elif utils.word_in_str("segment", elem["id"]):
           elem.name = "segment"
+        elif utils.word_in_str("sheetTitle", elem["id"]):
+          elem.name = "actionsheettitle"
         elif utils.word_in_str("slider", elem["id"]):
           elem.name = "slider"
         elif utils.word_in_str("statusBar", elem["id"]):
@@ -218,6 +220,8 @@ class Parser(object):
       elem["children"] = self.parse_elements(elem["children"], elem)
       if elem.name == "actionsheet":
         parsed_elem = ActionSheet(elem, "UIActionSheet")
+      elif elem.name == "actionsheettitle":
+        parsed_elem = ActionSheetTitle(elem, "ActionSheetTitle")
       elif elem.name in {"button", "tab"}:
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
