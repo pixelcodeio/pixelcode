@@ -15,6 +15,5 @@ class ActionSheet(BaseLayer):
           raise Exception("ActionSheet: Button does not contain text.")
 
     actions = sorted(actions, key=lambda a: a['y'])
-    actions = [a["text"]["textspan"][0]["contents"] for a in actions]
     elem["actions"] = actions
     return super().parse_elem(elem)
