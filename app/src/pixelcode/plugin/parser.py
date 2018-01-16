@@ -78,7 +78,7 @@ class Parser(object):
         init=True
     )
     elements = move_bounds_to_end(elements)
-    self.elements= elements
+    self.elements = elements
 
   def parse_globals(self, svg):
     """
