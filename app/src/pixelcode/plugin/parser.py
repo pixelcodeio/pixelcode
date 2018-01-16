@@ -2,7 +2,6 @@
 import json
 import requests
 from operator import itemgetter
-from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
 from pixelcode.plugin.layers._all import *
