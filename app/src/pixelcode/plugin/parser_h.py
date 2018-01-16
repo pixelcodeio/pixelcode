@@ -296,12 +296,11 @@ def move_bounds_to_end(elements):
     recursively moves bound to the end of each element's children property
   """
   for elem in elements:
-    bound_index = -1
+    rect_indicies = []
     for index, child in enumerate(elem["children"]):
-      if utils.word_in_str("bound", child["id"]):
-        bound_index = index
-        break
-    if bound_index > -1:
-      elem["children"] += [elem["children"].pop(bound_index)]
+      if child["type"] == "UIView":
+        rect_indicies.append(index)
+    for rect_index in sorted(rect_indicies, reverse=True):
+      elem["children"] += [elem["children"].pop(rect_index)]
     elem["children"] = move_bounds_to_end(elem["children"])
   return elements
