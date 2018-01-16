@@ -100,6 +100,7 @@ class BaseLayer(object):
         "items",
         "left-inset",
         "line-spacing",
+        "message",
         "name",
         "navbar-items",
         "opacity",
