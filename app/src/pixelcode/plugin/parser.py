@@ -69,8 +69,8 @@ class Parser(object):
     artboard = inherit_from(page, artboard, init=True)
 
     # init rwidth and rheight for inheritance
-    artboard["rwidth"] = self.globals["rwidth"]
-    artboard["rheight"] = self.globals["rheight"]
+    artboard["rwidth"] = self.globals["width"]
+    artboard["rheight"] = self.globals["height"]
 
     self.elements = self.parse_elements(
         [c for c in artboard.children],

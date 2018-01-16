@@ -10,6 +10,7 @@ class ComponentFactory(object):
     env (dict): environment in which component is being generated. contains keys
       - in_view (bool): whether component is generated inside a custom view file
       - is_long_artboard (bool)
+      - is_partial (bool)
   """
   def __init__(self, info, env):
     """
@@ -100,7 +101,12 @@ class ComponentFactory(object):
 
     view = 'view' if not self.env["in_view"] else None
     swift += utils.add_subview(view, id_, type_)
-    swift += self.gen_constraints(self.info)
+    constraints = self.gen_constraints(self.info)
+    if self.env["in_view"]:
+      # Generate constraints in layoutSubviews if in view
+      self.methods["layoutSubviews"] = constraints
+    else:
+      swift += constraints
     return swift
 
   def create_component(self, type_, id_, info, env):

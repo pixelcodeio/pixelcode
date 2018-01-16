@@ -136,9 +136,9 @@ def gen_cell_header(type_, cell):
        "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
        "String?) {{\n"
        "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-       "layoutSubviews()\n}}\n\n"
-       "override func layoutSubviews() {{\n"
-       "super.layoutSubviews()\n\n"
+       # "layoutSubviews()\n}}\n\n"
+       # "override func layoutSubviews() {{\n"
+       # "super.layoutSubviews()\n\n"
       ).format(class_, init_g_vars(cell.get('components')))
 
   if type_ == "UICollectionView":
@@ -163,9 +163,9 @@ def gen_header_header(type_, header): # TODO: Rename this function.
        "UITableViewHeaderFooterView {{\n\n{}"
        "\noverride init(reuseIdentifier: String?) {{\n"
        "super.init(reuseIdentifier: reuseIdentifier)\n"
-       "layoutSubviews()\n}}\n\n"
-       "override func layoutSubviews() {{"
-       "\nsuper.layoutSubviews()\n\n"
+       # "layoutSubviews()\n}}\n\n"
+       # "override func layoutSubviews() {{"
+       # "\nsuper.layoutSubviews()\n\n"
       ).format(class_, init_g_vars(header.get('components')))
 
   if type_ == "UICollectionView":
@@ -278,6 +278,9 @@ def add_methods(methods):
     if key == "viewDidAppear":
       C += ("\noverride func viewDidAppear(_ animated: Bool) {{\n"
             "{}\n}}\n\n").format(value)
+    elif key == "layoutSubviews":
+      C += ("override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
+            "{}\n}}\n\n").format(value)
     elif key == "viewDidLayoutSubviews":
       C += ("override func viewDidLayoutSubviews() {{\n"
             "{}\n}}\n\n").format(value)
@@ -319,6 +322,12 @@ def gen_slider_view_pieces(interpreter, comp):
   # Generate SliderView CollectionViewCell class
   interpreter.gen_table_collection_view_files(comp["content"])
   interpreter.file_name = file_name
+
+def gen_hairline(comp):
+  """
+  Returns (str): swift code to generate a hairline
+  """
+  return "" # TODO
 
 def gen_inset_label():
   """

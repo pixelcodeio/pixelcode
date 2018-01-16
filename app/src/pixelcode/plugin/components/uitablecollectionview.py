@@ -26,8 +26,7 @@ class UITableCollectionView(BaseComponent):
     C += ('{0}.delegate = self\n'
           '{0}.dataSource = self\n'
           '{0}.showsVerticalScrollIndicator = false\n'
-          '{0}.showsHorizontalScrollIndicator = false\n'
-          '{0}.clipsToBounds = false\n').format(self.id)
+          '{0}.showsHorizontalScrollIndicator = false\n').format(self.id)
     C += self.register_headers()
     C += self.register_cells()
 
