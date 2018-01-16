@@ -11,8 +11,20 @@ class UIActionSheet(BaseComponent):
     """
     Returns: swift code to setup UIActionSheet.
     """
-    C = ("let alertController = UIAlertController(title: nil, message: nil, "
-         "preferredStyle: .actionSheet)\n")
+    if self.info.get("title"):
+      if self.info["title"].get("title"):
+        title = '"{}"'.format(self.info["title"]["title"].decode('utf-8'))
+      else:
+        title = "nil"
+      if self.info["title"].get("message"):
+        message = '"{}"'.format(self.info["title"]["message"].decode('utf-8'))
+      else:
+        message = "nil"
+    else:
+      title = "nil"
+      message = "nil"
+    C = ("let alertController = UIAlertController(title: {}, message: {}, "
+         "preferredStyle: .actionSheet)\n").format(title, message)
 
     actions = self.info["actions"]
     titles = [a["text"]["textspan"][0]["contents"] for a in actions]

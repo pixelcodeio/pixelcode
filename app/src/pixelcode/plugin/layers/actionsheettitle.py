@@ -24,6 +24,9 @@ class ActionSheetTitle(BaseLayer):
           raise Exception("ActionSheetTitle: Labels should either be a " + \
                           "title or a message.")
 
+    if title is None and message is None:
+      raise Exception("ActionSheetTitle: Nothing found in: " + elem["id"])                      
+
     elem["title"] = title
     elem["message"] = message
     return super().parse_elem(elem)
