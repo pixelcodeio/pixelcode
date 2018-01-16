@@ -294,16 +294,15 @@ def gen_tabbar_file(interpreter, comp):
   """
   Returns (None): Generates tabbar file in interpreter's swift dictionary.
   """
-  comp["active_vc"] = interpreter.file_name # name of active view controller
+  comp["active_vc"] = interpreter.file_name # Name of active view controller
   cf = ComponentFactory(comp, interpreter.env)
-  # generate tabbar viewcontroller file
+  # Generate tabbar viewcontroller file
   info = interpreter.info
   vc_name = utils.uppercase(comp["id"]) + "ViewController"
   C = gen_viewcontroller_header(vc_name, info, False)
   C = C.replace(': UIViewController', ': UITabBarController')
-  C += ("{}}}\n}}\n").format(cf.swift)
+  C += ("{}}}\n\n").format(cf.swift) + add_methods(cf.methods) + "}\n"
   interpreter.swift[vc_name] = C
-  info["methods"] = concat_dicts(info["methods"], cf.methods)
 
 def gen_slider_view_pieces(interpreter, comp):
   """

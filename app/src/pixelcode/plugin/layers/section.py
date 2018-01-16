@@ -31,8 +31,6 @@ class Section(BaseLayer):
 
     if not cells:
       raise Exception("Section: No cells in section " + elem["id"])
-    elif rect is None:
-      raise Exception("Section: Missing bound in " + elem["id"])
 
     cells = sorted(cells, key=lambda c: c['y']) # sort by y
 

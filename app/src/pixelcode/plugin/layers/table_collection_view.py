@@ -22,8 +22,6 @@ class TableCollectionView(BaseLayer):
 
     if not sections:
       raise Exception("TableCollectionView: No sections in " + elem["id"])
-    elif rect is None:
-      raise Exception("TableCollectionView: Missing bound in " + elem["id"])
 
     # Calculate cell spacing for all sections
     sections = sorted(sections, key=lambda s: s['y']) # sort by y
