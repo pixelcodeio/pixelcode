@@ -42,7 +42,11 @@ class Interpreter(object):
     self.gen_file()
     self.swift = gen_global_colors(self.globals["info"]["colors"], self.swift)
 
-  def gen_partial(self, components):
+  def gen_partial(self, component):
+    """
+    Returns (str): swift code for generating part of an artboard.
+    """
+    self.info["components"] = [component]
     self.env = {"in_view": False,
                 "is_partial": True,
                 "is_long_artboard": self.globals["is_long_artboard"]}

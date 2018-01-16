@@ -196,10 +196,12 @@ class Parser(object):
           continue
         elif utils.word_in_str("switch", elem["id"]):
           elem.name = "switch"
-        elif utils.word_in_str("tabBar", elem["id"]):
-          elem.name = "tabbar"
         elif utils.word_in_str("tableView", elem["id"]):
           elem.name = "tableview"
+        elif utils.word_in_str("tabBar", elem["id"]):
+          elem.name = "tabbar"
+        elif utils.word_in_str("tab", elem["id"]):
+          elem.name = "tab"
         elif utils.word_in_str("textField", elem["id"]):
           elem.name = "textfield"
         elif utils.word_in_str("view", elem["id"]):
@@ -216,7 +218,7 @@ class Parser(object):
       elem["children"] = self.parse_elements(elem["children"], elem)
       if elem.name == "actionsheet":
         parsed_elem = ActionSheet(elem, "UIActionSheet")
-      elif elem.name == "button":
+      elif elem.name in {"button", "tab"}:
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
         parsed_elem = Container(elem, "Cell")

@@ -19,12 +19,10 @@ function onRun (context) {
     return;
   }
 
-  if (application.settingForKey('projects') == null) {
-    updateProjects(context);
-  }
+  updateProjects(context);
 
   if (layers.isEmpty) {
-    context.document.showMessage('PixelCode: No artboard selected.');
+    context.document.showMessage('Pixelcode: No artboard selected.');
   } else {
     var artboards = [];
     var exportsPath = resourcesPath + '/exports/';
