@@ -87,7 +87,6 @@ class BaseLayer(object):
         "filter",
         "font-family",
         "font-size",
-        "hairline",
         "header",
         "header_name",
         "height",
