@@ -169,7 +169,10 @@ def parse_fake_group(elem):
     if (not main_children) and use_children:
       for ind, child in enumerate(use_children):
         if "xlink:href" in child.attrs and "filter" not in child.attrs:
-          child.name = "rect"
+          if child.attrs["fill"][0] == "u": # url(...): for image fills
+            child.name = "image"
+          else:
+            child.name = "rect"
           use_children.pop(ind)
           main_children = [child]
           break
@@ -178,7 +181,6 @@ def parse_fake_group(elem):
         child.name = "rect"
         use_children.pop(0)
         main_children = [child]
-
 
     # ensure that there is only one main child
     if len(main_children) == 1:

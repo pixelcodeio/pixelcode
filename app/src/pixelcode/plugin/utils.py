@@ -148,6 +148,9 @@ def setup_rect(cid, type_, rect, header=False, cell=False):
 
   Returns: (str) swift code to apply all the properties from rect.
   """
+  if rect is None:
+    return ""
+
   keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
   fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
   C = ""
