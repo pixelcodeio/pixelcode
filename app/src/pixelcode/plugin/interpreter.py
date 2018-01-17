@@ -136,6 +136,7 @@ class Interpreter(object):
       nested (table/collection)view, if there is one. Otherwise, returns None.
     """
     self.file_name = file_name
+    self.env["in_view"] = True
     type_ = info["type"]
     if type_ == "Cell":
       C = gen_cell_header(parent["type"], info)
@@ -145,7 +146,10 @@ class Interpreter(object):
       C += utils.setup_rect(parent["id"], type_, info.get("rect"), header=True)
 
     swift, tc_elem = self.gen_comps(info.get("components"))
-    C += "{}}}\n\n{}\n\n".format(swift, utils.req_init())
+    swift += "layoutSubviews()\n}\n\n"
+    swift += add_methods(self.info["methods"])
+    self.info["methods"] = {}
+    C += "{}\n\n{}\n\n".format(swift, utils.req_init())
 
     if not tc_elem:
       self.swift[self.file_name] = C + "}"
@@ -156,6 +160,5 @@ class Interpreter(object):
       C = move_collection_view(C, tc_elem)
     # add parent classes for table/collection view
     C = subclass_tc(C, tc_elem)
-    C += "\n{}\n}}".format(self.info["methods"]["tc_methods"])
-    self.swift[self.file_name] = C
+    self.swift[self.file_name] = C + "}"
     return tc_elem

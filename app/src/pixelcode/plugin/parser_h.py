@@ -169,7 +169,10 @@ def parse_fake_group(elem):
     if (not main_children) and use_children:
       for ind, child in enumerate(use_children):
         if "xlink:href" in child.attrs and "filter" not in child.attrs:
-          child.name = "rect"
+          if child.attrs["fill"][0] == "u": # url(...): for image fills
+            child.name = "image"
+          else:
+            child.name = "rect"
           use_children.pop(ind)
           main_children = [child]
           break
@@ -178,7 +181,6 @@ def parse_fake_group(elem):
         child.name = "rect"
         use_children.pop(0)
         main_children = [child]
-
 
     # ensure that there is only one main child
     if len(main_children) == 1:
@@ -229,6 +231,21 @@ def check_spacing(r1, r2, direction):
       if t_btwn or b_btwn or contains:
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
+
+def adjust_size(elem):
+  rect = elem["rect"]
+  if rect["rwidth"] != elem["rwidth"] or rect["rheight"] != elem["rheight"]:
+    # Adjust width/heights of elem and all of its children
+    parent_width = elem["rwidth"] / elem["width"]
+    parent_height = elem["rheight"] / elem["height"]
+    elem["rwidth"] = rect["rwidth"]
+    elem["rheight"] = rect["rheight"]
+    elem["width"] = elem["rwidth"] / parent_width
+    elem["height"] = elem["rheight"] / parent_height
+    for child in elem["children"]:
+      child["width"] = child["rwidth"] / elem["rwidth"]
+      child["height"] = child["rheight"] / elem["rheight"]
+  return elem
 
 def add_to_info(key, new_value, info):
   """

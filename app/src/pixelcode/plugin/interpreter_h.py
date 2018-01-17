@@ -136,9 +136,6 @@ def gen_cell_header(type_, cell):
        "\noverride init(style: UITableViewCellStyle, reuseIdentifier: "
        "String?) {{\n"
        "super.init(style: style, reuseIdentifier: reuseIdentifier)\n"
-       "layoutSubviews()\n}}\n\n"
-       "override func layoutSubviews() {{\n"
-       "super.layoutSubviews()\n\n"
       ).format(class_, init_g_vars(cell.get('components')))
 
   if type_ == "UICollectionView":
@@ -163,9 +160,6 @@ def gen_header_header(type_, header): # TODO: Rename this function.
        "UITableViewHeaderFooterView {{\n\n{}"
        "\noverride init(reuseIdentifier: String?) {{\n"
        "super.init(reuseIdentifier: reuseIdentifier)\n"
-       "layoutSubviews()\n}}\n\n"
-       "override func layoutSubviews() {{"
-       "\nsuper.layoutSubviews()\n\n"
       ).format(class_, init_g_vars(header.get('components')))
 
   if type_ == "UICollectionView":
@@ -278,6 +272,9 @@ def add_methods(methods):
     if key == "viewDidAppear":
       C += ("\noverride func viewDidAppear(_ animated: Bool) {{\n"
             "{}\n}}\n\n").format(value)
+    elif key == "layoutSubviews":
+      C += ("override func layoutSubviews() {{\nsuper.layoutSubviews()\n"
+            "{}\n}}\n\n").format(value)
     elif key == "viewDidLayoutSubviews":
       C += ("override func viewDidLayoutSubviews() {{\n"
             "{}\n}}\n\n").format(value)
@@ -291,16 +288,15 @@ def gen_tabbar_file(interpreter, comp):
   """
   Returns (None): Generates tabbar file in interpreter's swift dictionary.
   """
-  comp["active_vc"] = interpreter.file_name # name of active view controller
+  comp["active_vc"] = interpreter.file_name # Name of active view controller
   cf = ComponentFactory(comp, interpreter.env)
-  # generate tabbar viewcontroller file
+  # Generate tabbar viewcontroller file
   info = interpreter.info
   vc_name = utils.uppercase(comp["id"]) + "ViewController"
   C = gen_viewcontroller_header(vc_name, info, False)
   C = C.replace(': UIViewController', ': UITabBarController')
-  C += ("{}}}\n}}\n").format(cf.swift)
+  C += ("{}}}\n\n").format(cf.swift) + add_methods(cf.methods) + "}\n"
   interpreter.swift[vc_name] = C
-  info["methods"] = concat_dicts(info["methods"], cf.methods)
 
 def gen_slider_view_pieces(interpreter, comp):
   """

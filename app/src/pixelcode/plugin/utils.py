@@ -148,6 +148,9 @@ def setup_rect(cid, type_, rect, header=False, cell=False):
 
   Returns: (str) swift code to apply all the properties from rect.
   """
+  if rect is None:
+    return ""
+
   keys = ["fill", "border-radius", "stroke-color", "stroke-width", "filter"]
   fill, border_r, str_c, str_w, filter_ = get_vals(keys, rect)
   C = ""
@@ -175,7 +178,8 @@ def setup_rect(cid, type_, rect, header=False, cell=False):
   if border_r is not None:
     C += set_corner_radius(cid, border_r)
   if filter_ is not None:
-    C += add_shadow(cid, type_, filter_)
+    if not(cid is not None and word_in_str("hairline", cid)):
+      C += add_shadow(cid, type_, filter_)
 
   return C
 

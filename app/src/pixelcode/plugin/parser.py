@@ -2,7 +2,6 @@
 import json
 import requests
 from operator import itemgetter
-from urllib import request
 from bs4 import BeautifulSoup
 # custom imports
 from pixelcode.plugin.layers._all import *
@@ -69,8 +68,8 @@ class Parser(object):
     artboard = inherit_from(page, artboard, init=True)
 
     # init rwidth and rheight for inheritance
-    artboard["rwidth"] = self.globals["rwidth"]
-    artboard["rheight"] = self.globals["rheight"]
+    artboard["rwidth"] = self.globals["width"]
+    artboard["rheight"] = self.globals["height"]
 
     elements = self.parse_elements(
         [c for c in artboard.children],
@@ -192,6 +191,8 @@ class Parser(object):
           elem.name = "segmentedcontrol"
         elif utils.word_in_str("segment", elem["id"]):
           elem.name = "segment"
+        elif utils.word_in_str("sheetTitle", elem["id"]):
+          elem.name = "actionsheettitle"
         elif utils.word_in_str("slider", elem["id"]):
           elem.name = "slider"
         elif utils.word_in_str("statusBar", elem["id"]):
@@ -220,6 +221,8 @@ class Parser(object):
       elem["children"] = self.parse_elements(elem["children"], elem)
       if elem.name == "actionsheet":
         parsed_elem = ActionSheet(elem, "UIActionSheet")
+      elif elem.name == "actionsheettitle":
+        parsed_elem = ActionSheetTitle(elem, "ActionSheetTitle")
       elif elem.name in {"button", "tab"}:
         parsed_elem = Button(elem, "UIButton")
       elif elem.name == "cell":
@@ -271,6 +274,8 @@ class Parser(object):
 
       # finished creating new element
       new_elem = parsed_elem.elem
+      if new_elem.get("rect") is not None: # adjust size to dimensions of bound
+        new_elem = adjust_size(new_elem)
       if new_elem.get('filter') is not None: # lookup filter in filters
         new_elem["filter"] = self.globals["filters"][new_elem["filter"]]
       parsed_elements.insert(0, new_elem)

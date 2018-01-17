@@ -10,6 +10,7 @@ class ComponentFactory(object):
     env (dict): environment in which component is being generated. contains keys
       - in_view (bool): whether component is generated inside a custom view file
       - is_long_artboard (bool)
+      - is_partial (bool)
   """
   def __init__(self, info, env):
     """
@@ -60,8 +61,14 @@ class ComponentFactory(object):
     """
     Returns (str): swift code with finishing touches to creating component
     """
-    keys = ["id", "type", "rect", "filter"]
-    id_, type_, rect, filter_ = utils.get_vals(keys, self.info)
+    keys = ["id", "type", "rect"]
+    id_, type_, rect = utils.get_vals(keys, self.info)
+
+    # Check if component itself is a rectangle
+    rect_keys = ["fill", "border-radius", "stroke-color", "stroke-width",
+                 "filter"]
+    if any(key in self.info for key in rect_keys):
+      rect = self.info
 
     if rect is not None and type_ != "SliderView":
       swift += utils.setup_rect(id_, type_, rect)
@@ -69,13 +76,6 @@ class ComponentFactory(object):
         # move code for shadows to viewDidLayoutSubviews function
         shadow = utils.add_shadow(id_, type_, rect["filter"])
         swift = swift.replace(shadow, "")
-        self.methods["viewDidLayoutSubviews"] = shadow
-
-    if filter_ is not None:
-      shadow = utils.add_shadow(id_, type_, filter_)
-      if self.env["in_view"]:
-        swift += shadow
-      else:
         self.methods["viewDidLayoutSubviews"] = shadow
 
     if type_ == 'UIView' and self.info.get('components') is not None:
@@ -100,7 +100,12 @@ class ComponentFactory(object):
 
     view = 'view' if not self.env["in_view"] else None
     swift += utils.add_subview(view, id_, type_)
-    swift += self.gen_constraints(self.info)
+    constraints = self.gen_constraints(self.info)
+    if self.env["in_view"]:
+      # Generate constraints in layoutSubviews if in view
+      self.methods["layoutSubviews"] = constraints
+    else:
+      swift += constraints
     return swift
 
   def create_component(self, type_, id_, info, env):

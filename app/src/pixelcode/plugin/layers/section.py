@@ -31,8 +31,6 @@ class Section(BaseLayer):
 
     if not cells:
       raise Exception("Section: No cells in section " + elem["id"])
-    elif rect is None:
-      raise Exception("Section: Missing bound in " + elem["id"])
 
     cells = sorted(cells, key=lambda c: c['y']) # sort by y
 
@@ -46,12 +44,17 @@ class Section(BaseLayer):
     """
     Returns (dict): adjusts cell dictionary if hairline exists in the cell
     """
-    hairline_index = -1
-    for index, comp in enumerate(cell["components"]):
+    hairline = None
+    for comp in cell["components"]:
       if utils.word_in_str("hairline", comp["id"]):
-        hairline_index = index
+        hairline = comp
         break
-    if hairline_index > -1:
-      cell["hairline"] = cell["components"][hairline_index]
-      del cell["components"][hairline_index]
+    if hairline:
+      if hairline.get("filter") is None:
+        raise Exception("Section: Hairline missing shadow.")
+      actual_height = abs(float(hairline["filter"]["dy"]))
+      new_height = actual_height / hairline["rheight"]
+      hairline["height"] = new_height
+      hairline["vertical"]["distance"] = 1.0 - new_height
+      hairline["fill"] = (200, 199, 204, 1.0)
     return cell
