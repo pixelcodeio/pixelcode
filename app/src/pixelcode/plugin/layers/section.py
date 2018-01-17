@@ -57,7 +57,4 @@ class Section(BaseLayer):
       hairline["height"] = new_height
       hairline["vertical"]["distance"] = 1.0 - new_height
       hairline["fill"] = (200, 199, 204, 1.0)
-    for comp in cell["components"]:
-      if comp["id"] == "hairline":
-        print(comp)
     return cell
