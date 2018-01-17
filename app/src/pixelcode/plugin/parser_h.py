@@ -232,6 +232,21 @@ def check_spacing(r1, r2, direction):
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
 
+def adjust_size(elem):
+  rect = elem["rect"]
+  if rect["rwidth"] != elem["rwidth"] or rect["rheight"] != elem["rheight"]:
+    # Adjust width/heights of elem and all of its children
+    parent_width = elem["rwidth"] / elem["width"]
+    parent_height = elem["rheight"] / elem["height"]
+    elem["rwidth"] = rect["rwidth"]
+    elem["rheight"] = rect["rheight"]
+    elem["width"] = elem["rwidth"] / parent_width
+    elem["height"] = elem["rheight"] / parent_height
+    for child in elem["children"]:
+      child["width"] = child["rwidth"] / elem["rwidth"]
+      child["height"] = child["rheight"] / elem["rheight"]
+  return elem
+
 def add_to_info(key, new_value, info):
   """
   Args:
