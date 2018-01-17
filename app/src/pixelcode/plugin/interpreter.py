@@ -46,6 +46,10 @@ class Interpreter(object):
     """
     Returns (str): swift code for generating part of an artboard.
     """
+    ignore_types = ["", "ActionSheetTitle", "Cell", "Header", "Section",
+                    "Segment", "SliderContent", "SliderOption", "SliderOptions"]
+    if component["type"] in ignore_types:
+      return ""
     self.info["components"] = [component]
     self.env = {"in_view": False,
                 "is_partial": True,
