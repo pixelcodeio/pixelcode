@@ -11,8 +11,14 @@ class UIView(BaseComponent):
     """
     Returns: swift code to setup uiview.
     """
+    if self.info.get("components") is not None: # container
+      rect = self.info.get("rect")
+    else: # rect
+      rect = self.info
+
     keys = ["fill", "border-radius", "stroke-color", "stroke-width",]
-    fill, border_r, stroke_c, stroke_w = utils.get_vals(keys, self.info["rect"])
+    fill, border_r, stroke_c, stroke_w = utils.get_vals(keys, rect)
+
     C = ""
     if fill is not None:
       C += utils.set_bg(self.id, fill)

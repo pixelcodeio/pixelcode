@@ -77,7 +77,6 @@ class BaseLayer(object):
         "char-spacing",
         "children",
         "components",
-        "contains_hairline",
         "content", # content of a SliderView
         "contents", # text of a label
         "custom_cells",

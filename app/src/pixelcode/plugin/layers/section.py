@@ -34,15 +34,7 @@ class Section(BaseLayer):
 
     cells = sorted(cells, key=lambda c: c['y']) # sort by y
 
-    # Check if cells have hairline
-    contains_hairline = False
-    for cell in cells:
-      if cell.get("hairline") is not None:
-        contains_hairline = True
-        break
-
     elem["cells"] = cells
-    elem["contains_hairline"] = contains_hairline
     elem["custom_cells"] = custom_cells
     elem["header"] = header
     elem["rect"] = rect
@@ -52,12 +44,19 @@ class Section(BaseLayer):
     """
     Returns (dict): adjusts cell dictionary if hairline exists in the cell
     """
-    hairline_index = -1
-    for index, comp in enumerate(cell["components"]):
+    hairline = None
+    for comp in cell["components"]:
       if utils.word_in_str("hairline", comp["id"]):
-        hairline_index = index
+        hairline = comp
         break
-    if hairline_index > -1:
-      cell["hairline"] = cell["components"][hairline_index]
-      del cell["components"][hairline_index]
+    if hairline:
+      if hairline.get("filter") is None:
+        raise Exception("Section: Hairline missing shadow.")
+      actual_height = abs(float(hairline["filter"]["dy"]))
+      new_height = actual_height / hairline["rheight"]
+      hairline["height"] = new_height
+      hairline["vertical"]["distance"] = 1.0 - new_height
+    for comp in cell["components"]:
+      if comp["id"] == "hairline":
+        print(comp)
     return cell
