@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from zipfile import *
 from pixelcode.plugin.parser import Parser
 from pixelcode.plugin.interpreter import Interpreter
@@ -23,6 +24,17 @@ class Main(object):
 
     i = Interpreter(p.globals)
     i.gen_code(p.elements)
+    # Format swift code
+    for filename in i.swift:
+      code = i.swift[filename]
+      swift_file = filename + ".swift"
+      o1 = open(swift_file, "w+")
+      o1.write(code)
+      o1.close()
+      os.system("swiftformat " + swift_file)
+      o2 = open(swift_file, "r")
+      i.swift[filename] = o2.read()
+      os.remove(swift_file)
     return i.swift
 
 def update_test_dir(path, zip_):
