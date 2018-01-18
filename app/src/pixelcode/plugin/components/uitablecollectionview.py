@@ -266,9 +266,15 @@ class UITableCollectionView(BaseComponent):
       C = "layout.minimumInteritemSpacing = {}\n".format(sep[0])
       scroll = ("layout.scrollDirection = .horizontal\n"
                 "{}.alwaysBounceHorizontal = true\n").format(self.id)
+      if self.info.get("scroll_dir") is not None:
+        scroll_dir = self.info["scroll_dir"]
+        uppercase_scroll_dir = utils.uppercase(scroll_dir)
+        scroll = scroll.replace('Horizontal', uppercase_scroll_dir)
+        scroll = scroll.replace('horizontal', scroll_dir)
       if len(sep) == 2:
-        scroll = scroll.replace('Horizontal', 'Vertical')
-        scroll = scroll.replace('horizontal', 'vertical')
+        if self.info.get("scroll_dir") is None:
+          scroll = scroll.replace('Horizontal', 'Vertical')
+          scroll = scroll.replace('horizontal', 'vertical')
         C += "layout.minimumLineSpacing = {}\n".format(sep[1])
       C += scroll
     return C

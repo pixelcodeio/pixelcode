@@ -14,6 +14,8 @@ class Container(BaseLayer):
 
     for child in elem["children"]:
       if utils.word_in_str('bound', child["id"]):
+        if child["type"] == "UIImageView": # bound with an image fill
+          components.append(child)
         if rect is None:
           rect = child
         else:

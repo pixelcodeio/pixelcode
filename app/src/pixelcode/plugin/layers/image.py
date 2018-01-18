@@ -11,5 +11,12 @@ class Image(BaseLayer):
       img_fill = elem.attrs["fill"]
 
     elem["img_fill"] = img_fill
-    elem["path"] = elem["id"] + ".png" # TODO: change this later
+    if ":" in elem["originalName"]:
+      id_index = elem["id"].find(":") # rename id
+      elem["id"] = elem["id"][:id_index]
+      index = elem["originalName"].find(":") # get name of image
+      img_name = elem["originalName"][:index]
+    else:
+      img_name = elem["originalName"]
+    elem["path"] = img_name + ".png" # TODO: change this later
     return super().parse_elem(elem)

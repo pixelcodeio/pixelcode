@@ -45,8 +45,23 @@ class TableCollectionView(BaseLayer):
         if custom_headers.get(header_name) is None:
           custom_headers[header_name] = header
 
+    # Check scroll direction indicator for UICollectionView
+    scroll_dir = None
+    if type_ == "UICollectionView" and ":" in elem["id"]:
+      index = elem["id"].find(":")
+      scroll_indicator = elem["id"][index:]
+      if utils.word_in_str("horizontal", scroll_indicator):
+        scroll_dir = "horizontal"
+      elif utils.word_in_str("vertical", scroll_indicator):
+        scroll_dir = "vertical"
+      else:
+        raise Exception("TableCollectionView: ':' found in name.")
+      elem["id"] = elem["id"][:index]
+
+
     elem["custom_headers"] = custom_headers
     elem["rect"] = rect
+    elem["scroll_dir"] = scroll_dir
     elem["sections"] = sections
     elem["separator"] = separator
     return super().parse_elem(elem)
@@ -64,9 +79,13 @@ class TableCollectionView(BaseLayer):
       else:
         hor_sep = cells[1]['x'] - cells[0]['x'] - cells[0]['rwidth']
         separator = [hor_sep]
-        npr = math.floor(375/cells[0]['rwidth']) # number of cells per row
-        if len(cells) > npr: # more than one row exists
-          vert_sep = cells[npr]['y'] - cells[0]['y'] - cells[0]['rheight']
+        next_row_cell = None
+        for cell in cells:
+          if cell['y'] > cells[0]['y']:
+            next_row_cell = cell
+            break
+        if next_row_cell is not None: # more than one row exists
+          vert_sep = next_row_cell['y'] - cells[0]['y'] - cells[0]['rheight']
           separator.append(vert_sep)
     section["separator"] = separator
     section["table_separate"] = (type_ == "UITableView" and \

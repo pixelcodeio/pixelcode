@@ -30,21 +30,21 @@ class SliderView(BaseLayer):
     cell_name = utils.uppercase(content["id"]) + "Cell"
     cell = {"cell_name": cell_name,
             "components": content["components"],
-            "height": content["height"],
+            "height": 1.0,
             "id": utils.lowercase(cell_name),
             "rect": content.get("rect"),
             "rheight": content["rheight"],
             "rwidth": content["rwidth"],
             "type": "Cell",
-            "width": content["width"],}
+            "width": 1.0}
     section = {"cells": [cell],
                "custom_cells": {cell_name: cell},
-               "height": content["height"],
+               "height": 1.0,
                "rect": content.get("rect"),
                "separator": [0],
                "table_separate": False,
                "type": "Section",
-               "width": content["width"]}
+               "width": 1.0}
     content.update({"custom_headers": {},
                     "sections": [section],
                     "separator": [0]})

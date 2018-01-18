@@ -296,6 +296,18 @@ def gen_tabbar_file(interpreter, comp):
   C = gen_viewcontroller_header(vc_name, info, False)
   C = C.replace(': UIViewController', ': UITabBarController')
   C += ("{}}}\n\n").format(cf.swift) + add_methods(cf.methods) + "}\n"
+
+  # Make adjustments if screen contains a navigation bar
+  navbar_exists = False
+  for component in interpreter.info["components"]:
+    if component["type"] == "UINavBar":
+      navbar_exists = True
+      break
+  if navbar_exists:
+    nav_controller = ("UINavigationController(rootViewController: {}())"
+                     ).format(comp["active_vc"])
+    C = C.replace(comp["active_vc"] + "()", nav_controller)
+
   interpreter.swift[vc_name] = C
 
 def gen_slider_view_pieces(interpreter, comp):
@@ -307,13 +319,20 @@ def gen_slider_view_pieces(interpreter, comp):
   file_name = interpreter.file_name
   interpreter.swift[slider_opts_id] = gen_slider_options(comp, file_name)
   # Generate Content CollectionView
+  # Correct Content CollectionView size with respect to artboard
+  globals_w = interpreter.globals["width"]
+  globals_h = interpreter.globals["height"]
+  comp["content"]["width"] = comp["content"]["rwidth"] / globals_w
+  comp["content"]["height"] = comp["content"]["rheight"] / globals_h
   content_cf = ComponentFactory(comp["content"], interpreter.env)
   comp["content_swift"] = content_cf.swift
   comp["content_methods"] = content_cf.methods["tc_methods"]
   interpreter.swift[file_name] = subclass_tc(interpreter.swift[file_name],
                                              comp["content"])
   # Generate SliderView CollectionViewCell class
+  in_view = interpreter.env["in_view"] # in_view may change while generating
   interpreter.gen_table_collection_view_files(comp["content"])
+  interpreter.env["in_view"] = in_view
   interpreter.file_name = file_name
 
 def gen_inset_label():

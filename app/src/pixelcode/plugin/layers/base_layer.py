@@ -109,6 +109,7 @@ class BaseLayer(object):
         "rect",
         "rwidth", # width in pixels
         "rheight", # height in pixels
+        "scroll_dir",
         "search-icon",
         "sections",
         "selected_index",
