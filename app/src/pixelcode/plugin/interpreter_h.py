@@ -243,7 +243,7 @@ def subclass_tc(swift, tc_elem):
   elif ": UICollectionViewCell" in swift:
     swift = utils.ins_after_key(swift, ": UICollectionViewCell", ext)
   else:
-    raise Exception("Interpreter_h: invalid file in subclass_tc()")
+    swift = ""
 
   return swift
 
