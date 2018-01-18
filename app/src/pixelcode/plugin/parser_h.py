@@ -232,16 +232,18 @@ def check_spacing(r1, r2, direction):
         return True, (r2_top[0] - r1_bottom[0])
     return False, 0
 
-def adjust_size(elem):
+def adjust_size(parser, elem):
   rect = elem["rect"]
   if rect["rwidth"] != elem["rwidth"] or rect["rheight"] != elem["rheight"]:
     # Adjust width/heights of elem and all of its children
-    parent_width = elem["rwidth"] / elem["width"]
-    parent_height = elem["rheight"] / elem["height"]
+    artboard_w = parser.globals["width"]
+    artboard_h = parser.globals["height"]
+    parent_w = min(elem["rwidth"] / elem["width"], artboard_w)
+    parent_h = min(elem["rheight"] / elem["height"], artboard_h)
     elem["rwidth"] = rect["rwidth"]
     elem["rheight"] = rect["rheight"]
-    elem["width"] = elem["rwidth"] / parent_width
-    elem["height"] = elem["rheight"] / parent_height
+    elem["width"] = elem["rwidth"] / parent_w
+    elem["height"] = elem["rheight"] / parent_h
     for child in elem["children"]:
       child["width"] = child["rwidth"] / elem["rwidth"]
       child["height"] = child["rheight"] / elem["rheight"]

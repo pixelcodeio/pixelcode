@@ -27,10 +27,12 @@ class Main(object):
     # Format swift code
     for filename in i.swift:
       code = i.swift[filename]
+      # Write code to swift file
       swift_file = filename + ".swift"
       o1 = open(swift_file, "w+")
       o1.write(code)
       o1.close()
+      # Use swiftformat to format code
       os.system("swiftformat " + swift_file)
       o2 = open(swift_file, "r")
       i.swift[filename] = o2.read()

@@ -275,7 +275,7 @@ class Parser(object):
       # finished creating new element
       new_elem = parsed_elem.elem
       if new_elem.get("rect") is not None: # adjust size to dimensions of bound
-        new_elem = adjust_size(new_elem)
+        new_elem = adjust_size(self, new_elem)
       if new_elem.get('filter') is not None: # lookup filter in filters
         new_elem["filter"] = self.globals["filters"][new_elem["filter"]]
       parsed_elements.insert(0, new_elem)
