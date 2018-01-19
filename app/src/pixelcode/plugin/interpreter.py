@@ -1,5 +1,3 @@
-import os
-import subprocess
 from pixelcode.plugin.interpreter_h import *
 
 class Interpreter(object):
@@ -59,15 +57,6 @@ class Interpreter(object):
                 "is_partial": True,
                 "is_long_artboard": self.globals["is_long_artboard"]}
     swift, tc_elem = self.gen_comps(self.info["components"])
-    # Write swift code to file
-    o1 = open("partial.swift", "w+")
-    o1.write(swift)
-    o1.close()
-    # Use swiftformat to format code
-    os.system("swiftformat partial.swift")
-    o2 = open("partial.swift", "r")
-    swift = o2.read()
-    os.remove("partial.swift")
     return swift
 
   def gen_file(self):
