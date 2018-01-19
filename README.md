@@ -31,16 +31,6 @@ sh run.sh
 
 Any artboards exported using the plugin should have `.svg` files created in `app/exports`, and their xcode files generated with an `.swift` extension.
 
-## Swift Code Formatter Setup
-
-1. Install [Homebrew](https://brew.sh/).
-2. Run the following commands in your terminal
-
-```
-brew update
-brew install swiftformat
-```
-
 ## XCode Setup
 
 ### Podfile Setup
