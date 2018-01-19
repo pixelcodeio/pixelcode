@@ -66,6 +66,33 @@ function onRun (context) {
   }
 }
 
+function cleanSVG (layer, exportsPath) {
+  var svg = NSString.stringWithContentsOfFile(exportsPath + layer.name + '.svg');
+  var cleanedSVG = removePathD(removeImageLinks(svg));
+  var cleanedSVGString = NSString.stringWithString(cleanedSVG);
+  cleanedSVGString.writeToFile_atomically_encoding_error(exportsPath + layer.name + '.svg', true, NSUTF8StringEncoding, null); 
+}
+
+function removeImageLinks (svg) {
+  var data_index = svg.indexOf("data:image/");
+  if (data_index == -1) {
+    return svg;
+  } else {
+    var end_index = svg.indexOf('"', data_index);
+    return removeImageLinks(svg.substr(0, data_index) + svg.substr(end_index));
+  }
+}
+
+function removePathD (svg) {
+  var d_index = svg.indexOf('path d="M');
+  if (d_index == -1) {
+    return svg;
+  } else {
+    var end_index = svg.indexOf('"', d_index + 8);
+    return removePathD(svg.substr(0, d_index + 8) + svg.substr(end_index));
+  }
+}
+
 function updateProjects (context) {
   var sketch = context.api();
   var application = new sketch.Application(context);

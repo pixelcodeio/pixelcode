@@ -63,8 +63,13 @@ function uploadArtboardToProject (context, projectHash, token, artboard) {
   var uploadUrl = globals.uploadToProjectRoute + projectHash + '/upload';
   fetch(uploadUrl, options)
     .then(response => response.text())
-    .then(text => context.document.showMessage('Pixelcode: Uploaded to Project!'))
-    .catch(error => context.document.showMessage('Pixelcode: Failed to upload to project.'));
+    .then(text => {
+      console.log(text);
+      context.document.showMessage('Pixelcode: Uploaded to Project!');
+    }).catch(error => {
+       context.document.showMessage('Pixelcode: Failed to upload to project.');
+       console.log(error);
+    });
 }
 
 function uploadToProject (context, projectHash, token, artboards) {
