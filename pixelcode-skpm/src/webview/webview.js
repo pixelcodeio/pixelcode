@@ -30,7 +30,7 @@ export function createWebViewChangeLocationDelegate (application, context, windo
         application.setSettingForKey('token', token);
       } else if (hash.hasOwnProperty('projectHash')) {
         var projectHash = hash['projectHash'];
-        uploadToProject(context, projectHash, info.token, info.artboards);
+        uploadToProject(context, projectHash, info.token, info.artboards, info.assetNames);
         context.document.showMessage('Pixelcode: Uploaded to project!');
       }
     }
@@ -72,11 +72,30 @@ function uploadArtboardToProject (context, projectHash, token, artboard) {
     });
 }
 
-function uploadToProject (context, projectHash, token, artboards) {
+function uploadAssetsToProejct (context, projectHash, token, assetNames) {
+  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
+  var exportsPath = contentsPath + '/Resources/exports/';
+  var assetDict = {};
+  for (var i = 0; i < assetNames.length; i++) {
+    var assetName = String(assetNames[i]);
+    var pngData = NSData.dataWithContentsOfFile_options_error(exportsPath + assetName + '.png', NSDataReadingUncached, null);
+    var pngContents = String(pngData.base64EncodedStringWithOptions(0));
+    assetDict[assetName] = pngContents;
+  }
+  var options = {};
+  var uploadURL = '';
+  fetch(uploadURL, options)
+    .then(response => response.text())
+    .then(text => context.document.showMessage('Pixelcode: Uploaded assets.'))
+    .catch(error => context.document.showMessage('Pixelcode: Failed to upload asset'))
+}
+
+function uploadToProject (context, projectHash, token, artboards, assetNames) {
   for (var i = 0; i < artboards.length; i++) {
     var artboard = String(artboards[i]);
     uploadArtboardToProject(context, projectHash, token, artboard);
   }
+  uploadAssetsToProject(context, projectHash, token, assetNames);
 }
 
 export function createWindow(width, height) {

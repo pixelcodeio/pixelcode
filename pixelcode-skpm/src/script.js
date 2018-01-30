@@ -25,12 +25,15 @@ function onRun (context) {
     context.document.showMessage('Pixelcode: No artboard selected.');
   } else {
     var artboards = [];
+    var assetNames = [];
     var exportsPath = resourcesPath + '/exports/';
     layers.iterate(function (layer) {
       if (layer.isArtboard) {
         // Add artboard name to list of artboards
         artboards.push(layer.name);
         var output = exportJSON(layer, exportsPath);
+        exportImages(layer, exportsPath);
+        assetNames = getAssetNames(layer, assetNames);
 
         var svgOptions = {
           'scales': '1',
@@ -56,21 +59,49 @@ function onRun (context) {
         return;
       }
     });
-
+    console.log('ASSET NAMES: BLAH');
+    console.log(assetNames);
     // Open Export to Projects window
     var window_ = createWindow(560, 496);
     var webview = createWebview(context, window_, resourcesPath + '/html/export.html', 560, 472);
-    var info = {token: token, artboards: artboards};
+    var info = {token: token, artboards: artboards, assetNames: assetNames};
     createWebViewChangeLocationDelegate(application, context, window_, webview, info);
     NSApp.run();
   }
+}
+
+function exportImages (layer, filepath, assetNames) {
+  var options = {
+    'scales': '1',
+    'formats': 'png',
+    'overwriting': 'true',
+    'output': filepath
+  };
+  if (layer.isImage) {
+    layer.export(options);
+  } else if (layer.isGroup) {
+    layer.iterate(function (sublayer) {
+      exportImages(sublayer, filepath, assetNames);
+    });
+  }
+}
+
+function getAssetNames (layer, assetNames) {
+  if (layer.isImage) {
+    assetNames.push(layer.name);
+  } else if (layer.isGroup) {
+    layer.iterate(function (sublayer) {
+      assetNames = getAssetNames(sublayer, assetNames);
+    });
+  }
+  return assetNames;
 }
 
 function cleanSVG (layer, exportsPath) {
   var svg = NSString.stringWithContentsOfFile(exportsPath + layer.name + '.svg');
   var cleanedSVG = removePathD(removeImageLinks(svg));
   var cleanedSVGString = NSString.stringWithString(cleanedSVG);
-  cleanedSVGString.writeToFile_atomically_encoding_error(exportsPath + layer.name + '.svg', true, NSUTF8StringEncoding, null); 
+  cleanedSVGString.writeToFile_atomically_encoding_error(exportsPath + layer.name + '.svg', true, NSUTF8StringEncoding, null);
 }
 
 function removeImageLinks (svg) {
@@ -152,22 +183,6 @@ function exportJSON (artboard, filepath) {
   var file = NSString.stringWithString(JSON.stringify(jsonObj, null, '\t'));
   file.writeToFile_atomically_encoding_error(filepath + artboardName + '.json', true, NSUTF8StringEncoding, null);
   return ret;
-}
-
-function exportImages (layer, filepath) {
-  var options = {
-    'scales': '1',
-    'formats': 'png',
-    'overwriting': 'true',
-    'output': filepath
-  };
-  if (layer.isImage) {
-    layer.export(options);
-  } else if (layer.isGroup) {
-    layer.iterate(function (sublayer) {
-      exportImages(sublayer, filepath);
-    });
-  }
 }
 
 // Account for sublayers in checking formatting
