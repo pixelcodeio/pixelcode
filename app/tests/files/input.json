@@ -1,0 +1,60 @@
+{
+	"layers": [
+		{
+			"name": "twoTextField",
+			"x": "32",
+			"y": "120",
+			"height": "48",
+			"width": "311"
+		},
+		{
+			"name": "placeholder1",
+			"x": "16",
+			"y": "10",
+			"height": "29",
+			"width": "130"
+		},
+		{
+			"name": "rectangle1",
+			"x": "0",
+			"y": "0",
+			"height": "48",
+			"width": "311"
+		},
+		{
+			"name": "oneTextField",
+			"x": "32",
+			"y": "184",
+			"height": "48",
+			"width": "311"
+		},
+		{
+			"name": "placeholder",
+			"x": "91",
+			"y": "10",
+			"height": "29",
+			"width": "130"
+		},
+		{
+			"name": "rectangle",
+			"x": "0",
+			"y": "0",
+			"height": "48",
+			"width": "311"
+		},
+		{
+			"name": "rectangle2",
+			"x": "32",
+			"y": "264",
+			"height": "48",
+			"width": "311"
+		},
+		{
+			"name": "rectangle3",
+			"x": "32",
+			"y": "334",
+			"height": "48",
+			"width": "311"
+		}
+	]
+}

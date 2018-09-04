@@ -1,0 +1,34 @@
+{
+  "author" : "100B",
+  "commands" : [
+    {
+      "script" : "./script.js",
+      "name" : "Export to Swift",
+      "identifier" : "export_swift_identifier",
+      "shortcut": "ctrl e"
+    },
+    {
+      "script" : "./update.js",
+      "name" : "Update Projects",
+      "identifier" : "update_projects_identifier"
+    },
+    {
+      "script" : "./logout.js",
+      "name" : "Logout",
+      "identifier" : "log_out_identifier"
+    }
+  ],
+  "menu" : {
+    "title" : "Pixelcode",
+    "items" : [
+      "export_swift_identifier",
+      "update_projects_identifier",
+      "log_out_identifier"
+    ]
+  },
+  "identifier" : "Pixelcode_Plugin",
+  "version" : "0.1",
+  "description" : "Converts Artboards to Swift Code",
+  "authorEmail" : "kim.thunderbird@gmail.com",
+  "name" : "Pixelcode"
+}

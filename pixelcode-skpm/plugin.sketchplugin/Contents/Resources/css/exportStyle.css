@@ -1,0 +1,140 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+header {
+  border-bottom-color: #DBDBDB;
+  border-bottom-style: solid;
+  border-bottom-width:1px;
+  display: flex;
+  flex-direction: column;
+}
+
+header label {
+  font-size: 15px;
+  text-align: center;
+}
+
+img {
+  max-width: 99px;
+}
+
+.active {
+  background: #FAFAFA;
+}
+
+.button {
+  border-radius: 4px;
+  border: none;
+  font-size: 13px;
+  height: 30px;
+  margin-left: 15px;
+  outline: none;
+  width: 125px;
+}
+
+.button:active {
+  border-style: none;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.image {
+  border-color: black;
+  border-style: solid;
+  border-width: 0.5px;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+  margin: 10px;
+  width: 100px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 36px;
+}
+
+.project {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.project:hover {
+  background: #F4F4F4;
+}
+
+.projects {
+  flex: 1;
+  overflow: auto;
+}
+
+.replaceScreens {
+  display: flex;
+  flex-direction: row;
+  font-size: 13px;
+  magrgin-bottom: 16px;
+  margin-top: 8px;
+  padding:10px;
+}
+
+.timestamp {
+  color: #929199;
+  font-size: 12px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#cancel {
+  color: #222;
+  background: #EBEBEB;
+}
+
+#cancel, #export {
+  margin: 12px;
+}
+
+#export {
+  background: #574FB7;
+  color: #847FCA;
+}
+
+#headline {
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+#replace {
+  margin-left: 4px;
+  margin-top:2px;
+}

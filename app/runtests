@@ -1,0 +1,2 @@
+python3 src/main.py ./tests/files/
+nose2

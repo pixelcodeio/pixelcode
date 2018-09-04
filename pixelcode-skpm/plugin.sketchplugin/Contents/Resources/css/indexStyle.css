@@ -1,0 +1,95 @@
+html {
+  background: white;
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  color: #222222;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.8px;
+  line-height: 1.14;
+  margin-bottom: 64px;
+  margin-top: 30px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+img {
+  max-width: 100%;
+}
+
+input {
+  border-color: #929199;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 1px;
+  height: 40px;
+  outline: none;
+  padding-left: 10px;
+  width: 336px;
+}
+
+input:focus {
+  border-color: black;
+  label {
+    color: black;
+  }
+}
+
+label {
+  color: #929199;
+  font-size: 10px;
+  height: 14px;
+  margin-bottom: 4px;
+}
+
+.child {
+  height: 58px;
+  margin-bottom: 24px;
+}
+
+.login {
+  height: 48px;
+  margin: 0 auto;
+  width: 172px;
+}
+
+.login-child {
+  height: 44px;
+}
+
+.parent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  width: 336px;
+}
+
+.parent a {
+  margin: 0 auto;
+  margin-bottom: 56px;
+  margin-top: 56px;
+  max-width: 100px;
+}
+
+#loginBtn {
+  background: #574FB7;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  height: 44px;
+  outline:none;
+  width: 100%;
+}
+
+#loginBtn:active {
+  border-style: outset;
+}
