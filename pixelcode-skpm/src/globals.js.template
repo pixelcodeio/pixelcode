@@ -1,6 +1,4 @@
 const globals = {
-  userProjectsRoute: 'https://app.pixelcode.io/api/csrf/userprojects',
-  uploadToProjectRoute: 'https://app.pixelcode.io/api/project/',
   exportsPath: '/Users/{FILL IN}/pixelcode/app/exports/'
 };
 
