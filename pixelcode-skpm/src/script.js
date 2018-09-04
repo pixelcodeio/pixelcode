@@ -5,28 +5,14 @@ function onRun (context) {
   var sketch = context.api();
   var app = NSApplication.sharedApplication();
   var layers = sketch.selectedDocument.selectedLayers;
-  var contentsPath = context.scriptPath.stringByDeletingLastPathComponent().stringByDeletingLastPathComponent();
-  var resourcesPath = contentsPath + '/Resources';
+  var exportsPath = globals['exportsPath'];
   var application = new sketch.Application(context);
-
-  var token = application.settingForKey('token');
-  if (token == null) {
-    // Open Login window
-    var window_ = createWindow(520, 496);
-    var webview = createWebview(context, window_, resourcesPath + '/html/index.html', 520, 496);
-    createWebViewChangeLocationDelegate(application, context, window_, webview, null);
-    NSApp.run();
-    return;
-  }
-
-  updateProjects(context);
 
   if (layers.isEmpty) {
     context.document.showMessage('Pixelcode: No artboard selected.');
   } else {
     var artboards = [];
     var assetNames = [];
-    var exportsPath = resourcesPath + '/exports/';
     layers.iterate(function (layer) {
       if (layer.isArtboard) {
         // Add artboard name to list of artboards
@@ -54,18 +40,13 @@ function onRun (context) {
         layer.iterate(function (currentLayer) {
           renameLayers(currentLayer, output['originalNames']);
         });
+
+        context.document.showMessage('Pixelcode: Your design was translated successfully.');
       } else {
         context.document.showMessage('Pixelcode: No artboard selected.');
         return;
       }
     });
-    console.log('ASSET NAMES: BLAH');
-    console.log(assetNames);
-    // Open Export to Projects window
-    var window_ = createWindow(560, 496);
-    var webview = createWebview(context, window_, resourcesPath + '/html/export.html', 560, 472);
-    var info = {token: token, artboards: artboards, assetNames: assetNames};
-    createWebViewChangeLocationDelegate(application, context, window_, webview, info);
     NSApp.run();
   }
 }
